@@ -24,14 +24,23 @@ Harmonogram:
   
 Hodnocení:
   Absolvování jednoho projektového dne (součástí je commit na github ne starší než 1 týden) 5 b (x3, tj. 15 b), pod omluvě lze nahradit individuálně
+  
   Příběh (na githubu) 5 b (součástí příběhu je časová posloupnost commitů, definice problémů k vyřešení)
+  
   Řádné komentáře v kódu (včetně description u GQLModelů, strawberry fieldsa a comment u DBModelů) 5 b
+  
   Vygenerovaná dokumentace 5 b
+  
   Prokázaná funkčnost jako samostatný kontejner 5 b
+  
   Prokázaná funkčnost jako prvek docker-compose (s odkazem na samostatný kontejner z docker hubu) 5 b
+  
   Vytvoření docker containeru, publikace na Docker hub 5 b
+  
   Kompletní CRUD 5 b_json 5 b
+  
   Obhajoba 60 b, každý student předvede „dopracovaný“ SQL a GQL model (bez ohledu na týmovou práci)
+  
   Lze získat až 120 bodů. Předmětem projdete, pokud budete mít více než 50 bodů, hodnocení „A“ získáte za 90 bodů a více
   
 
