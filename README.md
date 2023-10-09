@@ -1,5 +1,7 @@
 #UG
+
 Harmonogram:
+
   20.10•	Entity (UserGQLModel, MembershipGQLModel, GroupGQLModel, GroupTypeGQLModel)
   
   20.10•	Entity (RoleGQLModel, RoleTypeGQLModel, RoleCategoryGQLModel)
@@ -21,8 +23,10 @@ Harmonogram:
   15.1•	Zabezpečte více jak 90% code test coverage (standard pytest).
 
   21.1• Uzavření projektu
-  
+
+
 Hodnocení:
+
   Absolvování jednoho projektového dne (součástí je commit na github ne starší než 1 týden) 5 b (x3, tj. 15 b), pod omluvě lze nahradit individuálně
   
   Příběh (na githubu) 5 b (součástí příběhu je časová posloupnost commitů, definice problémů k vyřešení)
