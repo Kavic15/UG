@@ -11,7 +11,7 @@ from .UUID import UUIDColumn, UUIDFKey
 from .Base import BaseModel
 
 class UserModel(BaseModel):
-    """Spravuje data spojena s uzivatelem"""
+    """Manages data related to user"""
 
     __tablename__ = "users"
 

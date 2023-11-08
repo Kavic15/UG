@@ -13,7 +13,7 @@ from .Base import BaseModel
 
 
 class GroupModel(BaseModel):
-    """Spravuje data spojena se skupinou"""
+    """Manages data related to group"""
 
     __tablename__ = "groups"
 

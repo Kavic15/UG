@@ -9,9 +9,7 @@ def getLoader(info):
 
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
-@strawberry.federation.type(
-    keys=["id"], description="""Entity representing a group type (like Faculty)"""
-)
+@strawberry.federation.type(keys=["id"], description="""Entity representing a group type (like Faculty)""")
 class GroupTypeGQLModel:
     @classmethod
     async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
