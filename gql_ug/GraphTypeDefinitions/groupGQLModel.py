@@ -26,9 +26,7 @@ class GroupGQLModel:
     def id(self) -> strawberry.ID:
         return self.id
 
-    @strawberry.field(
-        description="""Group's name (like Department of Intelligent Control)"""
-    )
+    @strawberry.field(description="""Group's name (like Department of Intelligent Control)""")
     def name(self) -> str:
         return self.name
 
@@ -39,7 +37,7 @@ class GroupGQLModel:
         else:
             return self.valid
 
-    @strawberry.field(description="""""")
+    @strawberry.field(description="""Date and time of last change""")
     def lastchange(self) -> Union[datetime.datetime, None]:
         result = self.lastchange
         return result
@@ -122,9 +120,7 @@ async def group_by_id(
     result = await GroupGQLModel.resolve_reference(info=info, id=id)
     return result
 
-@strawberry.field(
-    description="""Finds an user by letters in name and surname, letters should be atleast three"""
-)
+@strawberry.field(description="""Finds an user by letters in name and surname, letters should be atleast three""")
 async def group_by_letters(
     self,
     info: strawberry.types.Info,
@@ -165,7 +161,7 @@ async def group_by_letters(
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating a group""")
 class GroupUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime
@@ -175,7 +171,7 @@ class GroupUpdateGQLModel:
     valid: Optional[bool] = None
 
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new group""")
 class GroupInsertGQLModel:
     name: str
     id: Optional[strawberry.ID] = None
@@ -183,7 +179,7 @@ class GroupInsertGQLModel:
     mastergroup_id: Optional[strawberry.ID] = None
     valid: Optional[bool] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for group operations""")
 class GroupResultGQLModel:
     id: strawberry.ID = None
     msg: str = None
@@ -195,9 +191,7 @@ class GroupResultGQLModel:
         print("GroupResultGQLModel", result.id, result.name, flush=True)
         return result
 
-@strawberry.mutation(description="""
-    Allows a update of group, also it allows to change the mastergroup of the group
-""")
+@strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
 async def group_update(self, info: strawberry.types.Info, group: GroupUpdateGQLModel) -> GroupResultGQLModel:
     loader = getLoader(info).groups
     
@@ -209,9 +203,7 @@ async def group_update(self, info: strawberry.types.Info, group: GroupUpdateGQLM
         return GroupResultGQLModel(id=group.id, msg="ok")
     
 
-@strawberry.mutation(description="""
-    Allows a update of group, also it allows to change the mastergroup of the group
-""")
+@strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
 async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLModel) -> GroupResultGQLModel:
     loader = getLoader(info).groups
     
@@ -226,9 +218,7 @@ async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLM
     
     return result
 
-@strawberry.mutation(description="""
-        Allows to assign the group to8 specified master group
-    """)
+@strawberry.mutation(description="""Allows to assign the group to specified master group""")
 async def group_update_master(self, 
     info: strawberry.types.Info, 
     master_id: strawberry.ID,
