@@ -9,4 +9,5 @@ UG (2 studenti) Holík, Káva
 - Kompletní CRUD (Create, Read, Update, Delete) dotazy na GQL v souboru externalids_queries.json (dictionary), jméno klíče nechť vhodně identifikuje operaci, hodnota je dictionary s klíči query (obsahuje parametrický dotaz) nebo mutation (obsahuje parametrické mutation) a variables (obsahuje dictionary jako testovací hodnoty).
 - Kompletní popisy API v kódu (description u GQLModelů) a popisy DB vrstvy (comment u DBModelů).
 - Zabezpečte více jak 90% code test coverage (standard pytest).
+
 - 2. projektový den = hotovo po krok 8
