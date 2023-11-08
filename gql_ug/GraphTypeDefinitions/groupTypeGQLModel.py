@@ -73,20 +73,20 @@ async def group_type_by_id(
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating a group type""")
 class GroupTypeUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new group type""")
 class GroupTypeInsertGQLModel:
     id: Optional[strawberry.ID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for group type operations""")
 class GroupTypeResultGQLModel:
     id: strawberry.ID = None
     msg: str = None
@@ -96,9 +96,7 @@ class GroupTypeResultGQLModel:
         result = await GroupTypeGQLModel.resolve_reference(info, self.id)
         return result
     
-@strawberry.mutation(description="""
-        Allows a update of group, also it allows to change the mastergroup of the group
-    """)
+@strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
 async def group_type_update(self, info: strawberry.types.Info, group_type: GroupTypeUpdateGQLModel) -> GroupTypeResultGQLModel:
     loader = getLoader(info).grouptypes
     
@@ -111,9 +109,7 @@ async def group_type_update(self, info: strawberry.types.Info, group_type: Group
     
     return result
 
-@strawberry.mutation(description="""
-    Inserts a group
-""")
+@strawberry.mutation(description="""Inserts a group""")
 async def group_type_insert(self, info: strawberry.types.Info, group_type: GroupTypeInsertGQLModel) -> GroupTypeResultGQLModel:
     loader = getLoader(info).grouptypes
     

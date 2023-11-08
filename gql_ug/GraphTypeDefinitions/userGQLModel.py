@@ -152,7 +152,7 @@ async def users_by_group_and_role_type(
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating user information""")
 class UserUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime  # razitko
@@ -161,7 +161,7 @@ class UserUpdateGQLModel:
     email: Optional[str] = None
     valid: Optional[bool] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new user""")
 class UserInsertGQLModel:
     id: Optional[strawberry.ID] = None
     name: Optional[str] = None
@@ -169,7 +169,7 @@ class UserInsertGQLModel:
     email: Optional[str] = None
     valid: Optional[bool] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for user operations""")
 class UserResultGQLModel:
     id: strawberry.ID = None
     msg: str = None
@@ -179,7 +179,7 @@ class UserResultGQLModel:
         result = await UserGQLModel.resolve_reference(info, self.id)
         return result
 
-@strawberry.mutation
+@strawberry.mutation(description="""Updates a user's information""")
 async def user_update(self, info: strawberry.types.Info, user: UserUpdateGQLModel) -> UserResultGQLModel:
     #print("user_update", flush=True)
     #print(user, flush=True)
@@ -197,7 +197,7 @@ async def user_update(self, info: strawberry.types.Info, user: UserUpdateGQLMode
     print("user_update", result.msg, flush=True)
     return result
 
-@strawberry.mutation
+@strawberry.mutation(description="""Inserts a new user""")
 async def user_insert(self, info: strawberry.types.Info, user: UserInsertGQLModel) -> UserResultGQLModel:
     loader = getLoader(info).users
     

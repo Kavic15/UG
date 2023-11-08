@@ -10,10 +10,7 @@ GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
 RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLModel")]
 
-@strawberry.federation.type(
-    keys=["id"],
-    description="""Entity representing a role of a user in a group (like user A in group B is Dean)""",
-)
+@strawberry.federation.type(keys=["id"],description="""Entity representing a role of a user in a group (like user A in group B is Dean)""",)
 class RoleGQLModel:
     @classmethod
     async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
@@ -78,7 +75,7 @@ class RoleGQLModel:
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating a role""")
 class RoleUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime
@@ -86,7 +83,7 @@ class RoleUpdateGQLModel:
     startdate: Optional[datetime.datetime] = None
     enddate: Optional[datetime.datetime] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new role""")
 class RoleInsertGQLModel:
     user_id: strawberry.ID
     group_id: strawberry.ID
@@ -96,7 +93,7 @@ class RoleInsertGQLModel:
     startdate: Optional[datetime.datetime] = datetime.datetime.now()
     enddate: Optional[datetime.datetime] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for role operations""")
 class RoleResultGQLModel:
     id: strawberry.ID = None
     msg: str = None

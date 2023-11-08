@@ -9,10 +9,7 @@ def getLoader(info):
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
 
-@strawberry.federation.type(
-    keys=["id"],
-    description="""Entity representing a relation between an user and a group""",
-)
+@strawberry.federation.type(keys=["id"], description="""Entity representing a relation between an user and a group""",)
 class MembershipGQLModel:
     @classmethod
     async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
@@ -69,7 +66,7 @@ class MembershipGQLModel:
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating a membership""")
 class MembershipUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime   
@@ -77,7 +74,7 @@ class MembershipUpdateGQLModel:
     startdate: Optional[datetime.datetime] = None
     enddate: Optional[datetime.datetime] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new membership""")
 class MembershipInsertGQLModel:
     user_id: strawberry.ID
     group_id: strawberry.ID
@@ -86,7 +83,7 @@ class MembershipInsertGQLModel:
     startdate: Optional[datetime.datetime] = None
     enddate: Optional[datetime.datetime] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for membership operations""")
 class MembershipResultGQLModel:
     id: strawberry.ID = None
     msg: str = None

@@ -199,7 +199,7 @@ import datetime
 
 class ExportEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, strawberry.ID):
+        if isinstance(obj, strawberryA.ID):
             return f"{obj}"
         if isinstance(obj, datetime.datetime):
             return f"{obj}"

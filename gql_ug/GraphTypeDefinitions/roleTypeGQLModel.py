@@ -72,20 +72,20 @@ async def role_type_page(
 #
 #####################################################################
 import datetime
-@strawberry.input
+@strawberry.input(description="""Input model for updating a role type""")
 class RoleTypeUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new role type""")
 class RoleTypeInsertGQLModel:
     id: Optional[strawberry.ID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for role type operations""")
 class RoleTypeResultGQLModel:
     id: strawberry.ID = None
     msg: str = None
@@ -95,7 +95,7 @@ class RoleTypeResultGQLModel:
         result = await RoleTypeGQLModel.resolve_reference(info, self.id)
         return result
     
-@strawberry.mutation(description="""Updates existing roleType record""")
+@strawberry.mutation(description="""Updates an existing roleType record""")
 async def role_type_update(self, 
     info: strawberry.types.Info, 
     role_type: RoleTypeUpdateGQLModel

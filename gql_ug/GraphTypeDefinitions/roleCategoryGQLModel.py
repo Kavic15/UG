@@ -7,9 +7,7 @@ def getLoader(info):
 
 RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLModel")]
 
-@strawberry.federation.type(
-    keys=["id"], description="""Entity representing a role type (like Dean)"""
-)
+@strawberry.federation.type(keys=["id"], description="""Entity representing a role type (like Dean)""")
 class RoleCategoryGQLModel:
     @classmethod
     async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
@@ -70,20 +68,20 @@ async def role_category_page(
 #####################################################################
 import datetime
 
-@strawberry.input
+@strawberry.input(description="""Input model for updating a role category""")
 class RoleCategoryUpdateGQLModel:
     id: strawberry.ID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.input
+@strawberry.input(description="""Input model for inserting a new role category""")
 class RoleCategoryInsertGQLModel:
     id: Optional[strawberry.ID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
-@strawberry.type
+@strawberry.type(description="""Result model for role category operations""")
 class RoleCategoryResultGQLModel:
     id: strawberry.ID = None
     msg: str = None
