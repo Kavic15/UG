@@ -14,6 +14,9 @@ class Mutation:
     from .userGQLModel import user_update
     user_update = user_update
 
+    from .userGQLModel import user_delete
+    user_delete = user_delete
+
     from .membershipGQLModel import membership_insert
     membership_insert = membership_insert
 

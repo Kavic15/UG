@@ -169,6 +169,10 @@ class UserInsertGQLModel:
     email: Optional[str] = None
     valid: Optional[bool] = None
 
+@strawberry.input(description="""Input model for deleting a user""")            #NOVÉ
+class UserDeleteGQLModel:
+    id: strawberry.ID
+
 @strawberry.type(description="""Result model for user operations""")
 class UserResultGQLModel:
     id: strawberry.ID = None
@@ -178,8 +182,19 @@ class UserResultGQLModel:
     async def user(self, info: strawberry.types.Info) -> Union[UserGQLModel, None]:
         result = await UserGQLModel.resolve_reference(info, self.id)
         return result
+    
+@strawberry.type(description="""Result model for user deletion""")              #NOVÉ##########################################
+class UserDeleteResultGQLModel:
+    id: strawberry.ID = None
+    msg: str = None
 
-@strawberry.mutation(description="""Updates a user's information""")
+    @strawberry.field(description="""Result of user deletion""")
+    async def user(self, info: strawberry.types.Info) -> Union[UserGQLModel, None]:
+        # Assuming you have a resolve_reference function for retrieving deleted user details
+        result = await UserGQLModel.resolve_reference(info, self.id)
+        return result                                                           ###############################################
+
+@strawberry.mutation(description="""Updates a user's information""") #UPDATE
 async def user_update(self, info: strawberry.types.Info, user: UserUpdateGQLModel) -> UserResultGQLModel:
     #print("user_update", flush=True)
     #print(user, flush=True)
@@ -197,7 +212,7 @@ async def user_update(self, info: strawberry.types.Info, user: UserUpdateGQLMode
     print("user_update", result.msg, flush=True)
     return result
 
-@strawberry.mutation(description="""Inserts a new user""")
+@strawberry.mutation(description="""Inserts a new user""")  #CREATE
 async def user_insert(self, info: strawberry.types.Info, user: UserInsertGQLModel) -> UserResultGQLModel:
     loader = getLoader(info).users
     
@@ -207,4 +222,21 @@ async def user_insert(self, info: strawberry.types.Info, user: UserInsertGQLMode
     result.id = row.id
     result.msg = "ok"
     
+    return result
+
+@strawberry.mutation(description="""Deletes a user""")  #DELETE
+async def user_delete(self, info: strawberry.types.Info, user: UserDeleteGQLModel) -> UserDeleteResultGQLModel:
+    loader = getLoader(info).users
+
+    # Perform user deletion operation
+    deleted_row = await loader.delete(user.id)
+
+    result = UserDeleteResultGQLModel()
+    result.id = user.id
+
+    if deleted_row is None:
+        result.msg = "fail"
+    else:
+        result.msg = "ok"
+
     return result
