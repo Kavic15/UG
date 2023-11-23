@@ -93,6 +93,10 @@ class RoleInsertGQLModel:
     startdate: Optional[datetime.datetime] = datetime.datetime.now()
     enddate: Optional[datetime.datetime] = None
 
+@strawberry.input(description="""Input model for deleting a role""")
+class RoleDeleteGQLModel:
+    id: strawberry.ID
+
 @strawberry.type(description="""Result model for role operations""")
 class RoleResultGQLModel:
     id: strawberry.ID = None
@@ -103,6 +107,16 @@ class RoleResultGQLModel:
         result = await RoleGQLModel.resolve_reference(info, self.id)
         return result
     
+@strawberry.type(description="""Result model for role deletion""")
+class RoleDeleteResultGQLModel:
+    id: strawberry.ID = None
+    msg: str = None
+
+    @strawberry.field(description="""Result of role deletion""")
+    async def role(self, info: strawberry.types.Info) -> Union[RoleGQLModel, None]:
+        # Assuming you have a resolve_reference function for retrieving deleted role details
+        result = await RoleGQLModel.resolve_reference(info, self.id)
+        return result
 
 @strawberry.mutation(description="""Updates a role""")
 async def role_update(self, 
@@ -136,4 +150,21 @@ async def role_insert(self,
     updatedrow = await loader.insert(role)
     result.id = updatedrow.id
     
-    return result    
+    return result
+
+@strawberry.mutation(description="""Deletes a role""")
+async def role_delete(self, info: strawberry.types.Info, role: RoleDeleteGQLModel) -> RoleDeleteResultGQLModel:
+    loader = getLoader(info).roles
+
+    # Perform role deletion operation
+    deleted_row = await loader.delete(role.id)
+
+    result = RoleDeleteResultGQLModel()
+    result.id = role.id
+
+    if deleted_row is None:
+        result.msg = "fail"
+    else:
+        result.msg = "ok"
+
+    return result

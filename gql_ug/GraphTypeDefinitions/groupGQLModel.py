@@ -179,6 +179,10 @@ class GroupInsertGQLModel:
     mastergroup_id: Optional[strawberry.ID] = None
     valid: Optional[bool] = None
 
+@strawberry.input(description="""Input model for deleting a group""")
+class GroupDeleteGQLModel:
+    id: strawberry.ID
+
 @strawberry.type(description="""Result model for group operations""")
 class GroupResultGQLModel:
     id: strawberry.ID = None
@@ -189,6 +193,17 @@ class GroupResultGQLModel:
         print("GroupResultGQLModel", "group", self.id, flush=True)
         result = await GroupGQLModel.resolve_reference(info, self.id)
         print("GroupResultGQLModel", result.id, result.name, flush=True)
+        return result
+
+@strawberry.type(description="""Result model for group deletion""")
+class GroupDeleteResultGQLModel:
+    id: strawberry.ID = None
+    msg: str = None
+
+    @strawberry.field(description="""Result of group deletion""")
+    async def group(self, info: strawberry.types.Info) -> Union[GroupGQLModel, None]:
+        # Assuming you have a resolve_reference function for retrieving deleted group details
+        result = await GroupGQLModel.resolve_reference(info, self.id)
         return result
 
 @strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
@@ -216,6 +231,23 @@ async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLM
     if updatedrow is None:
         result.msg = "fail"
     
+    return result
+
+@strawberry.mutation(description="""Deletes a group""")
+async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLModel) -> GroupDeleteResultGQLModel:
+    loader = getLoader(info).groups
+
+    # Perform group deletion operation
+    deleted_row = await loader.delete(group.id)
+
+    result = GroupDeleteResultGQLModel()
+    result.id = group.id
+
+    if deleted_row is None:
+        result.msg = "fail"
+    else:
+        result.msg = "ok"
+
     return result
 
 @strawberry.mutation(description="""Allows to assign the group to specified master group""")

@@ -8,6 +8,9 @@ class Mutation:
     from .groupGQLModel import group_update
     group_update = group_update
 
+    from .groupGQLModel import group_delete
+    group_delete = group_delete
+
     from .userGQLModel import user_insert
     user_insert = user_insert
 
@@ -29,11 +32,17 @@ class Mutation:
     from .roleGQLModel import role_update
     role_update = role_update
 
+    from .roleGQLModel import role_delete
+    role_delete = role_delete
+
     from .roleTypeGQLModel import role_type_insert
     role_type_insert = role_type_insert
 
     from .roleTypeGQLModel import role_type_update
     role_type_update = role_type_update
+
+    from .roleTypeGQLModel import role_type_delete
+    role_type_delete = role_type_delete
 
     from .roleCategoryGQLModel import role_category_insert
     role_category_insert = role_category_insert

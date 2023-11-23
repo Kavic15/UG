@@ -85,6 +85,10 @@ class RoleTypeInsertGQLModel:
     name: Optional[str] = None
     name_en: Optional[str] = None
 
+@strawberry.input(description="""Input model for deleting a role type""")
+class RoleTypeDeleteGQLModel:
+    id: strawberry.ID
+
 @strawberry.type(description="""Result model for role type operations""")
 class RoleTypeResultGQLModel:
     id: strawberry.ID = None
@@ -92,6 +96,17 @@ class RoleTypeResultGQLModel:
 
     @strawberry.field(description="""Result of role type operation""")
     async def role_type(self, info: strawberry.types.Info) -> Union[RoleTypeGQLModel, None]:
+        result = await RoleTypeGQLModel.resolve_reference(info, self.id)
+        return result
+    
+@strawberry.type(description="""Result model for role type deletion""")
+class RoleTypeDeleteResultGQLModel:
+    id: strawberry.ID = None
+    msg: str = None
+
+    @strawberry.field(description="""Result of role type deletion""")
+    async def role_type(self, info: strawberry.types.Info) -> Union[RoleTypeGQLModel, None]:
+        # Assuming you have a resolve_reference function for retrieving deleted role type details
         result = await RoleTypeGQLModel.resolve_reference(info, self.id)
         return result
     
@@ -128,4 +143,21 @@ async def role_type_insert(self,
     result = RoleTypeResultGQLModel()
     result.msg = "ok"
     result.id = row.id       
-    return result    
+    return result
+
+@strawberry.mutation(description="""Deletes a role type""")
+async def role_type_delete(self, info: strawberry.types.Info, role_type: RoleTypeDeleteGQLModel) -> RoleTypeDeleteResultGQLModel:
+    loader = getLoader(info).roletypes
+
+    # Perform role type deletion operation
+    deleted_row = await loader.delete(role_type.id)
+
+    result = RoleTypeDeleteResultGQLModel()
+    result.id = role_type.id
+
+    if deleted_row is None:
+        result.msg = "fail"
+    else:
+        result.msg = "ok"
+
+    return result
