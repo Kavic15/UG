@@ -62,14 +62,14 @@ services:
     ports:
       - 31122:80
 
-  nginx: # funguje jako proxy mezi vnejskem a vnitrkem, tudy tece cela HTTP komunikace
-    build:
-      # context definuje cestu k popisu
-      context: ./nginx
-    restart: always
-    ports:
-      # vnejsi port : port, kde sluzbu poskytuje kontejner
-      - 31180:80
-    depends_on:
-      # kontejnery, kter musi byt spusteny drive
-      - postgres
+  # nginx: # funguje jako proxy mezi vnejskem a vnitrkem, tudy tece cela HTTP komunikace
+  #   build:
+  #     # context definuje cestu k popisu
+  #     context: ./nginx
+  #   restart: always
+  #   ports:
+  #     # vnejsi port : port, kde sluzbu poskytuje kontejner
+  #     - 31180:80
+  #   depends_on:
+  #     # kontejnery, kter musi byt spusteny drive
+  #     - postgres
