@@ -4,7 +4,7 @@ from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
 #from gql_ug.DBFeeder import initDB         DBFeeder
 
-connectionString = ComposeConnectionString()
+#connectionString = ComposeConnectionString()
 
 
 def singleCall(asyncFunc):
