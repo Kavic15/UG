@@ -1,7 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
-import gql_ug.GraphTypeDefinitions
+import GraphTypeDefinitions
 
 def getLoader(info):
     return info.context["all"]
@@ -32,13 +32,13 @@ class MembershipGQLModel:
     @strawberry.field(description="""user""")
     async def user(self, info: strawberry.types.Info) -> Optional["UserGQLModel"]:
         # return self.user
-        result = await gql_ug.GraphTypeDefinitions.UserGQLModel.resolve_reference(info=info, id=self.user_id)
+        result = await GraphTypeDefinitions.UserGQLModel.resolve_reference(info=info, id=self.user_id)
         return result
 
     @strawberry.field(description="""group""")
     async def group(self, info: strawberry.types.Info) -> Optional["GroupGQLModel"]:
         # return self.group
-        result = await gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info=info, id=self.group_id)
+        result = await GraphTypeDefinitions.GroupGQLModel.resolve_reference(info=info, id=self.group_id)
         return result
 
     @strawberry.field(description="""is the membership is still valid""")

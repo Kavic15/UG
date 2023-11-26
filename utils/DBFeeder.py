@@ -1,5 +1,5 @@
 # from functools import cache
-# from gql_ug.DBDefinitions import (
+# from DBDefinitions import (
 #     GroupTypeModel, 
 #     RoleTypeModel,
 #     RoleCategoryModel,

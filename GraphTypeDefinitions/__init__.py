@@ -22,7 +22,7 @@ def getLoader(info):
 
 
 import datetime
-from gql_ug.GraphResolvers import resolveMembershipById
+from .GraphResolvers import resolveMembershipById
 
 # @strawberryA.federation.type(
 #     keys=["id"],

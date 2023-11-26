@@ -13,14 +13,14 @@ from uoishelpers.resolvers import (
 )
 from uoishelpers.resolvers import putSingleEntityToDb
 
-from gql_ug.DBDefinitions import (
+from DBDefinitions import (
     BaseModel,
     UserModel,
     GroupModel,
     MembershipModel,
     RoleModel,
 )
-from gql_ug.DBDefinitions import GroupTypeModel, RoleTypeModel
+from DBDefinitions import GroupTypeModel, RoleTypeModel
 
 
 ## Dataloaders
@@ -199,7 +199,7 @@ import datetime
 
 class ExportEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, strawberryA.ID):
+        if isinstance(obj, strawberry.ID):
             return f"{obj}"
         if isinstance(obj, datetime.datetime):
             return f"{obj}"
@@ -238,7 +238,7 @@ def datetime_parser(json_dict):
 import concurrent.futures
 import asyncio
 
-from gql_ug.DBDefinitions import ComposeConnectionString, startEngine
+from DBDefinitions import ComposeConnectionString, startEngine
 
 import re
 

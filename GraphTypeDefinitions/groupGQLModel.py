@@ -1,7 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
-import gql_ug.GraphTypeDefinitions
+import GraphTypeDefinitions
 
 def getLoader(info):
     return info.context["all"]
@@ -46,7 +46,7 @@ class GroupGQLModel:
     async def grouptype(
         self, info: strawberry.types.Info
     ) -> Union["GroupTypeGQLModel", None]:
-        result = await gql_ug.GraphTypeDefinitions.GroupTypeGQLModel.resolve_reference(info, id=self.grouptype_id)
+        result = await GraphTypeDefinitions.GroupTypeGQLModel.resolve_reference(info, id=self.grouptype_id)
         return result
 
     @strawberry.field(description="""Directly commanded groups""")
