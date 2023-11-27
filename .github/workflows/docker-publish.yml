@@ -1,9 +1,8 @@
 name: Publish Docker image
 
 on:
-  workflow_dispatch:
   release:
-   types: [published]
+    types: [published]
 
 jobs:
   push_to_registry:
@@ -33,3 +32,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
