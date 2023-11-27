@@ -1,5 +1,5 @@
 from functools import cache
-from gql_ug.DBDefinitions import (
+from DBDefinitions import (
     GroupTypeModel, 
     RoleTypeModel,
     RoleCategoryModel,
@@ -800,7 +800,7 @@ async def createUniversity(session, id, name):
     return university["id"]
 
 
-from gql_ug.GraphResolvers import (
+from GraphTypeDefinitions.GraphResolvers import (
     resolveGroupById,
     resolveUserById,
     resolveMembershipById,
