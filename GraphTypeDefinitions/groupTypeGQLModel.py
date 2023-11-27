@@ -1,7 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
-import gql_ug.GraphTypeDefinitions
+import GraphTypeDefinitions
 
 
 def getLoader(info):

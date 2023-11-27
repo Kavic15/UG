@@ -1,6 +1,6 @@
 from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
 
-from gql_ug.DBDefinitions import (
+from DBDefinitions import (
     UserModel,
     MembershipModel,
     GroupModel,

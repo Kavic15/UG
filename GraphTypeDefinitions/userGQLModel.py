@@ -2,7 +2,7 @@ import datetime
 import strawberry
 import asyncio
 from typing import List, Optional, Union, Annotated
-import gql_ug.GraphTypeDefinitions
+import GraphTypeDefinitions
 
 def getLoader(info):
     return info.context["all"]
@@ -16,7 +16,7 @@ RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
 
-from ..GraphPermissions import UserGDPRPermission
+from .GraphPermissions import UserGDPRPermission
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel:
@@ -82,7 +82,7 @@ class UserGQLModel:
     ) -> List["GroupGQLModel"]:
         loader = getLoader(info).memberships
         rows = await loader.filter_by(user_id=self.id)# , grouptype_id=grouptype_id)
-        results = (gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, row.group_id) for row in rows)
+        results = (GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, row.group_id) for row in rows)
         results = await asyncio.gather(*results)
         results = filter(lambda item: item.grouptype_id == grouptype_id, results)
         return results
@@ -130,7 +130,7 @@ async def user_by_letters(
     result = await loader.execute_select(stmt)
     return result
 
-from gql_ug.GraphResolvers import UserByRoleTypeAndGroupStatement
+from .GraphResolvers import UserByRoleTypeAndGroupStatement
 
 @strawberry.field(description="""Finds users who plays in a group a roletype""")
 async def users_by_group_and_role_type(

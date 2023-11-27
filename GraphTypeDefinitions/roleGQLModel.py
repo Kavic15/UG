@@ -1,7 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
-import gql_ug.GraphTypeDefinitions
+import GraphTypeDefinitions
 
 def getLoader(info):
     return info.context["all"]
@@ -45,7 +45,7 @@ class RoleGQLModel:
     @strawberry.field(description="""Role type (like Dean)""")
     async def roletype(self, info: strawberry.types.Info) -> RoleTypeGQLModel:
         # result = await resolveRoleTypeById(session,  self.roletype_id)
-        result = await gql_ug.GraphTypeDefinitions.RoleTypeGQLModel.resolve_reference(info, self.roletype_id)
+        result = await GraphTypeDefinitions.RoleTypeGQLModel.resolve_reference(info, self.roletype_id)
         return result
 
     @strawberry.field(
@@ -53,13 +53,13 @@ class RoleGQLModel:
     )
     async def user(self, info: strawberry.types.Info) -> UserGQLModel:
         # result = await resolveUserById(session,  self.user_id)
-        result = await gql_ug.GraphTypeDefinitions.UserGQLModel.resolve_reference(info, self.user_id)
+        result = await GraphTypeDefinitions.UserGQLModel.resolve_reference(info, self.user_id)
         return result
 
     @strawberry.field(description="""Group where user has a role name""")
     async def group(self, info: strawberry.types.Info) -> GroupGQLModel:
         # result = await resolveGroupById(session,  self.group_id)
-        result = await gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
+        result = await GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
         return result
     
 #####################################################################

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
+from DBDefinitions import startEngine, ComposeConnectionString
 
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
-from gql_ug.DBFeeder import initDB
+#from gql_ug.DBFeeder import initDB         DBFeeder
 
 connectionString = ComposeConnectionString()
 
@@ -39,7 +39,7 @@ async def RunOnceAndReturnSessionMaker():
     #
     # zde definujte do funkce asyncio.gather
     # vlozte asynchronni funkce, ktere maji data uvest do prvotniho konzistentniho stavu
-    await initDB(result)
+    #await initDB(result)           DBFeeder
     # await asyncio.gather( # concurency running :)
     # sem lze dat vsechny funkce, ktere maji nejak inicializovat databazi
     # musi byt asynchronniho typu (async def ...)
@@ -53,7 +53,7 @@ async def RunOnceAndReturnSessionMaker():
 
 
 from strawberry.asgi import GraphQL
-from gql_ug.Dataloaders import createLoaders, createLoaders_3
+from utils.Dataloaders import createLoaders, createLoaders_3
 
 
 async def createContext():
@@ -83,7 +83,7 @@ class MyGraphQL(GraphQL):
         return {**parentResult, **localResult, "user": self._user}
 
 
-from gql_ug.GraphTypeDefinitions import schema
+from GraphTypeDefinitions import schema
 
 ## ASGI app, kterou "moutneme"
 graphql_app = MyGraphQL(
