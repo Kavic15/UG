@@ -5,7 +5,7 @@ services:
     image: gql_ug
     build:
       # context definuje cestu k popisu
-      context: ./gql_ug
+      context: ./
     environment:
       # promenne, ktere lze cist v kontejneru
       - POSTGRES_USER=postgres
