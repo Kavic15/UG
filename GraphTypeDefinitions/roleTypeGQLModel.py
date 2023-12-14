@@ -2,6 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -13,7 +14,7 @@ RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 )
 class RoleTypeGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         # result = await resolveRoleTypeById(session,  id)
         loader = getLoader(info).roletypes
         result = await loader.load(id)
@@ -23,7 +24,7 @@ class RoleTypeGQLModel:
         return result
 
     @strawberry.field(description="""Primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""Datetime stamp""")
@@ -52,7 +53,7 @@ class RoleTypeGQLModel:
 #####################################################################
 @strawberry.field(description="""Finds a role type by its id""")
 async def role_type_by_id(
-    self, info: strawberry.types.Info, id: strawberry.ID
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[RoleTypeGQLModel, None]:
     result = await RoleTypeGQLModel.resolve_reference(info, id)
     return result
@@ -74,24 +75,24 @@ async def role_type_page(
 import datetime
 @strawberry.input(description="""Input model for updating a role type""")
 class RoleTypeUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.input(description="""Input model for inserting a new role type""")
 class RoleTypeInsertGQLModel:
-    id: Optional[strawberry.ID] = None
+    id: Optional[uuid.UUID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.input(description="""Input model for deleting a role type""")
 class RoleTypeDeleteGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for role type operations""")
 class RoleTypeResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of role type operation""")
@@ -101,7 +102,7 @@ class RoleTypeResultGQLModel:
     
 @strawberry.type(description="""Result model for role type deletion""")
 class RoleTypeDeleteResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of role type deletion""")

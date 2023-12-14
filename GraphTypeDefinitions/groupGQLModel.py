@@ -2,6 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -13,7 +14,7 @@ RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 @strawberry.federation.type(keys=["id"], description="""Entity representing a group""")
 class GroupGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         if id is None: return None
         loader = getLoader(info).groups
         result = await loader.load(id)
@@ -23,7 +24,7 @@ class GroupGQLModel:
         return result
 
     @strawberry.field(description="""Entity primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""Group's name (like Department of Intelligent Control)""")
@@ -115,7 +116,7 @@ async def group_page(
 
 @strawberry.field(description="""Finds a group by its id""")
 async def group_by_id(
-    self, info: strawberry.types.Info, id: strawberry.ID
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[GroupGQLModel, None]:
     result = await GroupGQLModel.resolve_reference(info=info, id=id)
     return result
@@ -163,29 +164,29 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group""")
 class GroupUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
-    grouptype_id: Optional[strawberry.ID] = None
-    mastergroup_id: Optional[strawberry.ID] = None
+    grouptype_id: Optional[uuid.UUID] = None
+    mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
 
 
 @strawberry.input(description="""Input model for inserting a new group""")
 class GroupInsertGQLModel:
     name: str
-    id: Optional[strawberry.ID] = None
-    grouptype_id: Optional[strawberry.ID] = None
-    mastergroup_id: Optional[strawberry.ID] = None
+    id: Optional[uuid.UUID] = None
+    grouptype_id: Optional[uuid.UUID] = None
+    mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
 
 @strawberry.input(description="""Input model for deleting a group""")
 class GroupDeleteGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for group operations""")
 class GroupResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of group operation""")
@@ -197,7 +198,7 @@ class GroupResultGQLModel:
 
 @strawberry.type(description="""Result model for group deletion""")
 class GroupDeleteResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of group deletion""")
@@ -253,7 +254,7 @@ async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLM
 @strawberry.mutation(description="""Allows to assign the group to specified master group""")
 async def group_update_master(self, 
     info: strawberry.types.Info, 
-    master_id: strawberry.ID,
+    master_id: uuid.UUID,
     group: GroupUpdateGQLModel) -> GroupResultGQLModel:
     loader = getLoader(info).groups
     

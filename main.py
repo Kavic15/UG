@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from DBDefinitions import startEngine, ComposeConnectionString
 
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
-from utils.DBFeeder import initDB
+#from utils.DBFeeder import initDB
 
 connectionString = ComposeConnectionString()
 
@@ -39,7 +39,7 @@ async def RunOnceAndReturnSessionMaker():
     #
     # zde definujte do funkce asyncio.gather
     # vlozte asynchronni funkce, ktere maji data uvest do prvotniho konzistentniho stavu
-    await initDB(result)
+    #await initDB(result)
     # await asyncio.gather( # concurency running :)
     # sem lze dat vsechny funkce, ktere maji nejak inicializovat databazi
     # musi byt asynchronniho typu (async def ...)

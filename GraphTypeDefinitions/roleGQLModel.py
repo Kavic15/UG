@@ -2,6 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -13,7 +14,7 @@ RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLMo
 @strawberry.federation.type(keys=["id"],description="""Entity representing a role of a user in a group (like user A in group B is Dean)""",)
 class RoleGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         # result = await resolverRoleById(session,  id)
         loader = getLoader(info).roles
         result = await loader.load(id)
@@ -23,11 +24,11 @@ class RoleGQLModel:
         return result
 
     @strawberry.field(description="""Primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""Time stamp""")
-    def lastchange(self) -> strawberry.ID:
+    def lastchange(self) -> uuid.UUID:
         return self.lastchange
 
     @strawberry.field(description="""If an user has still this role""")
@@ -77,7 +78,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a role""")
 class RoleUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime
     valid: Optional[bool] = None
     startdate: Optional[datetime.datetime] = None
@@ -85,21 +86,21 @@ class RoleUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new role""")
 class RoleInsertGQLModel:
-    user_id: strawberry.ID
-    group_id: strawberry.ID
-    roletype_id: strawberry.ID
-    id: Optional[strawberry.ID] = None
+    user_id: uuid.UUID
+    group_id: uuid.UUID
+    roletype_id: uuid.UUID
+    id: Optional[uuid.UUID] = None
     valid: Optional[bool] = True
     startdate: Optional[datetime.datetime] = datetime.datetime.now()
     enddate: Optional[datetime.datetime] = None
 
 @strawberry.input(description="""Input model for deleting a role""")
 class RoleDeleteGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for role operations""")
 class RoleResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of user operation""")
@@ -109,7 +110,7 @@ class RoleResultGQLModel:
     
 @strawberry.type(description="""Result model for role deletion""")
 class RoleDeleteResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of role deletion""")

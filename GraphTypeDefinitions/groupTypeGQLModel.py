@@ -2,6 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 
 def getLoader(info):
@@ -12,7 +13,7 @@ GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 @strawberry.federation.type(keys=["id"], description="""Entity representing a group type (like Faculty)""")
 class GroupTypeGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         loader = getLoader(info).grouptypes
         result = await loader.load(id)
         if result is not None:
@@ -21,11 +22,11 @@ class GroupTypeGQLModel:
             return result
         
     @strawberry.field(description="""Primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""""")
-    def lastchange(self) -> strawberry.ID:
+    def lastchange(self) -> uuid.UUID:
         return self.lastchange
 
     @strawberry.field(description="""Group type name CZ""")
@@ -60,7 +61,7 @@ async def group_type_page(
 
 @strawberry.field(description="""Finds a group type by its id""")
 async def group_type_by_id(
-    self, info: strawberry.types.Info, id: strawberry.ID
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[GroupTypeGQLModel, None]:
     # result = await resolveGroupTypeById(session,  id)
     result = await GroupTypeGQLModel.resolve_reference(info, id)
@@ -75,20 +76,20 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group type""")
 class GroupTypeUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.input(description="""Input model for inserting a new group type""")
 class GroupTypeInsertGQLModel:
-    id: Optional[strawberry.ID] = None
+    id: Optional[uuid.UUID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.type(description="""Result model for group type operations""")
 class GroupTypeResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of grouptype operation""")
