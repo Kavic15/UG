@@ -1,6 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -10,7 +11,7 @@ RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLMo
 @strawberry.federation.type(keys=["id"], description="""Entity representing a role type (like Dean)""")
 class RoleCategoryGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         loader = getLoader(info).rolecategories
         result = await loader.load(id)
         if result is not None:
@@ -19,11 +20,11 @@ class RoleCategoryGQLModel:
         return result
 
     @strawberry.field(description="""Primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""Primary key""")
-    def lastchange(self) -> strawberry.ID:
+    def lastchange(self) -> uuid.UUID:
         return self.lastchange
 
     @strawberry.field(description="""Role type name CZ""")
@@ -48,7 +49,7 @@ class RoleCategoryGQLModel:
 #####################################################################
 @strawberry.field(description="""Finds a role type by its id""")
 async def role_category_by_id(
-    self, info: strawberry.types.Info, id: strawberry.ID
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[RoleCategoryGQLModel, None]:
     result = await RoleCategoryGQLModel.resolve_reference(info,  id)
     return result
@@ -70,20 +71,20 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a role category""")
 class RoleCategoryUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.input(description="""Input model for inserting a new role category""")
 class RoleCategoryInsertGQLModel:
-    id: Optional[strawberry.ID] = None
+    id: Optional[uuid.UUID] = None
     name: Optional[str] = None
     name_en: Optional[str] = None
 
 @strawberry.type(description="""Result model for role category operations""")
 class RoleCategoryResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of role category operation""")

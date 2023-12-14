@@ -2,6 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -12,7 +13,7 @@ UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
 @strawberry.federation.type(keys=["id"], description="""Entity representing a relation between an user and a group""",)
 class MembershipGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         if id is None: return None
         loader = getLoader(info).memberships
         result = await loader.load(id)
@@ -22,7 +23,7 @@ class MembershipGQLModel:
         return result
 
     @strawberry.field(description="""primary key""")
-    def id(self) -> strawberry.ID:
+    def id(self) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""time stamp""")
@@ -68,7 +69,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a membership""")
 class MembershipUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime   
     valid: Optional[bool] = None
     startdate: Optional[datetime.datetime] = None
@@ -76,16 +77,16 @@ class MembershipUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new membership""")
 class MembershipInsertGQLModel:
-    user_id: strawberry.ID
-    group_id: strawberry.ID
-    id: Optional[strawberry.ID] = None
+    user_id: uuid.UUID
+    group_id: uuid.UUID
+    id: Optional[uuid.UUID] = None
     valid: Optional[bool] = True
     startdate: Optional[datetime.datetime] = None
     enddate: Optional[datetime.datetime] = None
 
 @strawberry.type(description="""Result model for membership operations""")
 class MembershipResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of membership operation""")

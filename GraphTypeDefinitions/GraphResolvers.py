@@ -67,7 +67,7 @@ resolveGroupsById = createEntityByIdListGetter(GroupModel)
 def createDataLoaderResolver(definitions):
     def bind(asyncSessionMaker, DataLoader=DataLoader):
         def createSingleLoader(DBModel, GQLModel):
-            async def loader(keys: List[strawberry.ID]) -> List[GQLModel]:
+            async def loader(keys: List[uuid.UUID]) -> List[GQLModel]:
                 print("query", DBModel, "for keys", keys, flush=True)
                 statement = select(DBModel).filter(DBModel.id.in_(keys))
                 async with asyncSessionMaker() as session:
@@ -199,7 +199,7 @@ import datetime
 
 class ExportEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, strawberry.ID):
+        if isinstance(obj, uuid.UUID):
             return f"{obj}"
         if isinstance(obj, datetime.datetime):
             return f"{obj}"

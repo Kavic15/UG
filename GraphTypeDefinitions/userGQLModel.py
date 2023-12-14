@@ -3,6 +3,7 @@ import strawberry
 import asyncio
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+import uuid
 
 def getLoader(info):
     return info.context["all"]
@@ -21,7 +22,7 @@ from .GraphPermissions import UserGDPRPermission
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel:
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: strawberry.ID):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         # userloader = info.context['users']
         loader = getLoader(info).users
         result = await loader.load(id)
@@ -31,7 +32,7 @@ class UserGQLModel:
         return result
 
     @strawberry.field(description="""Entity primary key""")
-    def id(self, info: strawberry.types.Info) -> strawberry.ID:
+    def id(self, info: strawberry.types.Info) -> uuid.UUID:
         return self.id
 
     @strawberry.field(description="""User's name (like John)""")
@@ -78,7 +79,7 @@ class UserGQLModel:
         description="""List of groups given type, where the user is member"""
     )
     async def member_of(
-        self, grouptype_id: strawberry.ID, info: strawberry.types.Info
+        self, grouptype_id: uuid.UUID, info: strawberry.types.Info
     ) -> List["GroupGQLModel"]:
         loader = getLoader(info).memberships
         rows = await loader.filter_by(user_id=self.id)# , grouptype_id=grouptype_id)
@@ -103,7 +104,7 @@ async def user_page(
 
 @strawberry.field(description="""Finds an user by their id""")
 async def user_by_id(
-    self, info: strawberry.types.Info, id: strawberry.ID
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[UserGQLModel, None]:
     result = await UserGQLModel.resolve_reference(info=info, id=id)
     return result
@@ -136,8 +137,8 @@ from .GraphResolvers import UserByRoleTypeAndGroupStatement
 async def users_by_group_and_role_type(
     self,
     info: strawberry.types.Info,
-    group_id: strawberry.ID,
-    role_type_id: strawberry.ID,
+    group_id: uuid.UUID,
+    role_type_id: uuid.UUID,
 ) -> List[UserGQLModel]:
     # result = await resolveUserByRoleTypeAndGroup(session,  group_id, role_type_id)
     loader = getLoader(info).users
@@ -154,7 +155,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating user information""")
 class UserUpdateGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
     lastchange: datetime.datetime  # razitko
     name: Optional[str] = None
     surname: Optional[str] = None
@@ -163,7 +164,7 @@ class UserUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new user""")
 class UserInsertGQLModel:
-    id: Optional[strawberry.ID] = None
+    id: Optional[uuid.UUID] = None
     name: Optional[str] = None
     surname: Optional[str] = None
     email: Optional[str] = None
@@ -171,11 +172,11 @@ class UserInsertGQLModel:
 
 @strawberry.input(description="""Input model for deleting a user""")            #NOVÉ
 class UserDeleteGQLModel:
-    id: strawberry.ID
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for user operations""")
 class UserResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of user operation""")
@@ -183,16 +184,16 @@ class UserResultGQLModel:
         result = await UserGQLModel.resolve_reference(info, self.id)
         return result
     
-@strawberry.type(description="""Result model for user deletion""")              #NOVÉ##########################################
+@strawberry.type(description="""Result model for user deletion""")
 class UserDeleteResultGQLModel:
-    id: strawberry.ID = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of user deletion""")
     async def user(self, info: strawberry.types.Info) -> Union[UserGQLModel, None]:
         # Assuming you have a resolve_reference function for retrieving deleted user details
         result = await UserGQLModel.resolve_reference(info, self.id)
-        return result                                                           ###############################################
+        return result
 
 @strawberry.mutation(description="""Updates a user's information""") #UPDATE
 async def user_update(self, info: strawberry.types.Info, user: UserUpdateGQLModel) -> UserResultGQLModel:
