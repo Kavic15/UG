@@ -4,9 +4,9 @@ import pytest
 
 # from ..uoishelpers.uuid import UUIDColumn
 
-from gql_ug.DBDefinitions import BaseModel
-from gql_ug.DBDefinitions import RoleTypeModel, RoleModel, RoleCategoryModel
-from gql_ug.DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
+from DBDefinitions import BaseModel
+from DBDefinitions import RoleTypeModel, RoleModel, RoleCategoryModel
+from DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
 
 
 async def prepare_in_memory_sqllite():
@@ -25,7 +25,7 @@ async def prepare_in_memory_sqllite():
 
     return async_session_maker
 
-from gql_ug.DBFeeder import get_demodata
+from utils.DBFeeder import get_demodata
 
 async def prepare_demodata(async_session_maker):
     data = get_demodata()
@@ -47,7 +47,7 @@ async def prepare_demodata(async_session_maker):
     )
 
 
-from gql_ug.Dataloaders import createLoaders_3, createLoaders
+from utils.Dataloaders import createLoaders_3, createLoaders
 
 
 async def createContext(asyncSessionMaker):
