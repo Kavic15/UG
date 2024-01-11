@@ -1,7 +1,7 @@
 import asyncio
 from main import RunOnceAndReturnSessionMaker
-from gql_ug.GraphResolvers import importData
-from gql_ug.DBDefinitions import ComposeConnectionString
+from GraphTypeDefinitions.GraphResolvers import importData
+from DBDefinitions import ComposeConnectionString
 import click
 
 
@@ -18,7 +18,7 @@ async def goAndImport():
 
 async def complexDBImport(modelIndex):
     import json
-    from gql_ug.GraphResolvers import datetime_parser, putPredefinedStructuresIntoTable
+    from GraphTypeDefinitions.GraphResolvers import datetime_parser, putPredefinedStructuresIntoTable
 
     sessionMaker = await RunOnceAndReturnSessionMaker()
 

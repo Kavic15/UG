@@ -17,55 +17,49 @@ from .gt_utils import (
     createPageTest, 
     createResolveReferenceTest, 
     createFrontendQuery, 
-    createUpdateQuery
+    createUpdateQuery,
 )
 
-test_reference_user = createResolveReferenceTest(
-    tableName='users', gqltype='UserGQLModel', 
-    attributeNames=["id", "name", "surname", "email", "lastchange", "valid", "creator {id}", "createdby {id}"])
-test_query_user_by_id = createByIdTest(tableName="users", queryEndpoint="userById")
-test_query_user_page = createPageTest(tableName="users", queryEndpoint="userPage")
+test_reference_group = createResolveReferenceTest(
+    tableName='groups', gqltype='GroupGQLModel', 
+    attributeNames=["id", "name", "lastchange", "valid", "creator {id}", "createdby {id}"])
+test_query_group_by_id = createByIdTest(tableName="groups", queryEndpoint="groupById")
+test_query_group_page = createPageTest(tableName="groups", queryEndpoint="groupPage")
 
-test_user_insert = createFrontendQuery(query="""
+test_group_insert = createFrontendQuery(query="""
     mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-        result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
+        result: groupInsert(group: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
             id
             msg
-            user {
+            group {
                 id
                 name
-                surname                
-                email
                 lastchange
                 created
                 valid
                                        
-                changedby { id }
-                rbacobject { id }                
+                changedby { id }         
             }
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new group", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
 )
 
-test_user_update = createUpdateQuery(
+test_group_update = createUpdateQuery(
     query="""
         mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            userUpdate(user: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
+            groupUpdate(group: {id: $id, name: $name, lastchange: $lastchange}) {
+                result: groupInsert(group: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
                     id
                     msg
-                    user {
+                    group {
                         id
                         name
-                        surname
-                        email
                         lastchange
                         created
                         valid
-
                         changedby { id }
                     }
                 }
@@ -73,5 +67,6 @@ test_user_update = createUpdateQuery(
         }
     """,
     variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name"},
-    tableName="users"
+    tableName="groups"
 )
+

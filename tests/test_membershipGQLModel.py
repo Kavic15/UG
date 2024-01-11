@@ -75,3 +75,5 @@ test_user_update = createUpdateQuery(
     variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name"},
     tableName="users"
 )
+
+
