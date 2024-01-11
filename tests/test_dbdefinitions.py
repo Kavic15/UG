@@ -46,7 +46,8 @@ from DBDefinitions import UUIDColumn
 
 
 def test_connection_uuidcolumn():
-    col = UUIDColumn(name="name")
+    #col = UUIDColumn(name="name")
+    col = UUIDColumn()
 
     assert col is not None
 

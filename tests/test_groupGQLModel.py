@@ -27,8 +27,8 @@ test_query_group_by_id = createByIdTest(tableName="groups", queryEndpoint="group
 test_query_group_page = createPageTest(tableName="groups", queryEndpoint="groupPage")
 
 test_group_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-        result: groupInsert(group: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
+    mutation($id: UUID!, $name: String!) { 
+        result: groupInsert(group: {id: $id, name: $name, surname: $surname}) { 
             id
             msg
             group {
@@ -43,7 +43,7 @@ test_group_insert = createFrontendQuery(query="""
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new group", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"id": "d6b88d4b-deba-4ddc-bb66-4dc892e33772", "name": "new group", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
 )
 
@@ -51,7 +51,7 @@ test_group_update = createUpdateQuery(
     query="""
         mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
             groupUpdate(group: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: groupInsert(group: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
+                result: groupInsert(group: {id: $id, name: $name, surname: $surname}) {
                     id
                     msg
                     group {
@@ -66,7 +66,7 @@ test_group_update = createUpdateQuery(
             }
         }
     """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name"},
+    variables={"id": "435d81a8-74b4-4dde-9986-7b762a4fb44e", "name": "new name"},
     tableName="groups"
 )
 
