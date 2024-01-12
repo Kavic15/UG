@@ -22,3 +22,4 @@ pytest
 pytest-cov
 pytest-asyncio
 aiosqlite
+https://github.com/hrbolek/PyMockOAuthServer/archive/refs/heads/main.zip

@@ -21,14 +21,14 @@ from .gt_utils import (
 )
 
 test_reference_groupType = createResolveReferenceTest(
-    tableName='groupTypeTypes', gqltype='GroupTypeGQLModel', 
+    tableName='groupTypes', gqltype='GroupTypeGQLModel', 
     attributeNames=["id", "name", "lastchange", "nameEn", "creator {id}", "createdby {id}"])
 test_query_groupType_by_id = createByIdTest(tableName="groupTypes", queryEndpoint="groupTypeById")
 test_query_groupType_page = createPageTest(tableName="groupTypes", queryEndpoint="groupTypePage")
 
 test_groupType_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-        result: groupTypeInsert(groupType: {id: $id, name: $name, nameEn: $nameEn,}) { 
+    mutation($id: UUID!, $name: String!) { 
+        result: groupTypeInsert(groupType: {id: $id, name: $name, nameEn: $nameEn}) { 
             id
             msg
             groupType {
@@ -43,7 +43,7 @@ test_groupType_insert = createFrontendQuery(query="""
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new groupType", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new groupType"},
     asserts=[]
 )
 

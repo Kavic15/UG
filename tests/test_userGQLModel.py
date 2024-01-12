@@ -26,25 +26,26 @@ test_reference_user = createResolveReferenceTest(
 test_query_user_by_id = createByIdTest(tableName="users", queryEndpoint="userById")
 test_query_user_page = createPageTest(tableName="users", queryEndpoint="userPage")
 
-test_user_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-        result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
-            id
-            msg
-            user {
+test_user_insert = createFrontendQuery(
+    query="""
+        mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
+            result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
                 id
-                name
-                surname                
-                email
-                lastchange
-                created
-                valid
-                                       
-                changedby { id }
-                rbacobject { id }                
+                msg
+                user {
+                    id
+                    name
+                    surname                
+                    email
+                    lastchange
+                    created
+                    valid
+                                        
+                    changedby { id }
+                    rbacobject { id }                
+                }
             }
         }
-    }
     """, 
     variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
