@@ -65,7 +65,7 @@ async def getUserFromHeaders(headers):
         pass
 
     gqlQuery = {"query": '''
-        query($id: ID!){
+        query($id: UUID!){
             result: userById(id: $id) {
                 id
                 name
