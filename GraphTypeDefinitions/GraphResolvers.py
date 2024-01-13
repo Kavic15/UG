@@ -53,10 +53,7 @@ def createEntityByIdListGetter(DBModel):
             result[f"{item.id}"] = item
 
         resultList = [result.get(id, None) for id in keys]
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print(resultList)
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
+        
         # print(DBModel, 'resultList', resultList, flush=True)
         # print(DBModel, 'ids', [item.id for item in rows], flush=True)
         return resultList

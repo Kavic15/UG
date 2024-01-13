@@ -19,6 +19,7 @@ class GroupModel(BaseModel):
 
     id = UUIDColumn()
     name = Column(String)
+    name_en = Column(String)
 
     lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now())
 
