@@ -124,12 +124,15 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
                 "}"+
                 "}"
             )
-            
-            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
+            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": uuid.UUID(rowid)}]}
+            #variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
 
             logging.info(f"query representations {query} with {variable_values}")
+            
             resp = await clientExecutor(query, {**variable_values})
+            logging.info(f"GraphQL Response: {resp}")
             testResult(resp)
+
             resp = await schemaExecutor(query, {**variable_values})
             testResult(resp)
 
@@ -226,9 +229,10 @@ def createUpdateQuery(query="{}", variables={}, tableName=""):
                 break
         assert entity is not None, f"expected entity in response to {query}"
 
-        for key, value in entity.items():
+        for key in variables.keys():
             if key in ["id", "lastchange"]:
                 continue
+            value = entity[key]
             print("attribute check", type(key), f"[{key}] is {value} ?= {variables[key]}")
             assert value == variables[key], f"test on update failed {value} != {variables[key]}"
 

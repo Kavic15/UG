@@ -79,8 +79,8 @@ async def SQLite(Async_Session_Maker, DemoData, DBModels):
 
 @pytest.fixture
 def LoadersContext(SQLite):
-    from utils.Dataloaders import createLoadersContext
-    context = createLoadersContext(SQLite)
+    from utils.Dataloaders import createLoaders
+    context = createLoaders(SQLite)
     return context
 
 @pytest.fixture
@@ -96,17 +96,17 @@ def Request(AuthorizationHeaders):
     return Request()
 
 @pytest.fixture
-def Context(AdminUser, SQLite, LoadersContext, Request):
-    #from utils.gql_ug_proxy import get_ug_connection
-    
+async def Context(AdminUser, SQLite, LoadersContext, Request):
     Async_Session_Maker = SQLite
+    loaders = await LoadersContext  # Await the coroutine to get the result
+
     return {
-        **LoadersContext,
+        **loaders,
         "request": Request,
         "": Async_Session_Maker,
         "user": AdminUser,
         "x": "",
-        #"ug_connection": get_ug_connection
+        # "ug_connection": get_ug_connection
     }
 
 @pytest.fixture
@@ -408,7 +408,14 @@ def OAuthServer(monkeypatch, OAuthport, AdminUser):
     monkeypatch.setenv("JWTRESOLVEUSERPATHURL", f"http://localhost:{UserInfoServerPort}/oauth/userinfo") #/oauth/publickey
     logging.info(f"JWTRESOLVEUSERPATHURL set to `http://localhost:{UserInfoServerPort}/oauth/userinfo`")
 
-    yield from zip(runOauth(OAuthport), runUserInfo(UserInfoServerPort, AdminUser))
+    oauth_server_gen = runOauth(OAuthport)
+    user_info_server_gen = runUserInfo(UserInfoServerPort, AdminUser)
+
+    oauth_server = next(oauth_server_gen)
+    user_info_server = next(user_info_server_gen)
+
+    yield (oauth_server, user_info_server)
+    #yield from zip(runOauth(OAuthport), runUserInfo(UserInfoServerPort, AdminUser))
 
 
 @pytest_asyncio.fixture(autouse=True, scope=serversTestscope)

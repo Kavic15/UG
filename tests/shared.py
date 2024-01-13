@@ -53,5 +53,5 @@ from utils.Dataloaders import createLoaders_3, createLoaders
 async def createContext(asyncSessionMaker):
     return {
         "asyncSessionMaker": asyncSessionMaker,
-        "all": await createLoaders(asyncSessionMaker),
+        "all": await createLoaders_3(asyncSessionMaker),
     }

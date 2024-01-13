@@ -20,15 +20,13 @@ from .gt_utils import (
     createUpdateQuery
 )
 
-test_reference_groupType = createResolveReferenceTest(
-    tableName='groupTypes', gqltype='GroupTypeGQLModel', 
-    attributeNames=["id", "name", "lastchange", "nameEn", "creator {id}", "createdby {id}"])
-test_query_groupType_by_id = createByIdTest(tableName="groupTypes", queryEndpoint="groupTypeById")
-test_query_groupType_page = createPageTest(tableName="groupTypes", queryEndpoint="groupTypePage")
+test_reference_groupType = createResolveReferenceTest(tableName='groupTypes', gqltype='GroupTypeGQLModel')
+test_query_groupType_by_id = createByIdTest(tableName="grouptypes", queryEndpoint="groupTypeById")
+test_query_groupType_page = createPageTest(tableName="grouptypes", queryEndpoint="groupTypePage")
 
 test_groupType_insert = createFrontendQuery(query="""
     mutation($id: UUID!, $name: String!) { 
-        result: groupTypeInsert(groupType: {id: $id, name: $name, nameEn: $nameEn}) { 
+        result: groupTypeInsert(groupType: {id: $id, name: $name}) { 
             id
             msg
             groupType {
@@ -38,7 +36,7 @@ test_groupType_insert = createFrontendQuery(query="""
                 created
                 valid
                                        
-                changedby { id }
+                groups { id }
             }
         }
     }
