@@ -907,7 +907,7 @@ from .GraphResolvers import resolveMembershipById
 # from gql_ug.GraphResolvers import import_ug, export_ug
 # from gql_ug.GraphResolvers import userSelect, groupSelect, selectGroup, selectGroupType
 
-# from gql_ug.DBFeeder import randomDataStructure, createUniversity
+# from utils.DBFeeder import randomDataStructure, createUniversity
 
 
 # @strawberryA.type(description="""Type for query root""")

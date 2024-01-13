@@ -1,7 +1,7 @@
 import asyncio
 from main import RunOnceAndReturnSessionMaker
 from gql_ug.GraphResolvers import importData
-from gql_ug.DBDefinitions import ComposeConnectionString
+from DBDefinitions import ComposeConnectionString
 import click
 
 

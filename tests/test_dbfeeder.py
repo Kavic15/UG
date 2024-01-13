@@ -4,14 +4,14 @@ import pytest
 
 # from ..uoishelpers.uuid import UUIDColumn
 
-from gql_ug.DBDefinitions import BaseModel
-from gql_ug.DBDefinitions import RoleTypeModel, RoleModel
-from gql_ug.DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
+from DBDefinitions import BaseModel
+from DBDefinitions import RoleTypeModel, RoleModel
+from DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
 
 from tests.shared import prepare_demodata, prepare_in_memory_sqllite, get_demodata
 
 
-from gql_ug.DBFeeder import predefineAllDataStructures
+from utils.DBFeeder import predefineAllDataStructures
 
 # import gql_ug.GraphResolvers
 @pytest.mark.asyncio
@@ -20,7 +20,7 @@ async def test_load_system_data():
     await predefineAllDataStructures(async_session_maker)
 
 
-from gql_ug.DBFeeder import predefineAllDataStructures, randomDataStructure
+from utils.DBFeeder import predefineAllDataStructures, randomDataStructure
 
 
 @pytest.mark.asyncio
@@ -31,7 +31,7 @@ async def test_random_data():
         await randomDataStructure(session, "")
 
 
-from gql_ug.DBFeeder import (
+from utils.DBFeeder import (
     createSystemDataStructureRoleTypes,
     createSystemDataStructureGroupTypes,
 )
