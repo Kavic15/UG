@@ -47,7 +47,7 @@ class UserGQLModel:
     def email(self) -> Union[str, None]:
         return self.email
 
-    @strawberry.field(description="""User's validity (if their are member of institution)""")
+    @strawberry.field(description="""User's validity (if they are member of institution)""")
     def valid(self) -> bool:
         return self.valid
 
