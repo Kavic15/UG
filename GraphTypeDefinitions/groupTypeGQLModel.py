@@ -1,41 +1,39 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
+from .BaseGQLModel import BaseGQLModel, IDType
 import GraphTypeDefinitions
 import uuid
+from .GraphResolvers import (
+    resolve_id,
+    resolve_name,
+    resolve_name_en,
+    resolve_changedby,
+    resolve_created,
+    resolve_lastchange,
+    resolve_createdby
+)
 
-
-def getLoader(info):
-    return info.context["all"]
+from utils.Dataloaders import (
+    getLoadersFromInfo as getLoader,
+    getUserFromInfo)
 
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a group type (like Faculty)""")
-class GroupTypeGQLModel:
+class GroupTypeGQLModel(BaseGQLModel):
+
+    id = resolve_id
+    name = resolve_name
+    name_en = resolve_name_en
+    changedby = resolve_changedby
+    created = resolve_created
+    lastchange = resolve_lastchange
+    createdby = resolve_createdby
+
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
-        loader = getLoader(info).grouptypes
-        result = await loader.load(id)
-        if result is not None:
-            result._type_definition = cls._type_definition  # little hack :)
-            result.__strawberry_definition__ = cls._type_definition # some version of strawberry changed :(
-            return result
-        
-    @strawberry.field(description="""Primary key""")
-    def id(self) -> uuid.UUID:
-        return self.id
-
-    @strawberry.field(description="""""")
-    def lastchange(self) -> uuid.UUID:
-        return self.lastchange
-
-    @strawberry.field(description="""Group type name CZ""")
-    def name(self) -> str:
-        return self.name
-
-    @strawberry.field(description="""Group type name EN""")
-    def name_en(self) -> str:
-        return self.name_en
+    def getLoader(cls, info):
+        return getLoader(info).grouptypes
 
     @strawberry.field(description="""List of groups which have this type""")
     async def groups(
@@ -51,17 +49,20 @@ class GroupTypeGQLModel:
 # Special fields for query
 #
 #####################################################################
+    
+from .GraphResolvers import asPage
+
 @strawberry.field(description="""Returns a list of groups types (paged)""")
+@asPage
 async def group_type_page(
     self, info: strawberry.types.Info, skip: int = 0, limit: int = 20
 ) -> List[GroupTypeGQLModel]:
     loader = getLoader(info).grouptypes
-    result = await loader.page(skip, limit)
-    return result
+    return loader
 
 @strawberry.field(description="""Finds a group type by its id""")
 async def group_type_by_id(
-    self, info: strawberry.types.Info, id: uuid.UUID
+    self, info: strawberry.types.Info, id: IDType
 ) -> Union[GroupTypeGQLModel, None]:
     # result = await resolveGroupTypeById(session,  id)
     result = await GroupTypeGQLModel.resolve_reference(info, id)
@@ -76,7 +77,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group type""")
 class GroupTypeUpdateGQLModel:
-    id: uuid.UUID
+    id: IDType
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -89,7 +90,7 @@ class GroupTypeInsertGQLModel:
 
 @strawberry.type(description="""Result model for group type operations""")
 class GroupTypeResultGQLModel:
-    id: uuid.UUID = None
+    id: IDType = None
     msg: str = None
 
     @strawberry.field(description="""Result of grouptype operation""")
@@ -103,10 +104,8 @@ async def group_type_update(self, info: strawberry.types.Info, group_type: Group
     
     updatedrow = await loader.update(group_type)
     result = GroupTypeResultGQLModel()
-    result.msg = "ok"
     result.id = group_type.id
-    if updatedrow is None:
-        result.msg = "fail"
+    result.msg = "fail" if updatedrow is None else "ok"
     
     return result
 
@@ -117,9 +116,6 @@ async def group_type_insert(self, info: strawberry.types.Info, group_type: Group
     updatedrow = await loader.insert(group_type)
     result = GroupTypeResultGQLModel()
     result.id = updatedrow.id
-    result.msg = "ok"
-
-    if updatedrow is None:
-        result.msg = "fail"
+    result.msg = "fail" if updatedrow is None else "ok"
     
-    return result    
+    return result     

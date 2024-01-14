@@ -1,17 +1,3 @@
-import pytest
-# import os
-# os.environ["GQLUG_ENDPOINT_URL"] = "http://localhost:8124/gql"
-# print(os.environ.get("GQLUG_ENDPOINT_URL", None))
-
-
-# from ..gqlshared import (
-#     createByIdTest, 
-#     createPageTest, 
-#     createResolveReferenceTest, 
-#     createFrontendQuery, 
-#     createUpdateQuery
-# )
-
 from .gt_utils import (
     createByIdTest, 
     createPageTest, 
@@ -20,59 +6,48 @@ from .gt_utils import (
     createUpdateQuery
 )
 
-test_reference_user = createResolveReferenceTest(
-    tableName='users', gqltype='UserGQLModel', 
-    attributeNames=["id", "name", "surname", "email", "lastchange", "valid", "creator {id}", "createdby {id}"])
-test_query_user_by_id = createByIdTest(tableName="users", queryEndpoint="userById")
-test_query_user_page = createPageTest(tableName="users", queryEndpoint="userPage")
+test_user_by_id = createByIdTest(tableName="users", queryEndpoint="userById", attributeNames=["id", "name", "surname", "email"])
+test_user_page = createPageTest(tableName="users", queryEndpoint="userPage")
+test_user_reference = createResolveReferenceTest(tableName="users", gqltype="UserGQLModel")
 
-test_user_insert = createFrontendQuery(
-    query="""
-        mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-            result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
-                id
-                msg
-                user {
-                    id
-                    name
-                    surname                
-                    email
-                    lastchange
-                    created
-                    valid
-                                        
-                    changedby { id }
-                    rbacobject { id }                
-                }
-            }
-        }
-    """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
-    asserts=[]
-)
 
-test_user_update = createUpdateQuery(
-    query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            userUpdate(user: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
-                    id
-                    msg
-                    user {
-                        id
-                        name
-                        surname
-                        email
-                        lastchange
-                        created
-                        valid
+test_user_update = createUpdateQuery(tableName="users", query="""mutation ($id: UUID!, $lastchange: DateTime!, $name: String!) {
+  result: userUpdate(user: {id: $id, lastchange: $lastchange, name: $name}) {
+    id
+    user {
+      name
+      lastchange
+      memberOf(grouptypeId: "cd49e157-610c-11ed-9312-001a7dda7110") { id }
+    }
+  }
+}""", variables={"id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003", "name": "newname"})
 
-                        changedby { id }
-                    }
-                }
-            }
-        }
-    """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name"},
-    tableName="users"
-)
+test_user_insert = createFrontendQuery(query="""mutation ($id: UUID!, $name: String!, $surname: String!, $email: String!) {
+  result: userInsert(user: {id: $id, name: $name, surname: $surname, email: $email}) {
+    id
+    user {
+      name
+      surname
+      email
+      lastchange
+    }
+  }
+}""", variables={"id": "850b03cf-a69a-4a6c-b980-1afaf5be174b", "name": "newname", "surname": "surname", "email": "email"})
+
+test_user_larger = createFrontendQuery(query="""query($id: UUID!){
+  userById(id: $id) {
+    id
+    name
+    surname
+    fullname
+    email
+    membership {
+      id
+      valid
+    }
+    valid
+    roles {
+      id
+    }
+  }
+}""", variables={"id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"})

@@ -3,6 +3,17 @@ import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
 import uuid
+from .BaseGQLModel import IDType, BaseGQLModel
+from utils.Dataloaders import getUserFromInfo
+from .GraphResolvers import (
+    resolve_id,
+    resolve_name,
+    resolve_name_en,
+    resolve_changedby,
+    resolve_created,
+    resolve_lastchange,
+    resolve_createdby
+)
 
 def getLoader(info):
     return info.context["all"]
@@ -12,42 +23,36 @@ MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershi
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a group""")
-class GroupGQLModel:
+class GroupGQLModel(BaseGQLModel):
+
+    id = resolve_id
+    name = resolve_name
+    name_en = resolve_name_en
+    changedby = resolve_changedby
+    created = resolve_created
+    lastchange = resolve_lastchange
+    createdby = resolve_createdby
+
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
-        if id is None: return None
-        loader = getLoader(info).groups
-        result = await loader.load(id)
-        if result is not None:
-            result._type_definition = cls._type_definition  # little hack :)
-            result.__strawberry_definition__ = cls._type_definition # some version of strawberry changed :(
+    def getLoader(cls, info):
+        return getLoader(info).groups
+
+    @strawberry.field()
+    def email(self) -> Optional[str]:
+        result = None if not self.email else self.email
         return result
 
-    @strawberry.field(description="""Entity primary key""")
-    def id(self) -> uuid.UUID:
-        return self.id
-
-    @strawberry.field(description="""Group's name (like Department of Intelligent Control)""")
-    def name(self) -> str:
-        return self.name
-
-    @strawberry.field(description="""Group's validity (still exists?)""")
-    def valid(self) -> bool:
-        if not self.valid:
-            return False
-        else:
-            return self.valid
-
-    @strawberry.field(description="""Date and time of last change""")
-    def lastchange(self) -> Union[datetime.datetime, None]:
-        result = self.lastchange
+    @strawberry.field()
+    def valid(self) -> Optional[bool]:
+        result = False if not self.valid else self.valid 
         return result
 
     @strawberry.field(description="""Group's type (like Department)""")
     async def grouptype(
         self, info: strawberry.types.Info
-    ) -> Union["GroupTypeGQLModel", None]:
-        result = await GraphTypeDefinitions.GroupTypeGQLModel.resolve_reference(info, id=self.grouptype_id)
+    ) -> Optional["GroupTypeGQLModel"]:
+        from .groupTypeGQLModel import GroupTypeGQLModel
+        result = await GroupTypeGQLModel.resolve_reference(info, id=self.grouptype_id)
         return result
 
     @strawberry.field(description="""Directly commanded groups""")
@@ -62,7 +67,7 @@ class GroupGQLModel:
     @strawberry.field(description="""Commanding group""")
     async def mastergroup(
         self, info: strawberry.types.Info
-    ) -> Union["GroupGQLModel", None]:
+    ) -> Optional["GroupGQLModel"]:
         result = await GroupGQLModel.resolve_reference(info, id=self.mastergroup_id)
         return result
 
@@ -142,19 +147,6 @@ async def group_by_letters(
     result = await loader.execute_select(stmt)
     return result
 
-# @strawberry.field(description="""Random university""")
-# async def randomUniversity(
-#     self, name: str, info: strawberry.types.Info
-# ) -> GroupGQLModel:
-#     async with withInfo(info) as session:
-#         # newId = await randomDataStructure(session,  name)
-#         newId = await randomDataStructure(session, name)
-#         print("random university id", newId)
-#         # result = await resolveGroupById(session,  newId)
-#         result = await resolveGroupById(session, newId)
-#         print("db response", result.name)
-#         return result
-
 #####################################################################
 #
 # Mutation section
@@ -164,29 +156,34 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group""")
 class GroupUpdateGQLModel:
-    id: uuid.UUID
+    id: IDType
     lastchange: datetime.datetime
     name: Optional[str] = None
+    name_en: Optional[str] = None
     grouptype_id: Optional[uuid.UUID] = None
     mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
+    changedby: strawberry.Private[uuid.UUID] = None
 
 
 @strawberry.input(description="""Input model for inserting a new group""")
 class GroupInsertGQLModel:
     name: str
+    grouptype_id: uuid.UUID
     id: Optional[uuid.UUID] = None
-    grouptype_id: Optional[uuid.UUID] = None
+    name_en: Optional[str] = None
     mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
+    createdby: strawberry.Private[uuid.UUID] = None
+
 
 @strawberry.input(description="""Input model for deleting a group""")
 class GroupDeleteGQLModel:
     id: uuid.UUID
 
-@strawberry.type(description="""Result model for group operations""")
+@strawberry.type
 class GroupResultGQLModel:
-    id: uuid.UUID = None
+    id: IDType = None
     msg: str = None
 
     @strawberry.field(description="""Result of group operation""")
@@ -201,37 +198,38 @@ class GroupDeleteResultGQLModel:
     id: uuid.UUID = None
     msg: str = None
 
-    @strawberry.field(description="""Result of group deletion""")
+    @strawberry.field(description="""Result of group operation""")
     async def group(self, info: strawberry.types.Info) -> Union[GroupGQLModel, None]:
-        # Assuming you have a resolve_reference function for retrieving deleted group details
+        print("GroupResultGQLModel", "group", self.id, flush=True)
         result = await GroupGQLModel.resolve_reference(info, self.id)
+        print("GroupResultGQLModel", result.id, result.name, flush=True)
         return result
 
 @strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
 async def group_update(self, info: strawberry.types.Info, group: GroupUpdateGQLModel) -> GroupResultGQLModel:
+    user = getUserFromInfo(info)
+    group.changedby = user["id"]
     loader = getLoader(info).groups
     
     updatedrow = await loader.update(group)
     #print(updatedrow, updatedrow.id, updatedrow.name, flush=True)
-    if updatedrow is None:
-        return GroupResultGQLModel(id=group.id, msg="fail")
-    else:
-        return GroupResultGQLModel(id=group.id, msg="ok")
+    id = group.id
+    msg = "fail" if updatedrow is None else "ok"
+    return GroupResultGQLModel(id=id, msg=msg)
     
 
 @strawberry.mutation(description="""Allows a update of group, also it allows to change the mastergroup of the group""")
 async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLModel) -> GroupResultGQLModel:
+    user = getUserFromInfo(info)
+    group.createdby = user["id"]
     loader = getLoader(info).groups
     
     updatedrow = await loader.insert(group)
     print("group_insert", updatedrow, updatedrow.id, updatedrow.name, flush=True)
     result = GroupResultGQLModel()
     result.id = updatedrow.id
-    result.msg = "ok"
-
-    if updatedrow is None:
-        result.msg = "fail"
-    
+    result.msg = "fail" if updatedrow is None else "ok"
+        
     return result
 
 @strawberry.mutation(description="""Deletes a group""")
@@ -239,12 +237,12 @@ async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLM
     loader = getLoader(info).groups
 
     # Perform group deletion operation
-    deleted_row = await loader.delete(group.id)
+    deletedrow = await loader.delete(group.id)
 
     result = GroupDeleteResultGQLModel()
     result.id = group.id
 
-    if deleted_row is None:
+    if deletedrow is None:
         result.msg = "fail"
     else:
         result.msg = "ok"
@@ -254,7 +252,7 @@ async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLM
 @strawberry.mutation(description="""Allows to assign the group to specified master group""")
 async def group_update_master(self, 
     info: strawberry.types.Info, 
-    master_id: uuid.UUID,
+    master_id: IDType,
     group: GroupUpdateGQLModel) -> GroupResultGQLModel:
     loader = getLoader(info).groups
     

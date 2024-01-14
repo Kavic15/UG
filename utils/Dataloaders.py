@@ -1,4 +1,5 @@
 from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
+import logging
 
 from DBDefinitions import (
     UserModel,
@@ -41,6 +42,17 @@ dbmodels = {
     "roletypes": RoleTypeModel,
     "rolecategories": RoleCategoryModel,
 }
+
+class Loaders:
+    users = None
+    groups = None
+    memberships = None
+    grouptypes = None
+    roles = None
+    roletypes = None
+    rolecategories = None
+    roletypelists = None
+    pass
 
 async def createLoaders(asyncSessionMaker, models=dbmodels):
     def createLambda(loaderName, DBModel):
@@ -151,3 +163,60 @@ async def createLoaders_3(asyncSessionMaker):
             )
 
     return Loaders()
+
+demouser = {
+    "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003",
+    "name": "John",
+    "surname": "Newbie",
+    "email": "john.newbie@world.com",
+    "roles": [
+        {
+            "valid": True,
+            "group": {
+                "id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003",
+                "name": "Uni"
+            },
+            "roletype": {
+                "id": "ced46aa4-3217-4fc1-b79d-f6be7d21c6b6",
+                "name": "administrátor"
+            }
+        },
+        {
+            "valid": True,
+            "group": {
+                "id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003",
+                "name": "Uni"
+            },
+            "roletype": {
+                "id": "ae3f0d74-6159-11ed-b753-0242ac120003",
+                "name": "rektor"
+            }
+        }
+    ]
+}
+
+def getUserFromInfo(info):
+    context = info.context
+    #print(list(context.keys()))
+    result = context.get("user", None)
+    if result is None:
+        request = context.get("request", None)
+        assert request is not None, context
+        result = request.scope["user"]
+
+    if result is None:
+        result = {"id": None}
+    else:
+        result = {**result, "id": uuid.UUID(result["id"])}
+    logging.debug("getUserFromInfo", result)
+    return result
+
+def getLoadersFromInfo(info) -> Loaders:
+    context = info.context
+    loaders = context["loaders"]
+    return loaders
+
+def createLoadersContext(asyncSessionMaker):
+    return {
+        "loaders": createLoaders(asyncSessionMaker)
+    }

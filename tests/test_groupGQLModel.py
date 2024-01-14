@@ -1,62 +1,33 @@
-import pytest
-# import os
-# os.environ["GQLUG_ENDPOINT_URL"] = "http://localhost:8124/gql"
-# print(os.environ.get("GQLUG_ENDPOINT_URL", None))
-
-
-# from ..gqlshared import (
-#     createByIdTest, 
-#     createPageTest, 
-#     createResolveReferenceTest, 
-#     createFrontendQuery, 
-#     createUpdateQuery
-# )
-
 from .gt_utils import (
     createByIdTest, 
     createPageTest, 
     createResolveReferenceTest, 
     createFrontendQuery, 
-    createUpdateQuery,
+    createUpdateQuery
 )
 
-test_reference_group = createResolveReferenceTest(tableName='groups', gqltype='GroupGQLModel')
-test_query_group_by_id = createByIdTest(tableName="groups", queryEndpoint="groupById")
-test_query_group_page = createPageTest(tableName="groups", queryEndpoint="groupPage")
+test_group_by_id = createByIdTest(tableName="groups", queryEndpoint="groupById")
+test_group_page = createPageTest(tableName="groups", queryEndpoint="groupPage")
+test_group_reference = createResolveReferenceTest(tableName="groups", gqltype="GroupGQLModel")
 
-test_group_insert = createFrontendQuery(
-    query="""
-        mutation($id: UUID!, $name: String!, $grouptype_id: UUID!) {
-            result: groupInsert(group: {id: $id, name: $name, grouptypeId: $grouptype_id}) {
-                id
-                msg
-                group {
-                    name
-                    lastchange
-                    created
-                    valid
-                                        
-                    rbacobject { id }
-                }
-            }
-        }
-    """, 
-    variables={"id": "d6b88d4b-deba-4ddc-bb66-4dd892e33772", "name": "new group", "grouptype_id": "cd49e152-610c-11ed-9f29-001a7dda7110"},
-    asserts=[]
-)
+test_group_update = createUpdateQuery(tableName="groups", query="""mutation ($id: UUID!, $lastchange: DateTime!, $name: String!) {
+  result: groupUpdate(group: {id: $id, lastchange: $lastchange, name: $name}) {
+    id
+    group {
+      name
+      lastchange
+      email
+    }
+  }
+}""", variables={"id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003", "name": "newname"})
 
-test_group_update = createUpdateQuery(
-    query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            result: groupUpdate(group: {id: $id, name: $name, lastchange: $lastchange}) {
-                id
-                group {
-                    name
-                    lastchange
-                }
-            }
-        }""",
-    variables={"id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003", "name": "new name"},
-    tableName="groups"
-)
-
+test_group_insert = createFrontendQuery(query="""mutation ($id: UUID!, $name: String!, $grouptype_id: UUID!) {
+  result: groupInsert(group: {id: $id, name: $name, grouptypeId: $grouptype_id }) {
+    id
+    group {
+      name
+      lastchange
+      valid
+    }
+  }
+}""", variables={"id": "850b03cf-a69a-4a6c-b980-1afaf5be174b", "name": "newname", "grouptype_id": "cd49e157-610c-11ed-9312-001a7dda7110"})

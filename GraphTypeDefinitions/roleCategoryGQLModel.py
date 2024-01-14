@@ -2,6 +2,21 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import uuid
+from .BaseGQLModel import BaseGQLModel, IDType
+from .GraphResolvers import (
+    resolve_id,
+    resolve_name,
+    resolve_name_en,
+    resolve_changedby,
+    resolve_created,
+    resolve_lastchange,
+    resolve_createdby
+)
+
+from utils.Dataloaders import (
+    getLoadersFromInfo as getLoader,
+    getUserFromInfo)
+
 
 def getLoader(info):
     return info.context["all"]
@@ -9,31 +24,18 @@ def getLoader(info):
 RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a role type (like Dean)""")
-class RoleCategoryGQLModel:
+class RoleCategoryGQLModel(BaseGQLModel):
+    id = resolve_id
+    name = resolve_name
+    name_en = resolve_name_en
+    changedby = resolve_changedby
+    created = resolve_created
+    lastchange = resolve_lastchange
+    createdby = resolve_createdby
+    
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
-        loader = getLoader(info).rolecategories
-        result = await loader.load(id)
-        if result is not None:
-            result._type_definition = cls._type_definition  # little hack :)
-            result.__strawberry_definition__ = cls._type_definition # some version of strawberry changed :(
-        return result
-
-    @strawberry.field(description="""Primary key""")
-    def id(self) -> uuid.UUID:
-        return self.id
-
-    @strawberry.field(description="""Primary key""")
-    def lastchange(self) -> uuid.UUID:
-        return self.lastchange
-
-    @strawberry.field(description="""Role type name CZ""")
-    def name(self) -> str:
-        return self.name
-
-    @strawberry.field(description="""Role type name EN""")
-    def name_en(self) -> str:
-        return self.name_en
+    def getLoader(cls, info):
+        return getLoader(info).rolecategories
 
     @strawberry.field(description="""List of roles with this type""")
     async def role_types(self, info: strawberry.types.Info) -> List["RoleTypeGQLModel"]:
@@ -71,7 +73,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a role category""")
 class RoleCategoryUpdateGQLModel:
-    id: uuid.UUID
+    id: IDType
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -84,7 +86,7 @@ class RoleCategoryInsertGQLModel:
 
 @strawberry.type(description="""Result model for role category operations""")
 class RoleCategoryResultGQLModel:
-    id: uuid.UUID = None
+    id: IDType = None
     msg: str = None
 
     @strawberry.field(description="""Result of role category operation""")
@@ -105,11 +107,7 @@ async def role_category_update(self,
     result = RoleCategoryResultGQLModel()
     result.msg = "ok"
     result.id = role_category.id
-    if row is None:
-        result.msg = "fail"
-    else:
-        result.id = row.id
-
+    result.msg = result.msg = "fail" if row is None else "ok"
     
     return result
 

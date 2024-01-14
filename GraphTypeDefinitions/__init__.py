@@ -1,6 +1,6 @@
 import typing
 from typing import List, Union, Optional
-import strawberry as strawberryA
+import strawberry
 import uuid
 import datetime
 
@@ -22,36 +22,6 @@ def getLoader(info):
 
 
 import datetime
-from .GraphResolvers import resolveMembershipById
-
-# @strawberryA.federation.type(
-#     keys=["id"],
-#     description="""Entity representing a relation between an user and a group""",
-# )
-# class UGInsertGQLModel:
-#     @classmethod
-#     async def resolve_reference(cls, info: strawberryA.types.Info):
-#         result = UGInsertGQLModel()
-#         return result
-
-#     @strawberryA.field(description="""Inserts new membership""")
-#     async def id(self) -> strawberryA.ID:
-#         return 1
-
-#     @strawberryA.field(description="""Inserts new membership""")
-#     async def membership_insert(self, 
-#         info: strawberryA.types.Info, 
-#         membership: "MembershipInsertGQLModel"
-#     ) -> "MembershipResultGQLModel":
-
-#         loader = getLoader(info).memberships
-#         row = await loader.insert(membership)
-
-#         result = MembershipResultGQLModel()
-#         result.msg = "ok"
-#         result.id = row.id
-        
-#         return result
     
 ###########################################################################################################################
 #
@@ -73,14 +43,7 @@ from .roleGQLModel import RoleGQLModel
 from .roleCategoryGQLModel import RoleCategoryGQLModel
 from .roleTypeGQLModel import RoleTypeGQLModel
 
-schema = strawberryA.federation.Schema(
-    query=Query,
-    types=(
-        UserGQLModel,
-        GroupGQLModel,
-        GroupTypeGQLModel,
-        MembershipGQLModel,
-        RoleGQLModel,
-        RoleCategoryGQLModel,    
-        RoleTypeGQLModel),
-    mutation=Mutation)
+from .RBACObjectGQLModel import RBACObjectGQLModel
+from .BaseGQLModel import IDType
+
+schema = strawberry.federation.Schema(query=Query, types=(RBACObjectGQLModel, IDType), mutation=Mutation)

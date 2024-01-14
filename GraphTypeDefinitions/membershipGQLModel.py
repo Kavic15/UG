@@ -2,33 +2,37 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
+from .BaseGQLModel import IDType
 import uuid
+from .GraphResolvers import (
+    resolve_id,
+    resolve_name,
+    resolve_name_en,
+    resolve_changedby,
+    resolve_created,
+    resolve_lastchange,
+    resolve_createdby
+)
 
-def getLoader(info):
-    return info.context["all"]
+from utils.Dataloaders import (
+    getLoadersFromInfo as getLoader,
+    getUserFromInfo)
 
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a relation between an user and a group""",)
 class MembershipGQLModel:
+
+    id = resolve_id
+    changedby = resolve_changedby
+    created = resolve_created
+    lastchange = resolve_lastchange
+    createdby = resolve_createdby
+    
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
-        if id is None: return None
-        loader = getLoader(info).memberships
-        result = await loader.load(id)
-        if result is not None:
-            result._type_definition = cls._type_definition  # little hack :)
-            result.__strawberry_definition__ = cls._type_definition # some version of strawberry changed :(
-        return result
-
-    @strawberry.field(description="""primary key""")
-    def id(self) -> uuid.UUID:
-        return self.id
-
-    @strawberry.field(description="""time stamp""")
-    def lastchange(self) -> datetime.datetime:
-        return self.lastchange
+    def getLoader(cls, info):
+        return getLoader(info).memberships
 
     @strawberry.field(description="""user""")
     async def user(self, info: strawberry.types.Info) -> Optional["UserGQLModel"]:
@@ -60,6 +64,21 @@ class MembershipGQLModel:
 #
 #####################################################################
 
+from .GraphResolvers import asPage
+
+@strawberry.field()
+@asPage
+async def membership_page(
+    self, info: strawberry.types.Info, skip: int = 0, limit: int = 10
+    ) -> List[MembershipGQLModel]: 
+    return getLoader(info).memberships
+
+@strawberry.field()
+async def membership_by_id(
+    self, info: strawberry.types.Info, id: IDType
+    ) -> Optional[MembershipGQLModel]:
+    return await MembershipGQLModel.resolve_reference(info, id)
+
 #####################################################################
 #
 # Mutation section
@@ -69,7 +88,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a membership""")
 class MembershipUpdateGQLModel:
-    id: uuid.UUID
+    id: IDType
     lastchange: datetime.datetime   
     valid: Optional[bool] = None
     startdate: Optional[datetime.datetime] = None
@@ -77,8 +96,8 @@ class MembershipUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new membership""")
 class MembershipInsertGQLModel:
-    user_id: uuid.UUID
-    group_id: uuid.UUID
+    user_id: IDType
+    group_id: IDType
     id: Optional[uuid.UUID] = None
     valid: Optional[bool] = True
     startdate: Optional[datetime.datetime] = None
@@ -86,7 +105,7 @@ class MembershipInsertGQLModel:
 
 @strawberry.type(description="""Result model for membership operations""")
 class MembershipResultGQLModel:
-    id: uuid.UUID = None
+    id: IDType = None
     msg: str = None
 
     @strawberry.field(description="""Result of membership operation""")
@@ -98,17 +117,12 @@ class MembershipResultGQLModel:
 async def membership_update(self, 
     info: strawberry.types.Info, 
     membership: "MembershipUpdateGQLModel"
-) -> "MembershipResultGQLModel":
-
+    ) -> "MembershipResultGQLModel":
     loader = getLoader(info).memberships
     updatedrow = await loader.update(membership)
-
     result = MembershipResultGQLModel()
-    result.msg = "ok"
     result.id = membership.id
-
-    if updatedrow is None:
-        result.msg = "fail"
+    result.msg = "fail" if updatedrow is None else "ok"
     
     return result
 
@@ -117,11 +131,9 @@ async def membership_update(self,
 async def membership_insert(self, 
     info: strawberry.types.Info, 
     membership: "MembershipInsertGQLModel"
-) -> "MembershipResultGQLModel":
-
+) -> "MembershipResultGQLModel":    
     loader = getLoader(info).memberships
     row = await loader.insert(membership)
-
     result = MembershipResultGQLModel()
     result.msg = "ok"
     result.id = row.id

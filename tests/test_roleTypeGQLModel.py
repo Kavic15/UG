@@ -1,17 +1,3 @@
-import pytest
-# import os
-# os.environ["GQLUG_ENDPOINT_URL"] = "http://localhost:8124/gql"
-# print(os.environ.get("GQLUG_ENDPOINT_URL", None))
-
-
-# from ..gqlshared import (
-#     createByIdTest, 
-#     createPageTest, 
-#     createResolveReferenceTest, 
-#     createFrontendQuery, 
-#     createUpdateQuery
-# )
-
 from .gt_utils import (
     createByIdTest, 
     createPageTest, 
@@ -20,57 +6,28 @@ from .gt_utils import (
     createUpdateQuery
 )
 
-test_reference_roleType = createResolveReferenceTest(
-    tableName='roletypes', gqltype='RoleTypeGQLModel', 
-    attributeNames=["id", "name", "nameEn", "lastchange", "category_id", "creator {id}", "createdby {id}"])
-test_query_roleType_by_id = createByIdTest(tableName="roletypes", queryEndpoint="roleTypeById")
-test_query_roleType_page = createPageTest(tableName="roletypes", queryEndpoint="roleTypePage")
+test_roleType_by_id = createByIdTest(tableName="roletypes", queryEndpoint="roleTypeById")
+test_role_type_page = createPageTest(tableName="roletypes", queryEndpoint="roleTypePage")
+test_role_type_reference = createResolveReferenceTest(tableName="roletypes", gqltype="RoleTypeGQLModel")
 
-test_roleType_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!,  $nameEn: String!, $rbac_id: UUID!) { 
-        result: roleTypeInsert(roleType: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
-            id
-            msg
-            roleType {
-                id
-                name
-                nameEn
-                category_id
-                lastchange
-                created
-                                       
-                changedby { id }
-                rbacobject { id }                
-            }
-        }
+test_role_type_update = createUpdateQuery(tableName="roletypes", query="""mutation ($id: UUID!, $lastchange: DateTime!, $name: String!) {
+  result: roleTypeUpdate(roleType: {id: $id, lastchange: $lastchange, name: $name}) {
+    id
+    roleType {
+      name
+      lastchange
     }
-    """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new roleType", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
-    asserts=[]
-)
+  }
+}""", variables={"id": "05a3e0f5-f71e-4caa-8012-229d868aa8ca", "name": "newname"})
 
-test_roleType_update = createUpdateQuery(
-    query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            roleTypeUpdate(roleType: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: roleTypeInsert(roleType: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
-                    id
-                    msg
-                    roleType {
-                        id
-                        name
-                        nameEn
-                        category_id
-                        lastchange
-                        created
-                                            
-                        changedby { id }
-                        rbacobject { id }                
-                    }
-                }
-            }
-        }
-    """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name", "nameEn": "new nameEn"},
-    tableName="roletypes"
-)
+test_role_type_insert = createFrontendQuery(query="""mutation ($id: UUID!, $name: String!) {
+  result: roleTypeInsert(roleType: {id: $id, name: $name}) {
+    id
+    roleType {
+      name
+      nameEn
+      lastchange
+      roles { id }
+    }
+  }
+}""", variables={"id": "850b03cf-a69a-4a6c-b980-1afaf5be174b", "name": "newname"})
