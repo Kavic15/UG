@@ -3,8 +3,8 @@ import uuid
 import asyncio
 from typing import List, Annotated, Optional
 from .BaseGQLModel import BaseGQLModel, IDType
-from ._GraphResolvers import resolve_id
-from ._GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from .GraphResolvers import resolve_id
+from .GraphPermissions import OnlyForAuthentized
 from utils.Dataloaders import getLoadersFromInfo as getLoader
 
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]

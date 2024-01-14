@@ -1,3 +1,4 @@
+'''
 import pytest
 from httpx import AsyncClient
 from main import app  # Assuming your FastAPI app is named 'app'
@@ -40,3 +41,116 @@ async def test_permissions():
         # Step 7: Repeat the process for other scenarios or permissions
 
 # Run the test using: pytest -k test_permissions
+'''
+import pytest
+from unittest.mock import Mock
+from strawberry import Schema
+from GraphTypeDefinitions.RBACObjectGQLModel import RBACObjectGQLModel
+from GraphPermissions import OnlyForAuthentized, UserGDPRPermission, UserEditorPermission, GroupEditorPermission
+
+@pytest.mark.asyncio
+async def test_rbac_object_permissions():
+    schema = Schema(query=RBACObjectGQLModel)
+
+    # Mock the resolver info
+    info = Mock()
+
+    # Example: Mocking a user with specific permissions
+    user_with_permissions = {
+        "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003",
+        "roles": [
+            {
+                "valid": True,
+                "group": {
+                    "id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003",
+                    "name": "Uni"
+                },
+                "roletype": {
+                    "id": "ced46aa4-3217-4fc1-b79d-f6be7d21c6b6",
+                    "name": "administrátor"
+                }
+            }
+        ]
+    }
+    
+    # Set the user context in the info
+    info.context = {"user": user_with_permissions}
+
+    # Test RBACObjectGQLModel with OnlyForAuthentized permission
+    result = await schema.execute("query { rbac_by_id(id: \"2d9dc5ca-a4a2-11ed-b9df-0242ac120003\") { id } }", info=info)
+    assert result.errors is None
+
+    # Example: Test RBACObjectGQLModel with GroupEditorPermission
+    info.context["session"] = Mock()  # Mock the session for the permission check
+    result = await schema.execute("query { rbac_by_id(id: \"2d9dc5ca-a4a2-11ed-b9df-0242ac120003\") { id } }", info=info)
+    assert result.errors is None
+
+    # Example: Test RBACObjectGQLModel with UserGDPRPermission
+    result = await schema.execute("query { rbac_by_id(id: \"2d9dc5ca-a4a2-11ed-b9df-0242ac120003\") { id } }", info=info)
+    assert result.errors is None
+
+
+@pytest.mark.asyncio
+async def test_group_editor_permission():
+    schema = Schema(query=GroupEditorPermission)
+
+    # Mock the resolver info
+    info = Mock()
+
+    # Example: Mocking a user with specific permissions
+    user_with_permissions = {
+        "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003",
+        "roles": [
+            {
+                "valid": True,
+                "group": {
+                    "id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003",
+                    "name": "Uni"
+                },
+                "roletype": {
+                    "id": "ced46aa4-3217-4fc1-b79d-f6be7d21c6b6",
+                    "name": "administrátor"
+                }
+            }
+        ]
+    }
+    
+    # Set the user context in the info
+    info.context = {"user": user_with_permissions, "session": Mock()}
+
+    # Test GroupEditorPermission
+    result = await schema.execute("query { has_permission }", info=info)
+    assert result.errors is None
+
+
+@pytest.mark.asyncio
+async def test_user_gdpr_permission():
+    schema = Schema(query=UserGDPRPermission)
+
+    # Mock the resolver info
+    info = Mock()
+
+    # Example: Mocking a user with specific permissions
+    user_with_permissions = {
+        "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003",
+        "roles": [
+            {
+                "valid": True,
+                "group": {
+                    "id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003",
+                    "name": "Uni"
+                },
+                "roletype": {
+                    "id": "ced46aa4-3217-4fc1-b79d-f6be7d21c6b6",
+                    "name": "administrátor"
+                }
+            }
+        ]
+    }
+    
+    # Set the user context in the info
+    info.context = {"user": user_with_permissions, "session": Mock()}
+
+    # Test UserGDPRPermission
+    result = await schema.execute("query { has_permission }", info=info)
+    assert result.errors is None
