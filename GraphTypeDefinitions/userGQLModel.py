@@ -27,9 +27,6 @@ MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershi
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
-
-from utils.GraphPermissions import UserGDPRPermission
-
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel(BaseGQLModel):
 
