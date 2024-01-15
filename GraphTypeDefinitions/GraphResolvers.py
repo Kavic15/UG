@@ -6,6 +6,8 @@ import logging
 
 UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".UserGQLModel")]
 GroupGQLModel = typing.Annotated["GroupGQLModel", strawberry.lazy(".GroupGQLModel")]
+RoleTypeGQLModel = typing.Annotated["RoleTypeGQLModel", strawberry.lazy(".RoleGQLModel")]
+
 
 @strawberry.field(description="""Entity primary key""")
 def resolve_id(self) -> uuid.UUID:
