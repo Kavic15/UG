@@ -3,7 +3,7 @@ import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
 import uuid
-from .BaseGQLModel import BaseGQLModel, IDType
+from .BaseGQLModel import BaseGQLModel
 from .GraphResolvers import (
     resolve_id,
     resolve_name,
@@ -49,19 +49,19 @@ class RoleGQLModel(BaseGQLModel):
     @strawberry.field(description="""Role type (like Dean)""")
     async def roletype(self, info: strawberry.types.Info) -> RoleTypeGQLModel:
         # result = await resolveRoleTypeById(session,  self.roletype_id)
-        result = await GraphTypeDefinitions.RoleTypeGQLModel.resolve_reference(info, self.roletype_id)
+        result = await GraphTypeDefinitions.RoleTypeGQLModel.resolve_reference(info, id=self.roletype_id)
         return result
 
     @strawberry.field(description="""User having this role. Must be member of group?""")
     async def user(self, info: strawberry.types.Info) -> UserGQLModel:
         # result = await resolveUserById(session,  self.user_id)
-        result = await GraphTypeDefinitions.UserGQLModel.resolve_reference(info, self.user_id)
+        result = await GraphTypeDefinitions.UserGQLModel.resolve_reference(info, id=self.user_id)
         return result
 
     @strawberry.field(description="""Group where user has a role name""")
     async def group(self, info: strawberry.types.Info) -> GroupGQLModel:
         # result = await resolveGroupById(session,  self.group_id)
-        result = await GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
+        result = await GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, id=self.group_id)
         return result
     
 #####################################################################
@@ -82,7 +82,7 @@ from DBDefinitions import (
 )
 from sqlalchemy import select
 
-async def resolve_roles_on_user(self, info: strawberry.types.Info, user_id: IDType) -> List["RoleGQLModel"]:
+async def resolve_roles_on_user(self, info: strawberry.types.Info, user_id: uuid.UUID) -> List["RoleGQLModel"]:
     loaderm = getLoader(info).memberships
     rows = await loaderm.filter_by(user_id = user_id)
     groupids = [row.group_id for row in rows]
@@ -96,7 +96,7 @@ async def resolve_roles_on_user(self, info: strawberry.types.Info, user_id: IDTy
     return rows
 
 
-async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: IDType) -> List["RoleGQLModel"]:
+async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: uuid.UUID) -> List["RoleGQLModel"]:
     grouploader = getLoader(info).groups
     groupids = []
     cid = group_id
@@ -116,12 +116,12 @@ async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: ID
 
 
 @strawberry.field()
-async def roles_on_user(self, info: strawberry.types.Info, user_id: IDType) -> List["RoleGQLModel"]:
+async def roles_on_user(self, info: strawberry.types.Info, user_id: uuid.UUID) -> List["RoleGQLModel"]:
     rows = await resolve_roles_on_user(self, info, user_id=user_id)
     return rows
 
 @strawberry.field()
-async def roles_on_group(self, info: strawberry.types.Info, group_id: IDType) -> List["RoleGQLModel"]:
+async def roles_on_group(self, info: strawberry.types.Info, group_id: uuid.UUID) -> List["RoleGQLModel"]:
     rows = await resolve_roles_on_group(self, info=info, group_id=group_id)
     return rows
 
@@ -134,7 +134,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a role""")
 class RoleUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime
     valid: Optional[bool] = None
     startdate: Optional[datetime.datetime] = None
@@ -142,9 +142,9 @@ class RoleUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new role""")
 class RoleInsertGQLModel:
-    user_id: IDType
-    group_id: IDType
-    roletype_id: IDType
+    user_id: uuid.UUID
+    group_id: uuid.UUID
+    roletype_id: uuid.UUID
     id: Optional[uuid.UUID] = None
     valid: Optional[bool] = True
     startdate: Optional[datetime.datetime] = datetime.datetime.now()
@@ -152,11 +152,11 @@ class RoleInsertGQLModel:
 
 @strawberry.input(description="""Input model for deleting a role""")
 class RoleDeleteGQLModel:
-    id: IDType
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for role operations""")
 class RoleResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of user operation""")

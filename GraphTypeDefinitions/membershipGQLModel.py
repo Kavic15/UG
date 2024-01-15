@@ -2,7 +2,6 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
-from .BaseGQLModel import IDType
 import uuid
 from .GraphResolvers import (
     resolve_id,
@@ -75,7 +74,7 @@ async def membership_page(
 
 @strawberry.field()
 async def membership_by_id(
-    self, info: strawberry.types.Info, id: IDType
+    self, info: strawberry.types.Info, id: uuid.UUID
     ) -> Optional[MembershipGQLModel]:
     return await MembershipGQLModel.resolve_reference(info, id)
 
@@ -88,7 +87,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a membership""")
 class MembershipUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime   
     valid: Optional[bool] = None
     startdate: Optional[datetime.datetime] = None
@@ -96,8 +95,8 @@ class MembershipUpdateGQLModel:
 
 @strawberry.input(description="""Input model for inserting a new membership""")
 class MembershipInsertGQLModel:
-    user_id: IDType
-    group_id: IDType
+    user_id: uuid.UUID
+    group_id: uuid.UUID
     id: Optional[uuid.UUID] = None
     valid: Optional[bool] = True
     startdate: Optional[datetime.datetime] = None
@@ -105,7 +104,7 @@ class MembershipInsertGQLModel:
 
 @strawberry.type(description="""Result model for membership operations""")
 class MembershipResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of membership operation""")

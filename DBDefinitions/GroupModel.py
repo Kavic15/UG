@@ -1,16 +1,8 @@
+from .UUIDColumn import UUIDColumn, UUIDFKey
+from sqlalchemy import Column, DateTime, String, ForeignKey, Boolean
+from .BaseModel import BaseModel
 import sqlalchemy
-from sqlalchemy import (
-    Column,
-    String,
-    ForeignKey,
-    DateTime,
-    Boolean,
-)
 from sqlalchemy.orm import relationship
-
-from .UUID import UUIDColumn, UUIDFKey
-from .Base import BaseModel
-
 
 class GroupModel(BaseModel):
     """Manages data related to group"""
@@ -18,10 +10,9 @@ class GroupModel(BaseModel):
     __tablename__ = "groups"
 
     id = UUIDColumn()
-    name = Column(String)
-    name_en = Column(String)
-
-    lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now())
+    name = Column(String, comment="Name of the group")
+    name_en = Column(String, comment="English name of the group")
+    lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now(), comment="Timestamp of the last change to the group")
 
     startdate = Column(DateTime)
     enddate = Column(DateTime)

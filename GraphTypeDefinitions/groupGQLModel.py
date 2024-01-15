@@ -1,10 +1,11 @@
+import strawberry as strawberryA
 import datetime
-import strawberry
-from typing import List, Optional, Union, Annotated
-import GraphTypeDefinitions
 import uuid
-from .BaseGQLModel import IDType, BaseGQLModel
-from utils.Dataloaders import getUserFromInfo
+from typing import List, Annotated, Optional, Union
+from .BaseGQLModel import BaseGQLModel
+
+import strawberry
+from utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 from .GraphResolvers import (
     resolve_id,
     resolve_name,
@@ -14,9 +15,6 @@ from .GraphResolvers import (
     resolve_lastchange,
     resolve_createdby
 )
-
-def getLoader(info):
-    return info.context["all"]
 
 GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
 MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershipGQLModel")]
@@ -35,7 +33,7 @@ class GroupGQLModel(BaseGQLModel):
 
     @classmethod
     def getLoader(cls, info):
-        return getLoader(info).groups
+        return getLoadersFromInfo(info).groups
 
     @strawberry.field()
     def email(self) -> Optional[str]:
@@ -59,7 +57,7 @@ class GroupGQLModel(BaseGQLModel):
     async def subgroups(
         self, info: strawberry.types.Info
     ) -> List["GroupGQLModel"]:
-        loader = getLoader(info).groups
+        loader = getLoadersFromInfo(info).groups
         print(self.id)
         result = await loader.filter_by(mastergroup_id=self.id)
         return result
@@ -80,7 +78,7 @@ class GroupGQLModel(BaseGQLModel):
         #     result = await resolveMembershipForGroup(session, self.id, skip, limit)
         #     return result
 
-        loader = getLoader(info).memberships
+        loader = getLoadersFromInfo(info).memberships
         #print(self.id)
         result = await loader.filter_by(group_id=self.id)
         return result
@@ -88,7 +86,7 @@ class GroupGQLModel(BaseGQLModel):
     @strawberry.field(description="""List of roles in the group""")
     async def roles(self, info: strawberry.types.Info) -> List["RoleGQLModel"]:
         # result = await resolveRolesForGroup(session,  self.id)
-        loader = getLoader(info).roles
+        loader = getLoadersFromInfo(info).roles
         result = await loader.filter_by(group_id=self.id)
         return result
 
@@ -107,7 +105,7 @@ class GroupGQLModel(BaseGQLModel):
 
 #####################################################################
 #
-# Special fields for query
+# Query
 #
 #####################################################################
 @strawberry.field(description="""Returns a list of groups (paged)""")
@@ -115,7 +113,7 @@ async def group_page(
     self, info: strawberry.types.Info, skip: int = 0, limit: int = 10
 ) -> List[GroupGQLModel]:
     # result = await resolveGroupAll(session,  skip, limit)
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
     result = await loader.page(skip, limit)
     return result
 
@@ -134,7 +132,7 @@ async def group_by_letters(
     letters: str = "",
 ) -> List[GroupGQLModel]:
     # result = await resolveGroupsByThreeLetters(session,  validity, letters)
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
 
     if len(letters) < 3:
         return []
@@ -156,14 +154,13 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group""")
 class GroupUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
     grouptype_id: Optional[uuid.UUID] = None
     mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
-    changedby: strawberry.Private[uuid.UUID] = None
 
 
 @strawberry.input(description="""Input model for inserting a new group""")
@@ -174,7 +171,6 @@ class GroupInsertGQLModel:
     name_en: Optional[str] = None
     mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
-    createdby: strawberry.Private[uuid.UUID] = None
 
 
 @strawberry.input(description="""Input model for deleting a group""")
@@ -183,7 +179,7 @@ class GroupDeleteGQLModel:
 
 @strawberry.type
 class GroupResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of group operation""")
@@ -209,7 +205,7 @@ class GroupDeleteResultGQLModel:
 async def group_update(self, info: strawberry.types.Info, group: GroupUpdateGQLModel) -> GroupResultGQLModel:
     user = getUserFromInfo(info)
     group.changedby = user["id"]
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
     
     updatedrow = await loader.update(group)
     #print(updatedrow, updatedrow.id, updatedrow.name, flush=True)
@@ -222,7 +218,7 @@ async def group_update(self, info: strawberry.types.Info, group: GroupUpdateGQLM
 async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLModel) -> GroupResultGQLModel:
     user = getUserFromInfo(info)
     group.createdby = user["id"]
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
     
     updatedrow = await loader.insert(group)
     print("group_insert", updatedrow, updatedrow.id, updatedrow.name, flush=True)
@@ -234,7 +230,7 @@ async def group_insert(self, info: strawberry.types.Info, group: GroupInsertGQLM
 
 @strawberry.mutation(description="""Deletes a group""")
 async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLModel) -> GroupDeleteResultGQLModel:
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
 
     # Perform group deletion operation
     deletedrow = await loader.delete(group.id)
@@ -252,9 +248,9 @@ async def group_delete(self, info: strawberry.types.Info, group: GroupDeleteGQLM
 @strawberry.mutation(description="""Allows to assign the group to specified master group""")
 async def group_update_master(self, 
     info: strawberry.types.Info, 
-    master_id: IDType,
+    master_id: uuid.UUID,
     group: GroupUpdateGQLModel) -> GroupResultGQLModel:
-    loader = getLoader(info).groups
+    loader = getLoadersFromInfo(info).groups
     
     result = GroupResultGQLModel()
     result.id = group.id

@@ -2,7 +2,7 @@ import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
 import uuid
-from .BaseGQLModel import BaseGQLModel, IDType
+from .BaseGQLModel import BaseGQLModel
 from .GraphResolvers import (
     resolve_id,
     resolve_name,
@@ -73,7 +73,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a role category""")
 class RoleCategoryUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -86,7 +86,7 @@ class RoleCategoryInsertGQLModel:
 
 @strawberry.type(description="""Result model for role category operations""")
 class RoleCategoryResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of role category operation""")

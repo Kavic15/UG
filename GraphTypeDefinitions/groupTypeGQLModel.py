@@ -1,7 +1,7 @@
 import datetime
 import strawberry
 from typing import List, Optional, Union, Annotated
-from .BaseGQLModel import BaseGQLModel, IDType
+from .BaseGQLModel import BaseGQLModel
 import GraphTypeDefinitions
 import uuid
 from .GraphResolvers import (
@@ -62,7 +62,7 @@ async def group_type_page(
 
 @strawberry.field(description="""Finds a group type by its id""")
 async def group_type_by_id(
-    self, info: strawberry.types.Info, id: IDType
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[GroupTypeGQLModel, None]:
     # result = await resolveGroupTypeById(session,  id)
     result = await GroupTypeGQLModel.resolve_reference(info, id)
@@ -77,7 +77,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating a group type""")
 class GroupTypeUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -90,7 +90,7 @@ class GroupTypeInsertGQLModel:
 
 @strawberry.type(description="""Result model for group type operations""")
 class GroupTypeResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of grouptype operation""")

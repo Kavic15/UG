@@ -3,7 +3,7 @@ import strawberry
 import asyncio
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
-from .BaseGQLModel import BaseGQLModel, IDType
+from .BaseGQLModel import BaseGQLModel
 import uuid
 from .GraphResolvers import (
     resolve_id,
@@ -156,7 +156,7 @@ import datetime
 
 @strawberry.input(description="""Input model for updating user information""")
 class UserUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime  # razitko
     name: Optional[str] = None
     surname: Optional[str] = None
@@ -177,7 +177,7 @@ class UserDeleteGQLModel:
 
 @strawberry.type
 class UserResultGQLModel:
-    id: IDType = None
+    id: uuid.UUID = None
     msg: str = None
 
     @strawberry.field(description="""Result of user operation""")

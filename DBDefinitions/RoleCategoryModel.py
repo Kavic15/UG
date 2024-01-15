@@ -8,8 +8,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from .UUID import UUIDColumn, UUIDFKey
-from .Base import BaseModel
+from .UUIDColumn import UUIDColumn, UUIDFKey
+from .BaseModel import BaseModel
 
 
 class RoleCategoryModel(BaseModel):

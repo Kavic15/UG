@@ -1,8 +1,4 @@
-import sqlalchemy
-
-        
-from .Base import BaseModel
-from .UUID import UUIDColumn
+from .BaseModel import BaseModel
 from .UserModel import UserModel
 from .MembershipModel import MembershipModel
 from .GroupModel import GroupModel
@@ -10,12 +6,11 @@ from .GroupTypeModel import GroupTypeModel
 from .RoleModel import RoleModel
 from .RoleTypeModel import RoleTypeModel
 from .RoleCategoryModel import RoleCategoryModel
+import sqlalchemy
 
-
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -23,8 +18,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 async def startEngine(connectionstring, makeDrop=False, makeUp=True):
     """Provede nezbytne ukony a vrati asynchronni SessionMaker"""
     asyncEngine = create_async_engine(connectionstring, pool_pre_ping=True)
-    # pool_size=20, max_overflow=10, pool_recycle=60) #pool_pre_ping=True, pool_recycle=3600
-
+    
     async with asyncEngine.begin() as conn:
         if makeDrop:
             await conn.run_sync(BaseModel.metadata.drop_all)
@@ -42,9 +36,6 @@ async def startEngine(connectionstring, makeDrop=False, makeUp=True):
         asyncEngine, expire_on_commit=False, class_=AsyncSession
     )
     return async_sessionMaker
-
-
-import os
 
 
 def ComposeConnectionString():

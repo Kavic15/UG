@@ -3,7 +3,7 @@ import strawberry
 from typing import List, Optional, Union, Annotated
 import GraphTypeDefinitions
 import uuid
-from .BaseGQLModel import BaseGQLModel, IDType
+from .BaseGQLModel import BaseGQLModel
 from .GraphResolvers import (
     resolve_id,
     resolve_name,
@@ -53,7 +53,7 @@ class RoleTypeGQLModel(BaseGQLModel):
 #####################################################################
 @strawberry.field(description="""Finds a role type by its id""")
 async def role_type_by_id(
-    self, info: strawberry.types.Info, id: IDType
+    self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Union[RoleTypeGQLModel, None]:
     result = await RoleTypeGQLModel.resolve_reference(info, id)
     return result
@@ -85,7 +85,7 @@ async def role_type_page(
 import datetime
 @strawberry.input(description="""Input model for updating a role type""")
 class RoleTypeUpdateGQLModel:
-    id: IDType
+    id: uuid.UUID
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -99,7 +99,7 @@ class RoleTypeInsertGQLModel:
 
 @strawberry.input(description="""Input model for deleting a role type""")
 class RoleTypeDeleteGQLModel:
-    id: IDType
+    id: uuid.UUID
 
 @strawberry.type(description="""Result model for role type operations""")
 class RoleTypeResultGQLModel:
