@@ -4,9 +4,9 @@ import datetime
 import typing
 import logging
 
-UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".UserGQLModel")]
-GroupGQLModel = typing.Annotated["GroupGQLModel", strawberry.lazy(".GroupGQLModel")]
-RoleTypeGQLModel = typing.Annotated["RoleTypeGQLModel", strawberry.lazy(".RoleGQLModel")]
+UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
+GroupGQLModel = typing.Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
+RoleTypeGQLModel = typing.Annotated["RoleTypeGQLModel", strawberry.lazy(".roleGQLModel")]
 
 
 @strawberry.field(description="""Entity primary key""")

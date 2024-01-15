@@ -39,8 +39,9 @@ class MembershipGQLModel(BaseGQLModel):
     @strawberry.field(
         description="""user""")
     async def user(self, info: strawberry.types.Info) -> Optional["UserGQLModel"]:
+        loader = getUserFromInfo(info).user
         # return self.user
-        result = await GraphTypeDefinitions.UserGQLModel.resolve_reference(info=info, id=self.user_id)
+        result = await loader.load(info=info, id=self.user_id)
         return result
 
     @strawberry.field(
@@ -103,8 +104,7 @@ from .GraphResolvers import asPage
     description="Retrieves memberships")
 @asPage
 async def membership_page(
-    self, info: strawberry.types.Info, skip: int = 0, limit: int = 10,
-    where: Optional[MembershipInputWhereFilter]= None
+    self, info: strawberry.types.Info, skip: int = 0, limit: int = 10
     ) -> List[MembershipGQLModel]: 
     return getLoader(info).memberships
 

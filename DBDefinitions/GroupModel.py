@@ -1,4 +1,4 @@
-from .UUIDColumn import UUIDColumn, UUIDFKey
+from .UUIDColFile import UUIDColumn, UUIDFKey
 from sqlalchemy import Column, DateTime, String, ForeignKey, Boolean
 from .BaseModel import BaseModel
 import sqlalchemy

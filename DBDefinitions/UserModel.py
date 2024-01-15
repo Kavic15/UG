@@ -7,7 +7,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from .UUIDColumn import UUIDColumn, UUIDFKey
+from .UUIDColFile import UUIDColumn, UUIDFKey
 from .BaseModel import BaseModel
 
 class UserModel(BaseModel):

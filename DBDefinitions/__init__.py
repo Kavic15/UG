@@ -13,6 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
+from .UUIDColFile import UUIDColumn
 
 
 async def startEngine(connectionstring, makeDrop=False, makeUp=True):
