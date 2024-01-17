@@ -1,8 +1,9 @@
 import typing
 from typing import List, Union, Optional
-import strawberry as strawberryA
+import strawberry as strawberry
 import uuid
 import datetime
+from .RBACObjectGQLModel import RBACObjectGQLModel
 
 from contextlib import asynccontextmanager
 
@@ -22,7 +23,7 @@ def getLoader(info):
 
 
 import datetime
-from .GraphResolvers import resolveMembershipById
+# from .GraphResolvers import resolveMembershipById
 
 # @strawberryA.federation.type(
 #     keys=["id"],
@@ -73,7 +74,9 @@ from .roleGQLModel import RoleGQLModel
 from .roleCategoryGQLModel import RoleCategoryGQLModel
 from .roleTypeGQLModel import RoleTypeGQLModel
 
-schema = strawberryA.federation.Schema(
+# schema = strawberry.federation.Schema(query=Query, types=(RBACObjectGQLModel, uuid.UUID), mutation=Mutation)
+
+schema = strawberry.federation.Schema(
     query=Query,
     types=(
         UserGQLModel,
@@ -82,5 +85,6 @@ schema = strawberryA.federation.Schema(
         MembershipGQLModel,
         RoleGQLModel,
         RoleCategoryGQLModel,    
-        RoleTypeGQLModel),
+        RoleTypeGQLModel,
+        RBACObjectGQLModel, uuid.UUID),
     mutation=Mutation)

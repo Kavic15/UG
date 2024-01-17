@@ -4,7 +4,7 @@
 
 # from uoishelpers.uuid import UUIDColumn
 
-# from GraphTypeDefinitions import schema
+# from gql_ug.GraphTypeDefinitions import schema
 
 # from tests.shared import (
 #     prepare_demodata,

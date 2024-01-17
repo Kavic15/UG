@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from DBDefinitions import startEngine, ComposeConnectionString
+from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
 
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
-from utils.DBFeeder import initDB
+from gql_ug.utils.DBFeeder import initDB
 
 connectionString = ComposeConnectionString()
 
@@ -53,7 +53,7 @@ async def RunOnceAndReturnSessionMaker():
 
 
 from strawberry.asgi import GraphQL
-from utils.Dataloaders import createLoaders, createLoaders_3
+from gql_ug.utils.Dataloaders import createLoaders
 
 
 async def createContext():
@@ -83,7 +83,7 @@ class MyGraphQL(GraphQL):
         return {**parentResult, **localResult, "user": self._user}
 
 
-from GraphTypeDefinitions import schema
+from gql_ug.GraphTypeDefinitions import schema
 
 ## ASGI app, kterou "moutneme"
 graphql_app = MyGraphQL(

@@ -5,8 +5,8 @@ import typing
 
 class BaseGQLModel:
     @classmethod
-    def getLoader(cls, info):
-        pass
+    # def getLoader(cls, info):
+    #     pass
 
     @classmethod
     async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID ):

@@ -13,7 +13,7 @@
 
 # from utils.DBFeeder import predefineAllDataStructures
 
-# import GraphTypeDefinitions.GraphResolvers
+# import gql_ug.GraphTypeDefinitions.GraphResolvers
 # @pytest.mark.asyncio
 # async def test_load_system_data():
 #     async_session_maker = await prepare_in_memory_sqllite()

@@ -181,7 +181,7 @@ def DemoFalse(monkeypatch):
 
 @pytest.fixture
 def SchemaExecutor(SQLite, Info):
-    from GraphTypeDefinitions import schema
+    from gql_ug.GraphTypeDefinitions import schema
     async def Execute(query, variable_values={}):
         result = await schema.execute(query=query, variable_values=variable_values, context_value=Info.context)
         value = {"data": result.data} 

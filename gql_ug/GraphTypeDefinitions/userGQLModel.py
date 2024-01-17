@@ -2,7 +2,7 @@ import datetime
 import strawberry
 import asyncio
 from typing import List, Optional, Union, Annotated
-import GraphTypeDefinitions
+import gql_ug.GraphTypeDefinitions
 import uuid
 
 def getLoader(info):
@@ -16,8 +16,8 @@ MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershi
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
-
-from utils.GraphPermissions import UserGDPRPermission
+#TODO
+# from gql_ug.GraphPermissions import UserGDPRPermission
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel:
@@ -55,11 +55,12 @@ class UserGQLModel:
     def lastchange(self) -> Union[datetime.datetime, None]:
         return self.lastchange
 
-    @strawberry.field(description="""GDPRInfo for permision test""", permission_classes=[UserGDPRPermission])
-    def GDPRInfo(self, info: strawberry.types.Info) -> Union[str, None]:
-        actinguser = getUser(info)
-        print(actinguser)
-        return "GDPRInfo"
+    #TODO
+    # @strawberry.field(description="""GDPRInfo for permision test""", permission_classes=[UserGDPRPermission])
+    # def GDPRInfo(self, info: strawberry.types.Info) -> Union[str, None]:
+    #     actinguser = getUser(info)
+    #     print(actinguser)
+    #     return "GDPRInfo"
 
     @strawberry.field(description="""List of groups, where the user is member""")
     async def membership(
@@ -131,19 +132,19 @@ async def user_by_letters(
     result = await loader.execute_select(stmt)
     return result
 
-from .GraphResolvers import UserByRoleTypeAndGroupStatement
+# from .GraphResolvers import UserByRoleTypeAndGroupStatement
 
-@strawberry.field(description="""Finds users who plays in a group a roletype""")
-async def users_by_group_and_role_type(
-    self,
-    info: strawberry.types.Info,
-    group_id: uuid.UUID,
-    role_type_id: uuid.UUID,
-) -> List[UserGQLModel]:
-    # result = await resolveUserByRoleTypeAndGroup(session,  group_id, role_type_id)
-    loader = getLoader(info).users
-    result = await loader.execute_select(UserByRoleTypeAndGroupStatement)
-    return result
+# @strawberry.field(description="""Finds users who plays in a group a roletype""")
+# async def users_by_group_and_role_type(
+#     self,
+#     info: strawberry.types.Info,
+#     group_id: uuid.UUID,
+#     role_type_id: uuid.UUID,
+# ) -> List[UserGQLModel]:
+#     # result = await resolveUserByRoleTypeAndGroup(session,  group_id, role_type_id)
+#     loader = getLoader(info).users
+#     result = await loader.execute_select(UserByRoleTypeAndGroupStatement)
+#     return result
 
 
 #####################################################################
