@@ -8,7 +8,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from .UUID import UUIDColumn, UUIDFKey
+from .UUIDColumn import UUIDColumn, UUIDFKey
 from .Base import BaseModel
 
 class MembershipModel(BaseModel):

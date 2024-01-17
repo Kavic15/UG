@@ -2,7 +2,7 @@ import sqlalchemy
 
         
 from .Base import BaseModel
-from .UUID import UUIDColumn
+from .UUIDColumn import UUIDColumn
 from .UserModel import UserModel
 from .MembershipModel import MembershipModel
 from .GroupModel import GroupModel
