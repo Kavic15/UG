@@ -37,12 +37,12 @@ async def resolve_user(user_id):
     
 @strawberry.field(description="""Who created entity""")
 async def resolve_createdby(self) -> typing.Optional["UserGQLModel"]:
-    return await resolve_user(self.createdby)
-
+    result = await resolve_user(self.createdby)
+    return result
 @strawberry.field(description="""Who made last change""")
 async def resolve_changedby(self) -> typing.Optional["UserGQLModel"]:
-    return await resolve_user(self.changedby)
-
+    reslut = await resolve_user(self.changedby)
+    return result
 # RBACObjectGQLModel = typing.Annotated["RBACObjectGQLModel", strawberry.lazy(".externals")]
 # @strawberry.field(description="""Who made last change""")
 # async def resolve_rbacobject(self, info: strawberry.types.Info) -> typing.Optional[RBACObjectGQLModel]:

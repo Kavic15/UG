@@ -1,5 +1,6 @@
-from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
 import logging
+from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
+
 
 from DBDefinitions import (
     UserModel,
@@ -213,10 +214,10 @@ def getUserFromInfo(info):
 
 def getLoadersFromInfo(info) -> Loaders:
     context = info.context
-    loaders = context["loaders"]
+    loaders = context["all"]
     return loaders
 
-def createLoadersContext(asyncSessionMaker):
+async def createLoadersContext(asyncSessionMaker):
     return {
-        "loaders": createLoaders(asyncSessionMaker)
+        "loaders": await createLoaders(asyncSessionMaker)
     }

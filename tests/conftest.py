@@ -78,9 +78,9 @@ async def SQLite(Async_Session_Maker, DemoData, DBModels):
     return Async_Session_Maker
 
 @pytest.fixture
-def LoadersContext(SQLite):
+async def LoadersContext(SQLite):
     from utils.Dataloaders import createLoaders
-    context = createLoaders(SQLite)
+    context = await createLoaders(SQLite)
     return context
 
 @pytest.fixture
@@ -183,6 +183,7 @@ def DemoFalse(monkeypatch):
 def SchemaExecutor(SQLite, Info):
     from GraphTypeDefinitions import schema
     async def Execute(query, variable_values={}):
+        print("UUUUU", query, variable_values, Info.context)
         result = await schema.execute(query=query, variable_values=variable_values, context_value=Info.context)
         value = {"data": result.data} 
         if result.errors:

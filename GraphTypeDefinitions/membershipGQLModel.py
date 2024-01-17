@@ -113,7 +113,8 @@ async def membership_page(
 async def membership_by_id(
     self, info: strawberry.types.Info, id: uuid.UUID
 ) -> Optional[MembershipGQLModel]:
-    return await MembershipGQLModel.resolve_reference(info, id)
+    result = await MembershipGQLModel.resolve_reference(info, id)
+    return result
 
 
 #####################################################################

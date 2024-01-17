@@ -14,7 +14,7 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
             
             respdata = resp.get("data", None)
             assert respdata is not None
-            
+            print("XXXXXXXXX", respdata)
             respdata = respdata[queryEndpoint]
             assert respdata is not None
 
@@ -32,7 +32,7 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
         variable_values = {"id": f'{datarow["id"]}'}
         
         # append(queryname=f"{queryEndpoint}_{tableName}", query=query, variables=variable_values)        
-        logging.debug(f"query for {query} with {variable_values}")
+        logging.info(f"query for {query} with {variable_values}")
 
         resp = await schemaExecutor(query, variable_values)
         testResult(resp)
@@ -92,6 +92,7 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
             assert respdata is not None
 
             assert len(respdata) == 1
+            print("YYYYY", respdata)
             respdata = respdata[0]
 
             assert respdata['id'] == rowid
@@ -107,25 +108,25 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
             rowid = f"{row['id']}"
 
             # query = (
-            #     'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
-            #     ' }])' +
-            #     '{' +
-            #     f'...on {gqltype}' + content +
-            #     '}' + 
-            #     '}')
+            #      'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
+            #      ' }])' +
+            #      '{' +
+            #      f'...on {gqltype}' + content +
+            #      '}' + 
+            #      '}')
 
             # variable_values = {"id": rowid}
 
             query = ("query($rep: [_Any!]!)" + 
-                "{" +
-                "_entities(representations: $rep)" +
-                "{"+
-                f"    ...on {gqltype} {content}"+
-                "}"+
-                "}"
+               "{" +
+               "_entities(representations: $rep)" +
+               "{"+
+               f"    ...on {gqltype} {content}"+
+               "}"+
+               "}"
             )
-            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": uuid.UUID(rowid)}]}
-            #variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
+            # variable_values = {"rep": [{"__typename": f"{gqltype}", "id": uuid.UUID(rowid)}]}
+            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
 
             logging.info(f"query representations {query} with {variable_values}")
             

@@ -6,9 +6,9 @@ from .gt_utils import (
     createUpdateQuery
 )
 
+test_group_reference = createResolveReferenceTest(tableName="groups", gqltype="GroupGQLModel")
 test_group_by_id = createByIdTest(tableName="groups", queryEndpoint="groupById")
 test_group_page = createPageTest(tableName="groups", queryEndpoint="groupPage")
-test_group_reference = createResolveReferenceTest(tableName="groups", gqltype="GroupGQLModel")
 
 test_group_update = createUpdateQuery(tableName="groups", query="""mutation ($id: UUID!, $lastchange: DateTime!, $name: String!) {
   result: groupUpdate(group: {id: $id, lastchange: $lastchange, name: $name}) {
