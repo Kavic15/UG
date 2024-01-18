@@ -1,44 +1,63 @@
+import strawberry as strawberryA
 import datetime
-import strawberry
-from typing import List, Optional, Union, Annotated
 import uuid
+from typing import List, Annotated, Optional, Union
+from .BaseGQLModel import BaseGQLModel
 
-def getLoader(info):
-    return info.context["all"]
+import strawberry
+from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
+
+# from gql_projects.GraphResolvers import (
+#     resolveFinanceTypeById,
+#     resolveProjectById,
+#     resolveFinanceAll
+# )
+
+from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+
+from gql_ug.GraphTypeDefinitions.GraphResolvers import (
+    resolve_id,
+    resolve_name,
+    resolve_name_en,
+    resolve_group,
+    resolve_group_id,
+    resolve_user,
+    resolve_user_id,
+    resolve_roletype,
+    resolve_roletype_id,
+    resolve_accesslevel,
+    resolve_created,
+    resolve_lastchange,
+    resolve_startdate,
+    resolve_enddate,
+    resolve_createdby,
+    resolve_changedby,
+    resolve_valid,
+    createRootResolver_by_id,
+    createRootResolver_by_page,
+    resolve_rbacobject
+)
 
 RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a role type (like Dean)""")
-class RoleCategoryGQLModel:
+class RoleCategoryGQLModel(BaseGQLModel):
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
-        loader = getLoader(info).rolecategories
-        result = await loader.load(id)
-        if result is not None:
-            result._type_definition = cls._type_definition  # little hack :)
-            result.__strawberry_definition__ = cls._type_definition # some version of strawberry changed :(
-        return result
+    def getLoader(cls, info):
+        return getLoadersFromInfo(info).memberships
 
-    @strawberry.field(description="""Primary key""")
-    def id(self) -> uuid.UUID:
-        return self.id
-
-    @strawberry.field(description="""Primary key""")
-    def lastchange(self) -> uuid.UUID:
-        return self.lastchange
-
-    @strawberry.field(description="""Role type name CZ""")
-    def name(self) -> str:
-        return self.name
-
-    @strawberry.field(description="""Role type name EN""")
-    def name_en(self) -> str:
-        return self.name_en
-
+    id = resolve_id
+    name =resolve_name
+    name_en = resolve_name_en
+    changedby = resolve_changedby
+    created = resolve_created
+    lastchange = resolve_lastchange
+    createdby = resolve_createdby
+    
     @strawberry.field(description="""List of roles with this type""")
     async def role_types(self, info: strawberry.types.Info) -> List["RoleTypeGQLModel"]:
         # result = await resolveRoleForRoleType(session,  self.id)
-        loader = getLoader(info).roletypes
+        loader = getLoadersFromInfo(info).roletypes
         rows = await loader.filter_by(category_id=self.id)
         return rows
     
