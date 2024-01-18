@@ -38,3 +38,9 @@ class Query:
 
     from .groupTypeGQLModel import group_type_page
     group_type_page = group_type_page
+    
+    from .membershipGQLModel import membership_page
+    membership_page = membership_page
+
+    from .membershipGQLModel import membership_by_id
+    membership_by_id = membership_by_id
