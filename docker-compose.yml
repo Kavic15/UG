@@ -1,18 +1,18 @@
-version: "3.9"
+version: "3.10"
 
 services:
   gql_ug:
     image: gql_ug
     build:
       # context definuje cestu k popisu
-      context: ./
+      context: .
     environment:
       # promenne, ktere lze cist v kontejneru
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=example
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_DB=data
-      - DEMO=true
+      - DEMO=True
       - GQL_PROXY=http://apollo:3000/api/gql/
     depends_on:
       # kontejnery, ktere musi byt spusteny drive

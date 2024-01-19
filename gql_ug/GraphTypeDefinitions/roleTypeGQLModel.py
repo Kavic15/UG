@@ -79,8 +79,8 @@ from dataclasses import dataclass
 class RoleTypeWhereFilter:
     id: uuid.UUID
     name: str
-    from .roleGQLModel import RoleTypeWhereFilter
-    roles: RoleTypeWhereFilter
+    # from .roleGQLModel import RoleTypeWhereFilter
+    # roles: RoleTypeWhereFilter
 
 @strawberryA.field(description="""Returns a list of role types""", permission_classes=[OnlyForAuthentized()])
 async def role_type_page(

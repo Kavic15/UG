@@ -78,7 +78,7 @@ from dataclasses import dataclass
 # MembershipInputWhereFilter = Annotated["MembershipInputWhereFilter", strawberry.lazy(".membershipGQLModel")]
 from .groupGQLModel import GroupWhereFilter
 from .userGQLModel import UserWhereFilter
-from .roleTypeGQLModel import RoleTypeWhereFilter
+# from .roleTypeGQLModel import RoleTypeWhereFilter
 
 @createInputs
 @dataclass
@@ -90,10 +90,10 @@ class RoleWhereFilter:
     enddate: datetime.datetime
     from .groupGQLModel import GroupWhereFilter
     from .userGQLModel import UserWhereFilter
-    from .roleTypeGQLModel import RoleTypeWhereFilter
+    # from .roleTypeGQLModel import RoleTypeWhereFilter
     group: GroupWhereFilter
     user: UserWhereFilter
-    roletype: RoleTypeWhereFilter
+    # roletype: RoleTypeWhereFilter
 
 @strawberry.field(
     description="Returns roles of user",

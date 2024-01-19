@@ -41,6 +41,7 @@ def DBModels():
         ]
 
 from utils.DBFeeder import get_demodata
+
 @pytest.fixture(scope=serversTestscope)
 def DemoData():
     return get_demodata()

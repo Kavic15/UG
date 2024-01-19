@@ -53,7 +53,7 @@ async def initEngine(app: FastAPI):
     makeDrop = os.getenv("DEMO", None) == "True"
     asyncSessionMaker = await startEngine(
         connectionstring=connectionstring,
-        makeDrop=makeDrop,
+        makeDrop=True,
         makeUp=True
     )
 
@@ -79,20 +79,26 @@ async def get_context(request: Request):
         async with initEngine(app) as cntx:
             pass
         
-    from gql_ug.utils.Dataloaders import createLoadersContext, createUgConnectionContext
+    # from gql_ug.utils.Dataloaders import createLoadersContext, createUgConnectionContext
+    # context = createLoadersContext(appcontext["asyncSessionMaker"])
+    # i = Item(query = "")
+    # # i.query = ""
+    # # i.variables = {}
+    # logging.info(f"before sentinel current user is {request.scope.get('user', None)}")
+    # await sentinel(request, i)
+    # logging.info(f"after sentinel current user is {request.scope.get('user', None)}")
+    # connectionContext = createUgConnectionContext(request=request)
+    # result = {**context, **connectionContext}
+    # result["request"] = request
+    # result["user"] = request.scope.get("user", None)
+    # logging.info(f"context created {result}")
+    # return context
+    from gql_ug.utils.Dataloaders import createLoadersContext
     context = createLoadersContext(appcontext["asyncSessionMaker"])
-    i = Item(query = "")
-    # i.query = ""
-    # i.variables = {}
-    logging.info(f"before sentinel current user is {request.scope.get('user', None)}")
-    await sentinel(request, i)
-    logging.info(f"after sentinel current user is {request.scope.get('user', None)}")
-    connectionContext = createUgConnectionContext(request=request)
-    result = {**context, **connectionContext}
+    result = {**context}
     result["request"] = request
     result["user"] = request.scope.get("user", None)
     logging.info(f"context created {result}")
-    return context
 
 app = FastAPI(lifespan=initEngine)
 

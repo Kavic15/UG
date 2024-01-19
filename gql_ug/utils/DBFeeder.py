@@ -1,7 +1,8 @@
 import datetime
 from functools import cache
 
-from gql_ug.DBDefinitions import (
+from ..DBDefinitions import (
+    Base,
     GroupTypeModel, 
     RoleTypeModel,
     RoleCategoryModel,
