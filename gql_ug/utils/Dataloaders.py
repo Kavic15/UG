@@ -19,13 +19,13 @@ from gql_ug.DBDefinitions import (
 )
 
 dbmodels = {
-    "usermodel": UserModel,
-    "membershipmodel": MembershipModel,
-    "groupmodel": GroupModel,
-    "grouptypemodel": GroupTypeModel,
-    "rolemodel":RoleModel,
-    "roletypemodel": RoleTypeModel,
-    "rolecategorymodel": RoleCategoryModel
+    "users": UserModel,
+    "memberships": MembershipModel,
+    "groups": GroupModel,
+    "grouptypes": GroupTypeModel,
+    "roles": RoleModel,
+    "roletypes": RoleTypeModel,
+    "rolecategories": RoleCategoryModel
 }
 
 

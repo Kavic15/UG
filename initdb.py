@@ -79,7 +79,6 @@ def loadall():
         "users",
         "groups",
         "memberships",
-        "roletypes",
         "roles",
         "externalidtypes",
         "externalids",
