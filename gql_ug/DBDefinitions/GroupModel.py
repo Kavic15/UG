@@ -19,13 +19,8 @@ class GroupModel(BaseModel):
     enddate = Column(DateTime)
     valid = Column(Boolean, default=True)
 
-    grouptype_id = Column(ForeignKey("grouptypes.id"), index=True)
-    grouptype = relationship("GroupTypeModel", back_populates="groups")
-
     mastergroup_id = Column(ForeignKey("groups.id"), index=True)
 
-    memberships = relationship("MembershipModel", back_populates="group")
-    roles = relationship("RoleModel", back_populates="group")
 
     created = Column(DateTime, server_default=sqlalchemy.sql.func.now(), comment="Timestamp when the group was created")
     lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now(), comment="Timestamp of the last change to the group")

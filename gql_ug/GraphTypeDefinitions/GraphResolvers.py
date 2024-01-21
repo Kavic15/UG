@@ -13,25 +13,11 @@ from uoishelpers.resolvers import (
 )
 from uoishelpers.resolvers import putSingleEntityToDb
 
-from DBDefinitions import (
-    BaseModel,
-    UserModel,
-    GroupModel,
-    MembershipModel,
-    RoleModel,
-)
-from DBDefinitions import GroupTypeModel, RoleTypeModel
-
+from gql_ug.DBDefinitions import (
+    GroupModel)
 
 ## Dataloaders
-
-userSelect = select(UserModel)
-userIdIn = UserModel.id.in_
 groupSelect = select(GroupModel)
-groupTypeSelect = select(GroupTypeModel)
-membershipsSelect = select(MembershipModel)
-roleSelect = select(RoleModel)
-roleTypeSelect = select(RoleTypeModel)
 
 
 
@@ -89,43 +75,15 @@ def createDataLoaderResolver(definitions):
 
 ## Nasleduji funkce, ktere lze pouzit jako asynchronni resolvery
 ## user resolvers
-resolveUserById = createEntityByIdGetter(UserModel)
-resolveUserAll = createEntityGetter(UserModel)
-resolveMembershipForUser = create1NGetter(
-    MembershipModel, foreignKeyName="user_id", options=joinedload(MembershipModel.group)
-)
-resolveRolesForUser = create1NGetter(
-    RoleModel, foreignKeyName="user_id", options=joinedload(RoleModel.roletype)
-)
 
-resolverUpdateUser = createUpdateResolver(UserModel, safe=True)
-resolveInsertUser = createInsertResolver(UserModel)
-
-
-async def resolveUsersByThreeLetters(
-    session: AsyncSession, validity=None, letters: str = ""
-) -> List[UserModel]:
-    if len(letters) < 3:
-        return []
-    stmt = select(UserModel).where(
-        (UserModel.name + " " + UserModel.surname).like(f"%{letters}%")
-    )
-    if validity is not None:
-        stmt = stmt.filter_by(valid=True)
-
-    dbSet = await session.execute(stmt)
-    return dbSet.scalars()
 
 
 ## group resolvers
 resolveGroupById = createEntityByIdGetter(GroupModel)
 resolveGroupAll = createEntityGetter(GroupModel)
-resolveMembershipForGroup = create1NGetter(
-    MembershipModel, foreignKeyName="group_id", options=joinedload(MembershipModel.user)
-)
+
 resolveSubgroupsForGroup = create1NGetter(GroupModel, foreignKeyName="mastergroup_id")
 resolveMastergroupForGroup = createEntityByIdGetter(GroupModel)
-resolveRolesForGroup = create1NGetter(RoleModel, foreignKeyName="group_id")
 
 resolveUpdateGroup = createUpdateResolver(GroupModel, safe=True)
 resolveInsertGroup = createInsertResolver(GroupModel)
@@ -145,28 +103,11 @@ async def resolveGroupsByThreeLetters(
 
 
 ## membership resolvers
-resolveUpdateMembership = createUpdateResolver(MembershipModel)
-resolveInsertMembership = createInsertResolver(MembershipModel)
-resolveMembershipById = createEntityByIdGetter(MembershipModel)
 
 # grouptype resolvers
-resolveGroupTypeById = createEntityByIdGetter(GroupTypeModel)
-resolveGroupTypeAll = createEntityGetter(GroupTypeModel)
+
 selectGroup = select(GroupModel)
-selectGroupType= select(GroupTypeModel)
 
-resolveGroupForGroupType = create1NGetter(GroupModel, foreignKeyName="grouptype_id")
-
-## roletype resolvers
-resolveRoleTypeById = createEntityByIdGetter(RoleTypeModel)
-resolveRoleTypeAll = createEntityGetter(RoleTypeModel)
-resolveRoleForRoleType = create1NGetter(RoleModel, foreignKeyName="roletype_id")
-
-## role resolvers
-resolverRoleById = createEntityByIdGetter(RoleModel)
-
-resolveUpdateRole = createUpdateResolver(RoleModel)
-resolveInsertRole = createInsertResolver(RoleModel)
 
 
 async def resolveAllRoleTypes(session):
@@ -174,24 +115,6 @@ async def resolveAllRoleTypes(session):
     dbSet = await session.execute(stmt)
     result = dbSet.scalars()
     return result
-
-
-def UserByRoleTypeAndGroupStatement(groupId, roleTypeId):
-    stmt = (
-        select(UserModel)
-        .join(RoleModel)
-        .where(RoleModel.group_id == groupId)
-        .where(RoleModel.roletype_id == roleTypeId)
-    )
-    return stmt
-
-async def resolveUserByRoleTypeAndGroup(session, groupId, roleTypeId):
-    stmt = UserByRoleTypeAndGroupStatement(groupId, roleTypeId)
-    
-    dbSet = await session.execute(stmt)
-    result = dbSet.scalars()
-    return result
-
 
 from uoishelpers.feeders import ImportModels, ExportModels
 import json
@@ -213,12 +136,7 @@ async def export_ug(session):
     jsonData = await ExportModels(
         sessionMaker,
         DBModels=[
-            UserModel,
-            GroupModel,
-            MembershipModel,
-            GroupTypeModel,
-            RoleModel,
-            RoleTypeModel,
+            GroupModel
         ],
     )
     with open("./extradata/ug_data.json", "w") as f:
@@ -239,7 +157,7 @@ def datetime_parser(json_dict):
 import concurrent.futures
 import asyncio
 
-from DBDefinitions import ComposeConnectionString, startEngine
+from gql_ug.DBDefinitions import ComposeConnectionString, startEngine
 
 import re
 
@@ -416,12 +334,7 @@ async def ImportModels(sessionMaker, DBModels, jsonData):
 
 async def importData(sessionMaker):
     DBModels = [
-        RoleTypeModel,
-        GroupTypeModel,
-        UserModel,
-        GroupModel,
-        MembershipModel,
-        RoleModel,
+        GroupModel
     ]
     print("asyncImport have DBModels", flush=True)
     with open("./extradata/ug_data.json", "r") as f:

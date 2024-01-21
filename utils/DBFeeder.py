@@ -51,19 +51,11 @@ async def initDB(asyncSessionMaker):
     demoMode = os.environ.get("DEMO", "False")
     if demoMode == "False":
         dbModels = [
-            GroupTypeModel,
-            RoleCategoryModel,
-            RoleTypeModel,
+            GroupModel
         ]
     else:
         dbModels = [
-            GroupTypeModel,
-            RoleCategoryModel,
-            RoleTypeModel,
-            UserModel,
-            GroupModel,
-            MembershipModel,
-            RoleModel,
+            GroupModel
         ]
         
     jsonData = get_demodata()

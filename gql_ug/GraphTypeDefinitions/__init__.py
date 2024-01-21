@@ -22,7 +22,6 @@ def getLoader(info):
 
 
 import datetime
-from .GraphResolvers import resolveMembershipById
 
 # @strawberryA.federation.type(
 #     keys=["id"],
@@ -65,22 +64,11 @@ from .GraphResolvers import resolveMembershipById
 from .query import Query
 from .mutation import Mutation
 
-from .userGQLModel import UserGQLModel # jen jako demo
 from .groupGQLModel import GroupGQLModel
-from .groupTypeGQLModel import GroupTypeGQLModel
-from .membershipGQLModel import MembershipGQLModel
-from .roleGQLModel import RoleGQLModel
-from .roleCategoryGQLModel import RoleCategoryGQLModel
-from .roleTypeGQLModel import RoleTypeGQLModel
 
 schema = strawberryA.federation.Schema(
     query=Query,
     types=(
-        UserGQLModel,
         GroupGQLModel,
-        GroupTypeGQLModel,
-        MembershipGQLModel,
-        RoleGQLModel,
-        RoleCategoryGQLModel,    
-        RoleTypeGQLModel),
+        uuid.UUID),
     mutation=Mutation)

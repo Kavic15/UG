@@ -83,7 +83,7 @@ class MyGraphQL(GraphQL):
         return {**parentResult, **localResult, "user": self._user}
 
 
-from GraphTypeDefinitions import schema
+from gql_ug.GraphTypeDefinitions import schema
 
 ## ASGI app, kterou "moutneme"
 graphql_app = MyGraphQL(

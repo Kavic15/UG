@@ -8,7 +8,6 @@ from DBDefinitions import (
     MembershipModel,
     RoleModel,
 )
-from DBDefinitions import GroupTypeModel, RoleTypeModel
 
 
 def AsyncSessionFromInfo(info):

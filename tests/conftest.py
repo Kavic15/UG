@@ -19,25 +19,13 @@ serversTestscope = "function"
 @pytest.fixture
 def DBModels():
     from DBDefinitions import (
-        GroupModel,
-        GroupTypeModel,
-        MembershipModel,
-        RoleCategoryModel,
-        RoleModel,
-        RoleTypeModel,
-        UserModel
+        GroupModel
     )
     ##
     # order is important!
     ##
     return  [
-            GroupModel,
-            GroupTypeModel,
-            MembershipModel,
-            RoleCategoryModel,
-            RoleModel,
-            RoleTypeModel,
-            UserModel
+            GroupModel
         ]
 
 from utils.DBFeeder import get_demodata

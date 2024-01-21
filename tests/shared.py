@@ -5,8 +5,7 @@ import pytest
 # from ..uoishelpers.uuid import UUIDColumn
 
 from DBDefinitions import BaseModel
-from DBDefinitions import RoleTypeModel, RoleModel, RoleCategoryModel
-from DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
+from DBDefinitions import GroupModel
 
 
 async def prepare_in_memory_sqllite():
@@ -35,13 +34,7 @@ async def prepare_demodata(async_session_maker):
     await ImportModels(
         async_session_maker,
         [
-            UserModel,
-            GroupModel,
-            GroupTypeModel,
-            MembershipModel,
-            RoleModel,
-            RoleTypeModel,
-            RoleCategoryModel
+            GroupModel
         ],
         data,
     )

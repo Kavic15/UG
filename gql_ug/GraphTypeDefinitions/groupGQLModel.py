@@ -7,9 +7,7 @@ import uuid
 def getLoader(info):
     return info.context["all"]
 
-GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
 MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershipGQLModel")]
-RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a group""")
 class GroupGQLModel:
@@ -43,13 +41,6 @@ class GroupGQLModel:
         result = self.lastchange
         return result
 
-    @strawberry.field(description="""Group's type (like Department)""")
-    async def grouptype(
-        self, info: strawberry.types.Info
-    ) -> Union["GroupTypeGQLModel", None]:
-        result = await GraphTypeDefinitions.GroupTypeGQLModel.resolve_reference(info, id=self.grouptype_id)
-        return result
-
     @strawberry.field(description="""Directly commanded groups""")
     async def subgroups(
         self, info: strawberry.types.Info
@@ -64,27 +55,6 @@ class GroupGQLModel:
         self, info: strawberry.types.Info
     ) -> Union["GroupGQLModel", None]:
         result = await GroupGQLModel.resolve_reference(info, id=self.mastergroup_id)
-        return result
-
-    @strawberry.field(description="""List of users who are member of the group""")
-    async def memberships(
-        self, info: strawberry.types.Info
-    ) -> List["MembershipGQLModel"]:
-        # result = await resolveMembershipForGroup(session,  self.id, skip, limit)
-        # async with withInfo(info) as session:
-        #     result = await resolveMembershipForGroup(session, self.id, skip, limit)
-        #     return result
-
-        loader = getLoader(info).memberships
-        #print(self.id)
-        result = await loader.filter_by(group_id=self.id)
-        return result
-
-    @strawberry.field(description="""List of roles in the group""")
-    async def roles(self, info: strawberry.types.Info) -> List["RoleGQLModel"]:
-        # result = await resolveRolesForGroup(session,  self.id)
-        loader = getLoader(info).roles
-        result = await loader.filter_by(group_id=self.id)
         return result
 
     # @strawberry.field(
