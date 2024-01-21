@@ -1,14 +1,8 @@
 import datetime
 from functools import cache
 
-from DBDefinitions import (
-    GroupTypeModel, 
-    RoleTypeModel,
-    RoleCategoryModel,
-    UserModel,
-    GroupModel,
-    MembershipModel,
-    RoleModel,
+from gql_ug.DBDefinitions import (
+    GroupModel
 )
 
 from functools import cache

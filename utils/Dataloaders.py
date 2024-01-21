@@ -1,26 +1,14 @@
 from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
 
-from DBDefinitions import (
-    UserModel,
-    MembershipModel,
+from gql_ug.DBDefinitions import (
     GroupModel,
-    GroupTypeModel,
-    RoleModel,
-    RoleTypeModel,
-    RoleCategoryModel
 )
 
 
 async def _createLoaders(
     asyncSessionMaker,
     DBModels=[
-        UserModel,
-        MembershipModel,
-        GroupModel,
-        GroupTypeModel,
-        RoleModel,
-        RoleTypeModel,
-        RoleCategoryModel,
+        GroupModel
     ],
 ):
 
@@ -33,13 +21,7 @@ async def _createLoaders(
     return result
 
 dbmodels = {
-    "users": UserModel,
-    "memberships": MembershipModel,
-    "groups": GroupModel,
-    "grouptypes": GroupTypeModel,
-    "roles": RoleModel,
-    "roletypes": RoleTypeModel,
-    "rolecategories": RoleCategoryModel,
+    "groups": GroupModel
 }
 
 async def createLoaders(asyncSessionMaker, models=dbmodels):

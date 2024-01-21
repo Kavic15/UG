@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from DBDefinitions import startEngine, ComposeConnectionString
+from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
 
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
 from utils.DBFeeder import initDB
