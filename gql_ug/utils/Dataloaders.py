@@ -128,22 +128,22 @@ class Loaders:
     roles = None
     roletypes = None
     rolecategories = None
-    roletypelists = None
+    # roletypelists = None
     pass
 
-class Loaders:
-    authorizations = None
-    requests = None
-    histories = None
-    forms = None
-    formtypes = None
-    formcategories = None
-    sections = None
-    parts = None
-    items = None
-    itemtypes = None
-    itemcategories = None
-    pass
+# class Loaders:
+#     authorizations = None
+#     requests = None
+#     histories = None
+#     forms = None
+#     formtypes = None
+#     formcategories = None
+#     sections = None
+#     parts = None
+#     items = None
+#     itemtypes = None
+#     itemcategories = None
+#     pass
 
 def createLoaders(asyncSessionMaker):
     class Loaders:
@@ -209,7 +209,8 @@ def createLoaders(asyncSessionMaker):
 
 def getLoadersFromInfo(info) -> Loaders:
      context = info.context
-     loaders = context["loaders"]
+     loaders = context.get("loaders", None)
+     assert loaders is not None, "loaders není v kontextu"
      return loaders
     #return info.context['all']
 

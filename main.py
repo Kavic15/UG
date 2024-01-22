@@ -148,7 +148,9 @@ async def apollo_gql(request: Request, item: Item):
         logging.info(f"sentinel skippend because of DEMO mode")
     try:
         context = await get_context(request)
+        print(context)
         logging.info(f"executing \n {item.query} \n with \n {item.variables}")
+        print(f"executing \n {item.query} \n with \n {item.variables}")
         schemaresult = await schema.execute(query=item.query, variable_values=item.variables, operation_name=item.operationName, context_value=context)
         # schemaresult = await schema.execute(query=item.query, variable_values=item.variables, context_value=context)
         # assert 1 == 0, ":)"
