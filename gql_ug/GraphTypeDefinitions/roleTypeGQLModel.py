@@ -87,7 +87,7 @@ async def role_type_page(
     self, info: strawberryA.types.Info, skip: int = 0, limit: int = 10,
     where: Optional[RoleTypeWhereFilter] = None
 ) -> List[RoleTypeGQLModel]:
-    loader = getLoadersFromInfo(info).roletype
+    loader = getLoadersFromInfo(info).roletypes
     wf = None if where is None else strawberry.asdict(where)
     #result = await resolveProjectAll(session, skip, limit)
     result = await loader.page(skip, limit, where = wf)
