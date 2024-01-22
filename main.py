@@ -100,6 +100,8 @@ async def get_context(request: Request):
     result["user"] = request.scope.get("user", None)
     logging.info(f"context created {result}")
 
+    return result
+
 app = FastAPI(lifespan=initEngine)
 
 from doc import attachVoyager
@@ -123,7 +125,7 @@ class Item(BaseModel):
     variables: dict = {}
     operationName: str = None
 
-app.include_router(graphql_app, prefix="/gql")
+# app.include_router(graphql_app, prefix="/gql")
 
 #from doc import attachVoyager
 #attachVoyager(app, path="/gql/doc")
