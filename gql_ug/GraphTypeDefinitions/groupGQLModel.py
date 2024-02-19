@@ -33,8 +33,8 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
+    createByIdResolver,
+    createAsPageResolver,
     resolve_rbacobject
 )
 
@@ -114,7 +114,7 @@ class GroupGQLModel(BaseGQLModel):
 #####################################################################
 from .utils import createInputs
 from dataclasses import dataclass
-# MembershipInputWhereFilter = Annotated["MembershipInputWhereFilter", strawberry.lazy(".membershipGQLModel")]
+MembershipWhereFilter = Annotated["MembershipWhereFilter", strawberry.lazy(".membershipGQLModel")]
 @createInputs
 @dataclass
 class GroupWhereFilter:
@@ -136,18 +136,18 @@ async def group_page(
     result = await loader.page(skip, limit, where=wf, orderby=orderby, desc=desc)
     return result
 
-#group_page = createRootResolver_by_page(GroupGQLModel, description="Returns page of groups")
-group_by_id = createRootResolver_by_id(GroupGQLModel, description="Returns group by it's ID")
+@strawberry.field(
+    description="""Finds a group by its id""",
+    permission_classes=[OnlyForAuthentized()])
+async def group_by_id(
+    self, info: strawberry.types.Info, id: uuid.UUID
+) -> Union[GroupGQLModel, None]:
+    result = await GroupGQLModel.resolve_reference(info=info, id=id)
+    return result
 
-# @strawberry.field(
-#     description="""Finds a group by its id""",
-#     permission_classes=[OnlyForAuthentized()])
-# async def group_by_id(
-#     self, info: strawberry.types.Info, id: uuid.UUID
-# ) -> Union[GroupGQLModel, None]:
-#     result = await GroupGQLModel.resolve_reference(info=info, id=id)
-#     return result
 
+# group_page = createRootResolver_by_page(GroupGQLModel, GroupWhereFilter, description="Returns page of groups")
+# group_by_id = createByIdResolver(GroupGQLModel, description="Returns group by it's ID")
 
 #TODO
 # @strawberry.field(

@@ -175,36 +175,39 @@ def createAsPageResolver(
 
 def createRootResolver_by_id(scalarType: None, description="Retrieves item by its id"):
     assert scalarType is not None
-
-    @strawberry.field(description=description, permission_classes=[OnlyForAuthentized()])
+    @strawberry.field(description=description,
+    permission_classes=[OnlyForAuthentized()])
     async def by_id(
-            self, info: strawberry.types.Info, id: uuid.UUID
+        self, info: strawberry.types.Info, id: uuid.UUID
     ) -> typing.Optional[scalarType]:
         result = await scalarType.resolve_reference(info=info, id=id)
         return result
-
     return by_id
 
 
 def createRootResolver_by_page(
-        scalarType: None,
-        whereFilterType: None,
-        loaderLambda=lambda info: None,
-        description="Retrieves items paged",
-        skip: int = 0,
-        limit: int = 10):
+    scalarType: None, 
+    whereFilterType: None,
+    loaderLambda = lambda info: None, 
+    description="Retrieves items paged", 
+    skip: int=0, 
+    limit: int=10,
+    orderby: typing.Optional[str] = None,
+    desc: typing.Optional[bool] = None):
+
     assert scalarType is not None
     assert whereFilterType is not None
-
-    @strawberry.field(description=description)
+    
+    @strawberry.field(description=description,
+    permission_classes=[OnlyForAuthentized()])
     async def paged(
-            self, info: strawberry.types.Info,
-            skip: int = skip, limit: int = limit, where: typing.Optional[whereFilterType] = None
+        self, info: strawberry.types.Info, 
+        skip: int=skip, limit: int=limit, where: typing.Optional[whereFilterType] = None,
+        orderby: typing.Optional[str] = None
     ) -> typing.List[scalarType]:
         loader = loaderLambda(info)
         assert loader is not None
         wf = None if where is None else strawberry.asdict(where)
-        result = await loader.page(skip=skip, limit=limit, where=wf)
+        result = await loader.page(skip=skip, limit=limit, where=wf, orderby=orderby, desc=desc)
         return result
-
     return paged

@@ -8,12 +8,6 @@ from .BaseGQLModel import BaseGQLModel
 import strawberry
 from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 
-# from gql_projects.GraphResolvers import (
-#     resolveFinanceTypeById,
-#     resolveProjectById,
-#     resolveFinanceAll
-# )
-
 from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
@@ -47,7 +41,7 @@ GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 # from gql_ug.GraphPermissions import UserGDPRPermission
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
-class UserGQLModel:
+class UserGQLModel(BaseGQLModel):
     @classmethod
     def getLoader(cls, info):
         return getLoadersFromInfo(info).users
@@ -121,10 +115,10 @@ from .utils import createInputs
 from dataclasses import dataclass
 MembershipWhereFilter = Annotated["MembershipWhereFilter", strawberry.lazy(".membershipGQLModel")]
 
-from .GraphResolvers import createRootResolver_by_id
-user_by_id = createRootResolver_by_id(
-    scalarType=UserGQLModel, 
-    description="Returns a list of users (paged)")
+# from .GraphResolvers import createRootResolver_by_id
+# user_by_id = createRootResolver_by_id(
+#     scalarType=UserGQLModel, 
+#     description="Returns a list of users (paged)")
 
 @createInputs
 @dataclass
@@ -150,8 +144,17 @@ async def user_page(
     result = await loader.page(skip, limit, where=wf, orderby=orderby, desc=desc)
     return result
 
+@strawberry.field(
+    description="""Finds user id""",
+    permission_classes=[OnlyForAuthentized()])
+async def user_by_id(
+    self, info: strawberry.types.Info, id: uuid.UUID
+) -> Union[UserGQLModel, None]:
+    result = await UserGQLModel.resolve_reference(info=info, id=id)
+    return result
+
 #user_page = createRootResolver_by_page(UserGQLModel, description="Returns page of users")
-user_by_id = createRootResolver_by_id(UserGQLModel, description="Returns user by it's ID")
+#user_by_id = createRootResolver_by_id(UserGQLModel, description="Returns user by it's ID")
 
 
 

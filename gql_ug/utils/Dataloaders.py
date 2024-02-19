@@ -5,7 +5,7 @@ import logging
 from sqlalchemy import select
 from functools import cache
 import os
-from uoishelpers.dataloaders import createIdLoader as createLoader, createFkeyLoader
+from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
 from aiodataloader import DataLoader
 
 from gql_ug.DBDefinitions import (
@@ -28,6 +28,28 @@ dbmodels = {
     "rolecategories": RoleCategoryModel
 }
 
+class Loaders:
+    users = None
+    groups = None
+    memberships = None
+    grouptypes = None
+    roles = None
+    roletypes = None
+    rolecategories = None
+    pass
+
+def createLoaders(asyncSessionMaker, models=dbmodels) -> Loaders:
+    def createLambda(loaderName, DBModel):
+        return lambda self: createIdLoader(asyncSessionMaker, DBModel)
+    
+    attrs = {}
+    for key, DBModel in models.items():
+        attrs[key] = property(cache(createLambda(key, DBModel)))
+    
+    Loaders = type('Loaders', (), attrs)   
+    return Loaders()
+
+from functools import cache
 
 @cache
 def composeAuthUrl():
@@ -120,43 +142,18 @@ def update(destination, source=None, extraValues={}):
 
     return destination
 
-class Loaders:
-    users = None
-    groups = None
-    memberships = None
-    grouptypes = None
-    roles = None
-    roletypes = None
-    rolecategories = None
-    # roletypelists = None
-    pass
-
-# class Loaders:
-#     authorizations = None
-#     requests = None
-#     histories = None
-#     forms = None
-#     formtypes = None
-#     formcategories = None
-#     sections = None
-#     parts = None
-#     items = None
-#     itemtypes = None
-#     itemcategories = None
-#     pass
-
 def createLoaders(asyncSessionMaker):
     class Loaders:
         
         @property
         @cache
         def users(self):
-            return createLoader(asyncSessionMaker, UserModel)
+            return createIdLoader(asyncSessionMaker, UserModel)
         
         @property
         @cache
         def memberships(self):
-            return createLoader(asyncSessionMaker, MembershipModel)
+            return createIdLoader(asyncSessionMaker, MembershipModel)
         
         @property
         @cache
@@ -166,17 +163,17 @@ def createLoaders(asyncSessionMaker):
         @property
         @cache
         def groups(self):
-            return createLoader(asyncSessionMaker, GroupModel)
+            return createIdLoader(asyncSessionMaker, GroupModel)
         
         @property
         @cache
         def grouptypes(self):
-            return createLoader(asyncSessionMaker, GroupTypeModel)
+            return createIdLoader(asyncSessionMaker, GroupTypeModel)
         
         @property
         @cache
         def roles(self):
-            return createLoader(asyncSessionMaker, RoleModel)
+            return createIdLoader(asyncSessionMaker, RoleModel)
         
         @property
         @cache
@@ -186,12 +183,12 @@ def createLoaders(asyncSessionMaker):
         @property
         @cache
         def roletypes(self):
-            return createLoader(asyncSessionMaker, RoleTypeModel)
+            return createIdLoader(asyncSessionMaker, RoleTypeModel)
         
         @property
         @cache
         def rolecategories(self):
-            return createLoader(asyncSessionMaker, RoleCategoryModel)
+            return createIdLoader(asyncSessionMaker, RoleCategoryModel)
         
         @property
         @cache
@@ -279,33 +276,3 @@ def createLoadersContext(asyncSessionMaker):
     return {
         "loaders": createLoaders(asyncSessionMaker)
     }
-
-
-# from uoishelpers.dataloaders import createIdLoader, createFkeyLoader
-
-# from gql_projects.DBDefinitions import (
-#     ProjectCategoryModel,
-#     ProjectTypeModel,
-#     ProjectModel,
-#     MilestoneModel,
-#     MilestoneLinkModel,
-#     FinanceCategory,
-#     FinanceTypeModel,
-#     FinanceModel
-# )
-
-
-
-
-# async def createLoaders(asyncSessionMaker, models=dbmodels):
-#     def createLambda(loaderName, DBModel):
-#         return lambda self: createIdLoader(asyncSessionMaker, DBModel)
-    
-#     attrs = {}
-#     for key, DBModel in models.items():
-#         attrs[key] = property(cache(createLambda(key, DBModel)))
-    
-#     Loaders = type('Loaders', (), attrs)   
-#     return Loaders()
-
-# from functools import cache

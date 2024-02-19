@@ -1,12 +1,25 @@
-from typing import List
-import typing
 import os
+import strawberry
+import socket
+
 from pydantic import BaseModel
-import asyncio
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from strawberry.fastapi import GraphQLRouter
+from strawberry.asgi import GraphQL
 
 import logging
 import logging.handlers
-import socket
+
+from gql_ug.GraphTypeDefinitions import schema
+from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
+from gql_ug.utils.DBFeeder import initDB
+from uoishelpers.authenticationMiddleware import createAuthentizationSentinel
+
+
+
 logging.basicConfig(
     level=logging.INFO, 
     format='%(asctime)s.%(msecs)03d\t%(levelname)s:\t%(message)s', 
@@ -33,10 +46,10 @@ from strawberry.fastapi import GraphQLRouter
 ## Definice DB typu (pomoci SQLAlchemy https://www.sqlalchemy.org/)
 ## SQLAlchemy zvoleno kvuli moznost komunikovat s DB asynchronne
 ## https://docs.sqlalchemy.org/en/14/core/future.html?highlight=select#sqlalchemy.future.select
-from gql_ug.DBDefinitions import startEngine, ComposeConnectionString
 
 ## Zabezpecuje prvotni inicializaci DB a definovani Nahodne struktury pro "Univerzity"
 # from gql_workflow.DBFeeder import createSystemDataStructureRoleTypes, createSystemDataStructureGroupTypes
+
 connectionString = ComposeConnectionString()
 
 from strawberry.asgi import GraphQL

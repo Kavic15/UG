@@ -74,17 +74,17 @@ from .roleGQLModel import RoleGQLModel
 from .roleCategoryGQLModel import RoleCategoryGQLModel
 from .roleTypeGQLModel import RoleTypeGQLModel
 
-# schema = strawberry.federation.Schema(query=Query, types=(RBACObjectGQLModel, uuid.UUID), mutation=Mutation)
+schema = strawberry.federation.Schema(query=Query, types=(RBACObjectGQLModel, uuid.UUID), mutation=Mutation)
 
-schema = strawberry.federation.Schema(
-    query=Query,
-    types=(
-        UserGQLModel,
-        GroupGQLModel,
-        GroupTypeGQLModel,
-        MembershipGQLModel,
-        RoleGQLModel,
-        RoleCategoryGQLModel,    
-        RoleTypeGQLModel,
-        RBACObjectGQLModel, uuid.UUID),
-    mutation=Mutation)
+# schema = strawberry.federation.Schema(
+#     query=Query,
+#     types=(
+#         UserGQLModel,
+#         GroupGQLModel,
+#         GroupTypeGQLModel,
+#         MembershipGQLModel,
+#         RoleGQLModel,
+#         RoleCategoryGQLModel,    
+#         RoleTypeGQLModel,
+#         RBACObjectGQLModel, uuid.UUID),
+#     mutation=Mutation)
