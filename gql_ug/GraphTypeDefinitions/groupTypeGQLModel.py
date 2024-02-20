@@ -167,14 +167,15 @@ async def group_type_insert(self, info: strawberryA.types.Info, grouptype: Group
     return result
 
 @strawberry.mutation(description="""Deletes a group type""")
-async def group_type_delete(self, info: strawberry.types.Info, grouptype: GroupTypeGQLModel) -> GroupTypeResultGQLModel:
+async def group_type_delete(self, info: strawberry.types.Info, grouptype: GroupTypeDeleteGQLModel) -> GroupTypeResultGQLModel:
     loader = getLoadersFromInfo(info).grouptypes
 
-    # Perform group deletion operation
+    # Perform grouptype deletion operation
     deleted_row = await loader.delete(grouptype.id)
 
     result = GroupTypeResultGQLModel()
     result.id = grouptype.id
+
     if deleted_row is None:
         result.msg = "fail"
     else:

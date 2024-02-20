@@ -242,8 +242,8 @@ class UserResultGQLModel:
 #_______________________________CRUD OPERACE_________________________________________
 @strawberryA.mutation(description="Update the user record.", permission_classes=[OnlyForAuthentized()])
 async def user_update(self, info: strawberryA.types.Info, user: UserUpdateGQLModel) -> UserResultGQLModel:
-    user = getUserFromInfo(info)
-    user.changedby = uuid.UUID(user["id"])
+    user_active = getUserFromInfo(info)
+    user.changedby = uuid.UUID(user_active["id"])
     loader = getLoadersFromInfo(info).users
     row = await loader.update(user)
     result = UserResultGQLModel()
@@ -257,9 +257,9 @@ async def user_update(self, info: strawberryA.types.Info, user: UserUpdateGQLMod
 
 @strawberryA.mutation(description="Adds a new user record.", permission_classes=[OnlyForAuthentized()])
 async def user_insert(self, info: strawberryA.types.Info, user: UserInsertGQLModel) -> UserResultGQLModel:
-    user = getUserFromInfo(info)
+    user_active = getUserFromInfo(info)
     print(user)
-    user.createdby = uuid.UUID(user["id"])
+    user.createdby = uuid.UUID(user_active["id"])
     loader = getLoadersFromInfo(info).users
     row = await loader.insert(user)
     result = UserResultGQLModel()

@@ -55,3 +55,6 @@ class Mutation:
 
     from .groupTypeGQLModel import group_type_update
     group_type_update = group_type_update
+
+    from .groupTypeGQLModel import group_type_delete
+    group_type_delete = group_type_delete
