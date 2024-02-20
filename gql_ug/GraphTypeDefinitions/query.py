@@ -44,3 +44,13 @@ class Query:
 
     from .membershipGQLModel import membership_by_id
     membership_by_id = membership_by_id
+
+    from .roleGQLModel import role_by_user
+    role_by_user = role_by_user
+
+    from .roleGQLModel import roles_on_group
+    roles_on_group = roles_on_group
+
+    from .roleGQLModel import roles_on_user
+    roles_on_user = roles_on_user
+

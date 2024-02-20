@@ -50,6 +50,9 @@ class Mutation:
     from .roleCategoryGQLModel import role_category_update
     role_category_update = role_category_update
 
+    from .roleCategoryGQLModel import role_category_delete
+    role_category_delete = role_category_delete
+
     from .groupTypeGQLModel import group_type_insert
     group_type_insert = group_type_insert
 

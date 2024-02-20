@@ -78,7 +78,7 @@ from dataclasses import dataclass
 # MembershipInputWhereFilter = Annotated["MembershipInputWhereFilter", strawberry.lazy(".membershipGQLModel")]
 from .groupGQLModel import GroupWhereFilter
 from .userGQLModel import UserWhereFilter
-# from .roleTypeGQLModel import RoleTypeWhereFilter
+from .roleTypeGQLModel import RoleTypeWhereFilter
 
 @createInputs
 @dataclass
@@ -93,7 +93,7 @@ class RoleWhereFilter:
     # from .roleTypeGQLModel import RoleTypeWhereFilter
     group: GroupWhereFilter
     user: UserWhereFilter
-    # roletype: RoleTypeWhereFilter
+    roletype: RoleTypeWhereFilter
 
 @strawberry.field(
     description="Returns roles of user",
@@ -153,6 +153,26 @@ async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: uu
     )
     roleloader = getLoadersFromInfo(info).roles
     rows = await roleloader.execute_select(stmt)
+    return rows
+
+@strawberry.field(
+    description="""
+    Returns all roles applicable on an user (defined by userId).
+    If there is a dean, role with type named "dean" will be enlisted.
+    """,
+    permission_classes=[OnlyForAuthentized(isList=True)])
+async def roles_on_user(self, info: strawberry.types.Info, user_id: uuid.UUID) -> List["RoleGQLModel"]:
+    rows = await resolve_roles_on_user(self, info, user_id=user_id)
+    return rows
+
+@strawberry.field(
+    description="""
+    Returns all roles applicable on a group (defined by groupId).
+    If the group is deparment which is subgroup of faculty, role with type named "dean" will be enlisted.
+    """,
+    permission_classes=[OnlyForAuthentized(isList=True)])
+async def roles_on_group(self, info: strawberry.types.Info, group_id: uuid.UUID) -> List["RoleGQLModel"]:
+    rows = await resolve_roles_on_group(self, info=info, group_id=group_id)
     return rows
 #####################################################################
 #

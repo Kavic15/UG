@@ -84,7 +84,7 @@ async def role_category_page(
 ) -> List[RoleCategoryGQLModel]:
     # otazka: musi tady byt async? 
     # async with withInfo(info) as session:
-    loader = getLoadersFromInfo(info).rolecategory
+    loader = getLoadersFromInfo(info).rolecategories
     wf = None if where is None else strawberry.asdict(where)
     #result = await resolveProjectAll(session, skip, limit)
     result = await loader.page(skip, limit, where = wf)
@@ -107,7 +107,7 @@ class RoleCategoryUpdateGQLModel:
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
-    changed_by: uuid.UUID
+    changed_by: strawberry.Private[uuid.UUID] = None
 
 @strawberry.input(description="""Input model for inserting a new role category""")
 class RoleCategoryInsertGQLModel:

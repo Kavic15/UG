@@ -108,7 +108,7 @@ class RoleTypeUpdateGQLModel:
     lastchange: datetime.datetime
     name: Optional[str] = None
     name_en: Optional[str] = None
-    changed_by: uuid.UUID
+    changedby: strawberry.Private[uuid.UUID] = None
 
 @strawberry.input(description="""Input model for inserting a new role type""")
 class RoleTypeInsertGQLModel:
