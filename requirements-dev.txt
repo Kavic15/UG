@@ -8,6 +8,7 @@ sqlalchemy
 sqlalchemy_utils
 
 sqlalchemy-cockroachdb
+psycopg2-binary
 
 pydantic
 starlette
