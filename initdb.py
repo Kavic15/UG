@@ -1,7 +1,7 @@
 import asyncio
 from main import RunOnceAndReturnSessionMaker
-from GraphTypeDefinitions.GraphResolvers import importData
-from DBDefinitions import ComposeConnectionString
+from gql_ug.GraphTypeDefinitions.GraphResolvers import importData
+from gql_ug.DBDefinitions import ComposeConnectionString
 import click
 
 
@@ -79,7 +79,6 @@ def loadall():
         "users",
         "groups",
         "memberships",
-        "roletypes",
         "roles",
         "externalidtypes",
         "externalids",
