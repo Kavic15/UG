@@ -43,3 +43,8 @@ uvicorn main:app --reload
 uvicorn main:app --env-file environment.txt --reload
 
 pytest --cov-report term-missing --cov=DBDefinitions --cov=GraphTypeDefinitions --cov=utils
+
+
+
+docker exec -it roach1 ./cockroach --host=roach1:26357 init --insecure
+docker exec -it roach1 ./cockroach sql --host=roach2:26258 --insecure

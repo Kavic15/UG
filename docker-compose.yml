@@ -55,6 +55,7 @@ services:
     ports:
       - "26259:26259"
       - "8082:8082"
+
   gql_ug:
     image: gql_ug
     build:
@@ -68,7 +69,7 @@ services:
       - POSTGRES_DB=data
       - IS_COCKROACH=True
       - DEMO=True
-      - GQL_PROXY=http://apollo:3000/api/gql/
+      # - GQL_PROXY=http://apollo:3000/api/gql/
     depends_on:
       # kontejnery, ktere musi byt spusteny drive
       - roach1
@@ -79,6 +80,8 @@ services:
       retries: 3
       start_period: 60s
       timeout: 10s
+    networks:
+      - roachnet
     # volumes:
     #   - ./_extradata:/app/extradata
     restart: on-failure:3 # nedojde k restartu pokud je kontejner "unhealthy", maximalne 3 pokusy
@@ -86,36 +89,36 @@ services:
     #   # vnejsi port : port, kde sluzbu poskytuje kontejner
       - 31120:8000
   
-  postgres:
-    image: postgres
-    environment:
-      # promenne, ktere lze cist v kontejneru
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=example
-      - POSTGRES_DB=data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 60s
-      timeout: 10s
-      retries: 5
-    restart: on-failure:3 # nedojde k restartu pokud je kontejner "unhealthy", maximalne 3 pokusy
-    ports:
-      - 5432:5432
+  # postgres:
+  #   image: postgres
+  #   environment:
+  #     # promenne, ktere lze cist v kontejneru
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=example
+  #     - POSTGRES_DB=data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready"]
+  #     interval: 60s
+  #     timeout: 10s
+  #     retries: 5
+  #   restart: on-failure:3 # nedojde k restartu pokud je kontejner "unhealthy", maximalne 3 pokusy
+  #   ports:
+  #     - 5432:5432
 
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      # promenne, ktere lze cist v kontejneru
-      - PGADMIN_DEFAULT_EMAIL=anoyne@anywhere.com
-      - PGADMIN_DEFAULT_PASSWORD=example
-    healthcheck:
-      test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
-      interval: 60s
-      timeout: 10s
-      retries: 5
-    ports:
-      - 31122:80
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     # promenne, ktere lze cist v kontejneru
+  #     - PGADMIN_DEFAULT_EMAIL=anoyne@anywhere.com
+  #     - PGADMIN_DEFAULT_PASSWORD=example
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
+  #     interval: 60s
+  #     timeout: 10s
+  #     retries: 5
+  #   ports:
+  #     - 31122:80
 
   # nginx: # funguje jako proxy mezi vnejskem a vnitrkem, tudy tece cela HTTP komunikace
   #   build:

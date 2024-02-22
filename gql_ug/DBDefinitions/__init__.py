@@ -57,14 +57,8 @@ def ComposeConnectionString():
     database = os.environ.get("POSTGRES_DB", "data")
     hostWithPort = os.environ.get("POSTGRES_HOST", "localhost:5432")
 
-    # user = os.environ.get("POSTGRES_USER", "root")
-    # password = os.environ.get("POSTGRES_PASSWORD", "")
-    # database = os.environ.get("POSTGRES_DB", "data")
-    # hostWithPort = os.environ.get("POSTGRES_HOST", "localhost:26257")
-
     isCockroach = os.environ.get("IS_COCKROACH", "False")
     
-
     if isCockroach == "False":
         driver = "postgresql+asyncpg"  # "postgresql+psycopg2"
         connectionstring = f"{driver}://{user}:{password}@{hostWithPort}/{database}"
@@ -73,7 +67,6 @@ def ComposeConnectionString():
         driver = "cockroachdb+asyncpg"  # "postgresql+psycopg2"
         connectionstring = f"{driver}://{user}:{password}@{hostWithPort}/{database}?ssl=disable"
 
-        print(connectionstring + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
+    print(connectionstring)
 
     return connectionstring
