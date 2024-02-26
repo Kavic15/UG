@@ -6,7 +6,7 @@
 #     createFrontendQuery,
 #     createUpdateQuery
 # )
-from .gt_utils import (
+from tests.gt_utils import (
     createByIdTest, 
     createPageTest, 
     createResolveReferenceTest, 

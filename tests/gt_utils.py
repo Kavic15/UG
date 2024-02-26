@@ -3,7 +3,12 @@ import logging
 import uuid
 import sqlalchemy
 
+# Function to create a test for querying data by ID
 def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
+    """# Function to create a test for querying data by ID."""
+    if tableName.lower() == "facilities_events":
+        attributeNames = [attr for attr in attributeNames if attr != "name"] #KVULI TOMU ZE V NEKTERYCH TABULKACH NENI NAME
+
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Env_GQLUG_ENDPOINT_URL_8124):
         
@@ -41,7 +46,11 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
 
     return result_test
 
+# Function to create a test for querying data by entity page
 def createPageTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
+    """Function to create a test for querying data by entity page"""
+    if tableName.lower() == "facilities_events":
+        attributeNames = [attr for attr in attributeNames if attr != "name"]
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo):
 
@@ -76,7 +85,9 @@ def createPageTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
         
     return result_test
 
+# Function to create a test for resolving references by ID
 def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]):
+    """Function to create a test for resolving references by ID"""
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):
 
@@ -106,33 +117,30 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
         for row in table:
             rowid = f"{row['id']}"
 
-            # query = (
-            #     'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
-            #     ' }])' +
-            #     '{' +
-            #     f'...on {gqltype}' + content +
-            #     '}' + 
-            #     '}')
+            query = (
+                 'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
+                 ' }])' +
+                 '{' +
+                 f'...on {gqltype}' + content +
+                 '}' + 
+                 '}')
 
-            # variable_values = {"id": rowid}
+            variable_values = {"id": rowid}
 
-            query = ("query($rep: [_Any!]!)" + 
-                "{" +
-                "_entities(representations: $rep)" +
-                "{"+
-                f"    ...on {gqltype} {content}"+
-                "}"+
-                "}"
-            )
-            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": uuid.UUID(rowid)}]}
+            #query = ("query($rep: [_Any!]!)" + 
+            #    "{" +
+            #    "_entities(representations: $rep)" +
+            #    "{"+
+            #    f"    ...on {gqltype} {content}"+
+            #    "}"+
+            #    "}"
+            #)
+            
             #variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
 
             logging.info(f"query representations {query} with {variable_values}")
-            
             resp = await clientExecutor(query, {**variable_values})
-            logging.info(f"GraphQL Response: {resp}")
             testResult(resp)
-
             resp = await schemaExecutor(query, {**variable_values})
             testResult(resp)
 
@@ -140,7 +148,9 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
 
     return result_test
 
+# Function to create a GraphQL query test for the frontend
 def createFrontendQuery(query="{}", variables={}, asserts=[]):
+    """# Function to create a GraphQL query test for the frontend"""
     @pytest.mark.asyncio
     async def test_frontend_query(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):    
         logging.debug("createFrontendQuery")
@@ -168,8 +178,9 @@ def createFrontendQuery(query="{}", variables={}, asserts=[]):
             a(respdata)
     return test_frontend_query
 
-
+# Function to create a test for updating data
 def createUpdateQuery(query="{}", variables={}, tableName=""):
+    """Function to create a test for updating data"""
     @pytest.mark.asyncio
     async def test_update(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):
         logging.debug("test_update")
@@ -229,13 +240,92 @@ def createUpdateQuery(query="{}", variables={}, tableName=""):
                 break
         assert entity is not None, f"expected entity in response to {query}"
 
-        for key in variables.keys():
+        for key, value in entity.items():
             if key in ["id", "lastchange"]:
                 continue
-            value = entity[key]
             print("attribute check", type(key), f"[{key}] is {value} ?= {variables[key]}")
             assert value == variables[key], f"test on update failed {value} != {variables[key]}"
 
         
 
     return test_update
+
+# Function to create a test for deleting data by ID
+def createDeleteQuery(tableName, queryBase, id, attributeNames=["id"]):
+    """Function to create a test for deleting data by ID"""
+    # check pages
+    # do delete in sql lite and gql
+    # test if given id is NOT located in sql lite and gql response
+    @pytest.mark.asyncio
+    async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo):
+        async def testConsistentPages(data=DemoData, testSchema = True):
+            def testResultPage(resp):
+                errors = resp.get("errors", None)
+                assert errors is None, resp["errors"]
+                respdata = resp.get("data", None)
+                assert respdata is not None
+
+                respdata = respdata.get(queryEndpoint, None)
+                assert respdata is not None
+                datarows = data[tableName]       
+                for rowa, rowb in zip(respdata, datarows):
+                    for att in attributeNames:
+                        # logging.info("Comparing pages gql/sql " + str(rowa[att]) +"--------"+ f'{rowb[att]}')
+                        assert rowa[att] == f'{rowb[att]}'            
+            
+            
+            # page phasee test
+            schemaExecutor = SchemaExecutorDemo
+            clientExecutor = ClientExecutorDemo
+
+            queryEndpoint = queryBase + "Page"
+
+            content = "{" + ", ".join(attributeNames) + "}"
+            query = "query{" f"{queryEndpoint}" f"{content}" "}"
+
+            resp = await schemaExecutor(query) if testSchema else await clientExecutor(query)
+            testResultPage(resp)
+            # resp = await schemaExecutor(query)
+            # testResultPage(resp)
+            # resp = await clientExecutor(query)
+            # testResultPage(resp)
+        
+        # Test if pages are consistent with demo data
+        await testConsistentPages(testSchema=True)
+        await testConsistentPages(testSchema=False)
+
+        ######################################## 
+        query = """
+                mutation($id: UUID!) {
+                    """+queryBase+"""Delete(id: $id) {
+                        id
+                        msg
+                    }
+                }
+            """
+        variables = {"id": id}
+
+        # Delete from sqlite
+        resp = await SchemaExecutorDemo(
+                    query=query, 
+                    variable_values=variables
+                )
+        
+        # Delete from DemoData (systemdata)
+        DemoData[tableName] = [ element for element in DemoData[tableName] if str(element["id"]) != id]
+        
+        # Test if sqlite and demodata are consistent
+        await testConsistentPages(testSchema=True)
+        
+        # Delete via gql api
+        resp = await ClientExecutorDemo(query=query, variable_values=variables)
+
+        respdata = resp.get("data", None)
+        logging.info(f"query for \n{query} with \n{variables} got response: \n{respdata}")
+
+        # Test if gql is consistent with demodata
+        await testConsistentPages(testSchema=False)
+
+
+    return result_test
+    

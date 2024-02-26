@@ -4,9 +4,9 @@ import pytest
 
 # from ..uoishelpers.uuid import UUIDColumn
 
-from DBDefinitions import BaseModel
-from DBDefinitions import RoleTypeModel, RoleModel
-from DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
+#from DBDefinitions.Base import BaseModel
+#from DBDefinitions import RoleTypeModel, RoleModel
+#from DBDefinitions import UserModel, GroupModel, GroupTypeModel, MembershipModel
 
 from tests.shared import prepare_demodata, prepare_in_memory_sqllite, get_demodata
 
@@ -32,9 +32,6 @@ async def test_table_users_select_a():
     ]
     for dr, rr in zip(data, result):
         assert dr == rr
-
-
-from utils.Dataloaders import createLoaders_3
 
 
 @pytest.mark.asyncio
