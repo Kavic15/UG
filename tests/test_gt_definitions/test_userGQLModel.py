@@ -17,7 +17,8 @@ from tests.gt_utils import (
     createPageTest, 
     createResolveReferenceTest, 
     createFrontendQuery, 
-    createUpdateQuery
+    createUpdateQuery,
+    createDeleteQuery
 )
 
 test_reference_user = createResolveReferenceTest(
@@ -44,7 +45,18 @@ test_user_insert = createFrontendQuery(
                     valid
                     changedby {
                         id
-                        }
+                        surname
+                        email
+                    }
+                    membership {
+                        id
+                    }
+                    roles {
+                        id
+                    }
+                    memberOf(grouptypeId: "cd49e152-610c-11ed-9f29-001a7dda7110") {
+                        id
+                    }
                 }
             }
         }
@@ -75,3 +87,6 @@ test_user_update = createUpdateQuery(
         "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     tableName="users"
 )
+
+#TODO
+test_user_delete = createDeleteQuery(tableName="users", queryBase="user", attributeNames=["id"], id="89d1f534-ae0f-11ed-9bd8-0242ac110002")

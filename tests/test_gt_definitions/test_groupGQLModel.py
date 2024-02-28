@@ -11,7 +11,8 @@ from tests.gt_utils import (
     createPageTest, 
     createResolveReferenceTest, 
     createFrontendQuery, 
-    createUpdateQuery
+    createUpdateQuery,
+    createDeleteQuery
 )
 
 test_group_reference = createResolveReferenceTest(tableName="groups", gqltype="GroupGQLModel")
@@ -31,49 +32,31 @@ test_group_update = createUpdateQuery(tableName="groups", query="""mutation ($id
 test_group_insert = createFrontendQuery(query="""mutation ($name: String!, $grouptype_id: UUID!) {
   result: groupInsert(group: {name: $name, grouptypeId: $grouptype_id }) {
     id
+    msg
     group {
       name
       lastchange
       valid
       created
+      grouptype {
+        id
+      }
+      mastergroup {
+        id
+      }
+      subgroups {
+        id
+      }
+      memberships {
+        id
+      }
+      roles {
+        id
+      }
     }
   }
 }""", variables={"name": "newname", "grouptype_id": "cd49e157-610c-11ed-9312-001a7dda7110"},
     asserts=[])
 
-# test_group_larger = createFrontendQuery(query="""query($id: UUID!){
-#   groupById(id: $id) {
-#     id
-#     name
-#     memberships {
-#       id
-#       valid
-#     }
-#     valid
-#     roles {
-#       id
-#     }
-#     grouptype { id }
-#     subgroups { id }
-#     mastergroup { id }
-#   }
-# }""", variables={"id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003"})
-
-# test_group_update_master = createFrontendQuery(query="""mutation($id: UUID!, $mastergroup_id: UUID!){
-#   result: groupUpdateMaster(masterId: $id) {
-#     id
-#     name
-#     memberships {
-#       id
-#       valid
-#     }
-#     valid
-#     roles {
-#       id
-#     }
-#     grouptype { id }
-#     subgroups { id }
-#     mastergroup { id }
-#   }
-# }""", variables={"id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003"})
-
+#TODO
+test_group_delete = createDeleteQuery(tableName="groups", queryBase="group", attributeNames=["id"], id="480f2802-a869-11ed-924c-0242ac110002")
