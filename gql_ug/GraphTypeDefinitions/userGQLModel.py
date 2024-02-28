@@ -38,7 +38,7 @@ RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
 #TODO
-# from gql_ug.GraphPermissions import UserGDPRPermission
+from gql_ug.GraphPermissions import UserGDPRPermission
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel(BaseGQLModel):
@@ -53,7 +53,7 @@ class UserGQLModel(BaseGQLModel):
     lastchange = resolve_lastchange
     createdby = resolve_createdby
     valid = resolve_valid
-    rbacobject = resolve_rbacobject
+    #rbacobject = resolve_rbacobject
 
     @strawberry.field(
         description="""User's family name (like Obama)""",
@@ -67,13 +67,13 @@ class UserGQLModel(BaseGQLModel):
     def email(self) -> Optional[str]:
         return self.email
 
-    # @strawberry.field(
-    #     description="""GDPRInfo for permision test""", 
-    #     permission_classes=[OnlyForAuthentized(), UserGDPRPermission])
-    # def GDPRInfo(self, info: strawberry.types.Info) -> Union[str, None]:
-    #     actinguser = getUser(info)
-    #     print(actinguser)
-    #     return "GDPRInfo"
+    @strawberry.field(
+        description="""GDPRInfo for permision test""", 
+        permission_classes=[OnlyForAuthentized(), UserGDPRPermission])
+    def GDPRInfo(self, info: strawberry.types.Info) -> Union[str, None]:
+        user_active = getUserFromInfo(info)
+        print(user_active)
+        return "GDPRInfo"
 
     @strawberry.field(
         description="""List of users, where the user is member""",
@@ -218,11 +218,13 @@ class UserUpdateGQLModel:
 @strawberry.input(description="""Input model for inserting a new user""")
 class UserInsertGQLModel:
     name: str
+    #rbacobject: uuid.UUID
     id: Optional[uuid.UUID] = None
-    surname: Optional[str] = None
+    surname: str
     email: Optional[str] = None
     valid: Optional[bool] = None
     createdby: strawberry.Private[uuid.UUID] = None
+    
     
 @strawberry.input(description="""Input model for deleting a user""")
 class UserDeleteGQLModel:

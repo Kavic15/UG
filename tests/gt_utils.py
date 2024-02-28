@@ -3,12 +3,7 @@ import logging
 import uuid
 import sqlalchemy
 
-# Function to create a test for querying data by ID
 def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
-    """# Function to create a test for querying data by ID."""
-    if tableName.lower() == "facilities_events":
-        attributeNames = [attr for attr in attributeNames if attr != "name"] #KVULI TOMU ZE V NEKTERYCH TABULKACH NENI NAME
-
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Env_GQLUG_ENDPOINT_URL_8124):
         
@@ -46,11 +41,7 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
 
     return result_test
 
-# Function to create a test for querying data by entity page
 def createPageTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
-    """Function to create a test for querying data by entity page"""
-    if tableName.lower() == "facilities_events":
-        attributeNames = [attr for attr in attributeNames if attr != "name"]
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo):
 
@@ -85,9 +76,7 @@ def createPageTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
         
     return result_test
 
-# Function to create a test for resolving references by ID
 def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]):
-    """Function to create a test for resolving references by ID"""
     @pytest.mark.asyncio
     async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):
 
@@ -111,32 +100,32 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
         clientExecutor = ClientExecutorDemo
 
         content = "{" + ", ".join(attributeNames) + "}"
-
         data = DemoData
         table = data[tableName]
+        
         for row in table:
             rowid = f"{row['id']}"
 
-            query = (
-                 'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
-                 ' }])' +
-                 '{' +
-                 f'...on {gqltype}' + content +
-                 '}' + 
-                 '}')
+            # query = (
+            #     'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
+            #     ' }])' +
+            #     '{' +
+            #     f'...on {gqltype}' + content +
+            #     '}' + 
+            #     '}')
 
-            variable_values = {"id": rowid}
+            # variable_values = {"id": rowid}
 
-            #query = ("query($rep: [_Any!]!)" + 
-            #    "{" +
-            #    "_entities(representations: $rep)" +
-            #    "{"+
-            #    f"    ...on {gqltype} {content}"+
-            #    "}"+
-            #    "}"
-            #)
+            query = ("query($rep: [_Any!]!)" + 
+                "{" +
+                "_entities(representations: $rep)" +
+                "{"+
+                f"    ...on {gqltype} {content}"+
+                "}"+
+                "}"
+            )
             
-            #variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
+            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
 
             logging.info(f"query representations {query} with {variable_values}")
             resp = await clientExecutor(query, {**variable_values})
@@ -148,9 +137,7 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
 
     return result_test
 
-# Function to create a GraphQL query test for the frontend
 def createFrontendQuery(query="{}", variables={}, asserts=[]):
-    """# Function to create a GraphQL query test for the frontend"""
     @pytest.mark.asyncio
     async def test_frontend_query(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):    
         logging.debug("createFrontendQuery")
@@ -178,9 +165,8 @@ def createFrontendQuery(query="{}", variables={}, asserts=[]):
             a(respdata)
     return test_frontend_query
 
-# Function to create a test for updating data
+
 def createUpdateQuery(query="{}", variables={}, tableName=""):
-    """Function to create a test for updating data"""
     @pytest.mark.asyncio
     async def test_update(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo, Context, Env_GQLUG_ENDPOINT_URL_8124):
         logging.debug("test_update")
@@ -249,6 +235,7 @@ def createUpdateQuery(query="{}", variables={}, tableName=""):
         
 
     return test_update
+
 
 # Function to create a test for deleting data by ID
 def createDeleteQuery(tableName, queryBase, id, attributeNames=["id"]):
@@ -328,4 +315,3 @@ def createDeleteQuery(tableName, queryBase, id, attributeNames=["id"]):
 
 
     return result_test
-    

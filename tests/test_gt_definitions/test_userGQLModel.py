@@ -47,7 +47,7 @@ test_user_insert = createFrontendQuery(
             }
         }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "surname": "newSurname", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
 )
 
@@ -73,6 +73,6 @@ test_user_update = createUpdateQuery(
             }
         }
     """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name"},
+    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name", "surname": "newSurname"},
     tableName="users"
 )

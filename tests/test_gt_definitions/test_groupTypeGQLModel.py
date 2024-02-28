@@ -20,16 +20,16 @@ from tests.gt_utils import (
     createUpdateQuery
 )
 
-test_reference_groupType = createResolveReferenceTest(tableName='groupTypes', gqltype='GroupTypeGQLModel')
+test_reference_groupType = createResolveReferenceTest(tableName='grouptypes', gqltype='GroupTypeGQLModel')
 test_query_groupType_by_id = createByIdTest(tableName="grouptypes", queryEndpoint="groupTypeById")
 test_query_groupType_page = createPageTest(tableName="grouptypes", queryEndpoint="groupTypePage")
 
 test_groupType_insert = createFrontendQuery(query="""
     mutation($id: UUID!, $name: String!) { 
-        result: groupTypeInsert(groupType: {id: $id, name: $name}) { 
+        result: groupTypeInsert(grouptype: {id: $id, name: $name}) { 
             id
             msg
-            groupType {
+            grouptype {
                 id
                 name
                 lastchange
@@ -41,18 +41,18 @@ test_groupType_insert = createFrontendQuery(query="""
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new groupType"},
+    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new grouptype"},
     asserts=[]
 )
 
 test_groupType_update = createUpdateQuery(
     query="""
         mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            groupTypeUpdate(groupType: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: groupTypeInsert(groupType: {id: $id, name: $name}) { 
+            groupTypeUpdate(grouptype: {id: $id, name: $name, lastchange: $lastchange}) {
+                result: groupTypeInsert(grouptype: {id: $id, name: $name}) { 
                     id
                     msg
-                    groupType {
+                    grouptype {
                         id
                         name
                         lastchange

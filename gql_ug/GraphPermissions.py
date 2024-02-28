@@ -387,13 +387,12 @@ def RoleBasedPermission(roles: str = "", whatreturn=[]):
     return RolebasedPermission
 
 
-# class UserGDPRPermission(BasePermission):
-#     message = "User is not authenticated"
-
-#     async def has_permission(
-#         self, source, info: strawberry.types.Info, **kwargs
-#     ) -> bool:
-#         print("UserGDPRPermission", source)
-#         print("UserGDPRPermission", self)
-#         print("UserGDPRPermission", kwargs)
-#         return True
+class UserGDPRPermission(BasePermission):
+    message = "User is not authenticated"
+    async def has_permission(
+        self, source, info: strawberry.types.Info, **kwargs
+    ) -> bool:
+        print("UserGDPRPermission", source)
+        print("UserGDPRPermission", self)
+        print("UserGDPRPermission", kwargs)
+        return True

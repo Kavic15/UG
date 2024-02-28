@@ -98,7 +98,7 @@ async def resolve_changedby(self) -> typing.Optional["UserGQLModel"]:
 RBACObjectGQLModel = typing.Annotated["RBACObjectGQLModel", strawberry.lazy(".RBACObjectGQLModel")]
 @strawberry.field(description="""Who made last change""", permission_classes=[OnlyForAuthentized()])
 async def resolve_rbacobject(self, info: strawberry.types.Info) -> typing.Optional[RBACObjectGQLModel]:
-    from GraphTypeDefinitions import RBACObjectGQLModel
+    from .RBACObjectGQLModel import RBACObjectGQLModel
     result = None if self.rbacobject is None else await RBACObjectGQLModel.resolve_reference(info, self.rbacobject)
     return result
 

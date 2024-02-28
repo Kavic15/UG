@@ -28,10 +28,10 @@ test_query_roleType_page = createPageTest(tableName="roletypes", queryEndpoint="
 
 test_roleType_insert = createFrontendQuery(query="""
     mutation($id: UUID!, $name: String!,  $nameEn: String!, $rbac_id: UUID!) { 
-        result: roleTypeInsert(roleType: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
+        result: roleTypeInsert(roletype: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
             id
             msg
-            roleType {
+            roletype {
                 id
                 name
                 nameEn
@@ -45,18 +45,18 @@ test_roleType_insert = createFrontendQuery(query="""
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new roleType", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new roletype", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
 )
 
 test_roleType_update = createUpdateQuery(
     query="""
         mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            roleTypeUpdate(roleType: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: roleTypeInsert(roleType: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
+            roleTypeUpdate(roletype: {id: $id, name: $name, lastchange: $lastchange}) {
+                result: roleTypeInsert(roletype: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
                     id
                     msg
-                    roleType {
+                    roletype {
                         id
                         name
                         nameEn

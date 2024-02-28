@@ -10,7 +10,7 @@ import pytest
 
 from tests.shared import prepare_demodata, prepare_in_memory_sqllite, get_demodata
 
-from utils.Dataloaders import createLoaders_3
+from gql_ug.utils.Dataloaders import createLoaders
 
 
 @pytest.mark.asyncio
@@ -18,7 +18,7 @@ async def test_table_users_select_a():
     async_session_maker = await prepare_in_memory_sqllite()
     await prepare_demodata(async_session_maker)
 
-    loaders = await createLoaders_3(async_session_maker)
+    loaders = await createLoaders(async_session_maker)
     usersloader = loaders.users
     data = get_demodata()
     data = list(data["users"])
@@ -39,7 +39,7 @@ async def test_table_users_select_b():
     async_session_maker = await prepare_in_memory_sqllite()
     await prepare_demodata(async_session_maker)
 
-    loaders = await createLoaders_3(async_session_maker)
+    loaders = await createLoaders(async_session_maker)
     usersloader = loaders.users
     data = get_demodata()
     data = list(data["users"])
@@ -54,16 +54,12 @@ async def test_table_users_select_b():
     for dr, rr in zip(data, result):
         assert dr == rr
 
-
-from utils.Dataloaders import createLoaders_3
-
-
 @pytest.mark.asyncio
 async def test_table_users_select_c():
     async_session_maker = await prepare_in_memory_sqllite()
     await prepare_demodata(async_session_maker)
 
-    loaders = await createLoaders_3(async_session_maker)
+    loaders = await createLoaders(async_session_maker)
     usersloader = loaders.users
     data = get_demodata()
     data = list(data["users"])
