@@ -40,6 +40,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
 
 GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
 UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
+GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a relation between an user and a membership""",)
 class MembershipGQLModel(BaseGQLModel):
@@ -58,6 +59,22 @@ class MembershipGQLModel(BaseGQLModel):
     startdate = resolve_startdate
     enddate = resolve_enddate
     rbacobject = resolve_rbacobject
+
+    @strawberryA.field(description="""List of user, related to .....""", permission_classes=[OnlyForAuthentized()])
+    async def user(
+        self, info: strawberryA.types.Info
+    ) -> List["UserGQLModel"]:
+        loader = getLoadersFromInfo(info).users
+        result = await loader.filter_by(id = self.user_id)
+        return result
+
+    @strawberryA.field(description="""List of group, related to .....""", permission_classes=[OnlyForAuthentized()])
+    async def group(
+        self, info: strawberryA.types.Info
+    ) -> List["GroupGQLModel"]:
+        loader = getLoadersFromInfo(info).groups
+        result = await loader.filter_by(id = self.group_id)
+        return result
 
 #####################################################################
 #

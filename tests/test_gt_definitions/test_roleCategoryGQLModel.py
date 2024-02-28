@@ -22,53 +22,50 @@ from tests.gt_utils import (
 
 test_reference_roleCategory = createResolveReferenceTest(
     tableName='rolecategories', gqltype='RoleCategoryGQLModel', 
-    attributeNames=["id", "name", "nameEn", "lastchange", "creator {id}", "createdby {id}"])
+    attributeNames=["id"])
 test_query_roleCategory_by_id = createByIdTest(tableName="rolecategories", queryEndpoint="roleCategoryById")
 test_query_roleCategory_page = createPageTest(tableName="rolecategories", queryEndpoint="roleCategoryPage")
 
 test_roleCategory_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!, $nameEn: String!, $rbac_id: UUID!) { 
-        result: roleCategoryInsert(rolecategory: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
+    mutation($name: String!, $nameEn: String!) { 
+        result: roleCategoryInsert(rolecategory: {name: $name, nameEn: $nameEn}) { 
             id
             msg
-            rolecategory {
+            roleCategory {
                 id
                 name
                 nameEn
                 lastchange
                 created
                                        
-                changedby { id }
-                rbacobject { id }                
+                changedby { id }            
             }
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0ea2255b3", "name": "new rolecategory", "nameEn": "new rolecategory", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={"name": "new rolecategory", "nameEn": "new rolecategory"},
     asserts=[]
 )
 
 test_roleCategory_update = createUpdateQuery(
     query="""
-        mutation($id: UUID!, $name: String!, $nameEn: String!, $lastchange: DateTime!) {
-            roleCategoryUpdate(rolecategory: {id: $id, name: $name, nameEn: $nameEn, lastchange: $lastchange}) {
-                result: roleCategoryInsert(rolecategory: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
+        mutation($id: UUID!, $lastchange: DateTime!, $name: String) 
+        {
+            result: roleCategoryUpdate(rolecategory: {id: $id, lastchange: $lastchange, name: $name}) 
+            { 
+                id
+                msg
+                roleCategory {
                     id
-                    msg
-                    rolecategory {
-                        id
-                        name
-                        nameEn
-                        lastchange
-                        created
-                                            
-                        changedby { id }
-                        rbacobject { id }
-                    }
+                    name
+                    lastchange
                 }
             }
         }
     """,
-    variables={"id": "191d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name", "nameEn": "new nameEn"},
+    variables={
+        "id": "fd73596b-1043-46f0-837a-baa0734d64df",
+        "name": "new name1"
+    },
     tableName="rolecategories"
 )

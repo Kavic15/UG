@@ -20,7 +20,7 @@ class GroupTypeModel(BaseModel):
     id = UUIDColumn()
     name = Column(String)
     name_en = Column(String)
-
+    valid = Column(Boolean, default=True, comment="Indicates whether this entity is valid or invalid")
     groups = relationship("GroupModel", back_populates="grouptype")
 
     created = Column(DateTime, server_default=sqlalchemy.sql.func.now())

@@ -22,55 +22,51 @@ from tests.gt_utils import (
 
 test_reference_roleType = createResolveReferenceTest(
     tableName='roletypes', gqltype='RoleTypeGQLModel', 
-    attributeNames=["id", "name", "nameEn", "lastchange", "category_id", "creator {id}", "createdby {id}"])
+    attributeNames=["id"])
 test_query_roleType_by_id = createByIdTest(tableName="roletypes", queryEndpoint="roleTypeById")
 test_query_roleType_page = createPageTest(tableName="roletypes", queryEndpoint="roleTypePage")
 
 test_roleType_insert = createFrontendQuery(query="""
-    mutation($id: UUID!, $name: String!,  $nameEn: String!, $rbac_id: UUID!) { 
-        result: roleTypeInsert(roletype: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
+     mutation($name: String!,  $nameEn: String!, $categoryId: UUID!) { 
+        result: roleTypeInsert(roletype: {name: $name, nameEn: $nameEn, categoryId: $categoryId}) { 
             id
             msg
-            roletype {
+            roleType {
                 id
                 name
                 nameEn
-                category_id
                 lastchange
-                created
-                                       
-                changedby { id }
-                rbacobject { id }                
+                created                 
+                changedby { id }            
             }
         }
     }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new roletype", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={
+        "categoryId": "fd73596b-1043-46f0-837a-baa0734d64df",
+        "name": "nepreziju_to",
+        "nameEn": "kys"
+    },
     asserts=[]
 )
 
 test_roleType_update = createUpdateQuery(
     query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            roleTypeUpdate(roletype: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: roleTypeInsert(roletype: {id: $id, name: $name, nameEn: $nameEn, rbacobject: $rbac_id}) { 
-                    id
-                    msg
-                    roletype {
-                        id
-                        name
-                        nameEn
-                        category_id
-                        lastchange
-                        created
-                                            
-                        changedby { id }
-                        rbacobject { id }                
-                    }
+       mutation ($id: UUID!, $name: String!, $lastchange: DateTime!) {
+        result: roleTypeUpdate(
+            roletype: {id: $id, name: $name, lastchange: $lastchange}
+        ) {
+            id
+            msg
+            roleType {
+                id
+                lastchange
                 }
             }
         }
     """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name", "nameEn": "new nameEn"},
+    variables={  "id": "05a3e0f5-f71e-4caa-8012-229d868aa8ca",
+                "name": "nepreziju_to",
+            },
     tableName="roletypes"
 )
