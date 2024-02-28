@@ -450,11 +450,11 @@ async def AuthorizationHeaders(AccessToken):
 @pytest.fixture
 def FastAPIClient(SQLite):
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   
@@ -463,11 +463,11 @@ def FastAPIClient(SQLite):
 @pytest.fixture
 def FastAPIClient2():
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   
@@ -489,11 +489,11 @@ def FastAPIClient2():
 @pytest.fixture
 def FastAPIClient3():
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   

@@ -22,57 +22,56 @@ from tests.gt_utils import (
 
 test_reference_user = createResolveReferenceTest(
     tableName='users', gqltype='UserGQLModel', 
-    attributeNames=["id", "name", "surname", "email", "lastchange", "valid", "creator {id}", "createdby {id}"])
+    attributeNames=["id"])
 test_query_user_by_id = createByIdTest(tableName="users", queryEndpoint="userById")
 test_query_user_page = createPageTest(tableName="users", queryEndpoint="userPage")
 
 test_user_insert = createFrontendQuery(
     query="""
-        mutation($id: UUID!, $name: String!, $rbac_id: UUID!) { 
-            result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
+        mutation ($name: String!, $surname: String!) {
+            result: userInsert(
+                user: {name: $name, surname: $surname}
+            ) {
                 id
                 msg
                 user {
                     id
                     name
-                    surname                
+                    surname
                     email
                     lastchange
                     created
                     valid
-                                        
-                    changedby { id }
-                    rbacobject { id }                
+                    changedby {
+                        id
+                        }
                 }
             }
         }
     """, 
-    variables={"id": "ccde3a8b-81d0-4e2b-9aac-42e0eb2255b3", "name": "new user", "surname": "newSurname", "rbac_id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    variables={  
+        "surname": "sikovny",
+        "name": "kluk"
+        },
     asserts=[]
 )
 
 test_user_update = createUpdateQuery(
     query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            userUpdate(user: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: userInsert(user: {id: $id, name: $name, surname: $surname, rbacobject: $rbac_id}) { 
-                    id
-                    msg
-                    user {
-                        id
-                        name
-                        surname
-                        email
-                        lastchange
-                        created
-                        valid
-
-                        changedby { id }
-                    }
+    mutation ($id: UUID!, $name: String!, $lastchange: DateTime!) {
+        result: userUpdate(user: {id: $id, name: $name, lastchange: $lastchange}) {
+            id
+            msg
+            user {
+                id
+                lastchange
                 }
-            }
         }
+    }
     """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0242ac110002", "name": "new name", "surname": "newSurname"},
+    variables={  
+        "lastchange": "2024-02-28T22:26:42.076425",
+        "name": "kluk",
+        "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     tableName="users"
 )

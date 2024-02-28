@@ -52,6 +52,7 @@ class GroupTypeGQLModel(BaseGQLModel):
     lastchange = resolve_lastchange
     createdby = resolve_createdby
     rbacobject = resolve_rbacobject
+    valid = resolve_valid
 
     @strawberry.field(description="""List of groups which have this type""")
     async def groups(

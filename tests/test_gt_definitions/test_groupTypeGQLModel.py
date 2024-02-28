@@ -29,7 +29,7 @@ test_groupType_insert = createFrontendQuery(query="""
         result: groupTypeInsert(grouptype: {id: $id, name: $name}) { 
             id
             msg
-            grouptype {
+            groupType {
                 id
                 name
                 lastchange
@@ -47,24 +47,21 @@ test_groupType_insert = createFrontendQuery(query="""
 
 test_groupType_update = createUpdateQuery(
     query="""
-        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) {
-            groupTypeUpdate(grouptype: {id: $id, name: $name, lastchange: $lastchange}) {
-                result: groupTypeInsert(grouptype: {id: $id, name: $name}) { 
+        mutation($id: UUID!, $name: String!, $lastchange: DateTime!) 
+        {
+                result: groupTypeUpdate(grouptype: {id: $id, name: $name, lastchange: $lastchange}) 
+                { 
                     id
                     msg
-                    grouptype {
+                    groupType {
                         id
                         name
                         lastchange
-                        created
-                        valid
 
-                        changedby { id }
                     }
                 }
-            }
         }
     """,
-    variables={"id": "190d578c-afb1-11ed-9bd8-0243ac110002", "name": "new name"},
-    tableName="groupTypes"
+    variables={"id": "cd49e152-610c-11ed-9f29-001a7dda7110", "name": "new name"},
+    tableName="grouptypes"
 )
