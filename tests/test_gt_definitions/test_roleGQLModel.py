@@ -36,7 +36,7 @@ test_role_insert = createFrontendQuery(query="""
             role {
                 id                      
                 lastchange
-                valid                    
+                valid  
                 changedby { id }
             }
         }
@@ -73,4 +73,4 @@ test_role_update = createUpdateQuery(
 )
 
 #TODO
-test_role_delete = createDeleteQuery(tableName="roles", queryBase="role", attributeNames=["id"], id="2d9dc5ca-a4a2-11ed-b9df-0242ac125003")
+# test_role_delete = createDeleteQuery(tableName="roles", queryBase="role", attributeNames=["id"], id="2d9dc5ca-a4a2-11ed-b9df-0242ac125003")

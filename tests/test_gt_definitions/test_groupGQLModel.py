@@ -58,5 +58,4 @@ test_group_insert = createFrontendQuery(query="""mutation ($name: String!, $grou
 }""", variables={"name": "newname", "grouptype_id": "cd49e157-610c-11ed-9312-001a7dda7110"},
     asserts=[])
 
-#TODO
 test_group_delete = createDeleteQuery(tableName="groups", queryBase="group", attributeNames=["id"], id="480f2802-a869-11ed-924c-0242ac110002")

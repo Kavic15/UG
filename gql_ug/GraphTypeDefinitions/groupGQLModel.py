@@ -229,7 +229,7 @@ async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQL
 #     return result
 
 @strawberryA.mutation(
-    description="Delete the project category.",
+    description="Deletes group.",
         permission_classes=[OnlyForAuthentized()])
 async def group_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> GroupResultGQLModel:
     loader = getLoadersFromInfo(info).groups

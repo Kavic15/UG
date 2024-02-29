@@ -246,19 +246,19 @@ async def role_insert(self, info: strawberry.types.Info, role: RoleInsertGQLMode
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a role""")
-async def role_delete(self, info: strawberry.types.Info, role: RoleDeleteGQLModel) -> RoleResultGQLModel:
-    loader = getLoadersFromInfo(info).roles
+# @strawberry.mutation(description="""Deletes a role""")
+# async def role_delete(self, info: strawberry.types.Info, role: RoleDeleteGQLModel) -> RoleResultGQLModel:
+#     loader = getLoadersFromInfo(info).roles
 
-    # Perform role deletion operation
-    deleted_row = await loader.delete(role.id)
+#     # Perform role deletion operation
+#     deleted_row = await loader.delete(role.id)
 
-    result = RoleResultGQLModel()
-    result.id = role.id
+#     result = RoleResultGQLModel()
+#     result.id = role.id
 
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
 
-    return result
+#     return result

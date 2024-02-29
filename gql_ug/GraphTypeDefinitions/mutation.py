@@ -32,8 +32,8 @@ class Mutation:
     from .roleGQLModel import role_update
     role_update = role_update
 
-    from .roleGQLModel import role_delete
-    role_delete = role_delete
+    # from .roleGQLModel import role_delete
+    # role_delete = role_delete
 
     from .roleTypeGQLModel import role_type_insert
     role_type_insert = role_type_insert

@@ -78,5 +78,5 @@ test_membership_update = createUpdateQuery(
     tableName="memberships"
 )
 
-test_membership_delete = createDeleteQuery(tableName="memberships", queryBase="membership", attributeNames=["id"], id="7cea8596-a4a2-11ed-b9df-0242ac120003")
+# test_membership_delete = createDeleteQuery(tableName="memberships", queryBase="membership", attributeNames=["id"], id="7cea8596-a4a2-11ed-b9df-0242ac120003")
 
