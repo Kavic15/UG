@@ -136,6 +136,7 @@ async def group_page(
 async def group_by_id(
     self, info: strawberryA.types.Info, id: uuid.UUID
 ) -> Union[GroupGQLModel, None]:
+    print("3heeeer")
     result = await GroupGQLModel.resolve_reference(info=info, id=id)
     return result
 
@@ -170,7 +171,7 @@ class GroupInsertGQLModel:
     
 @strawberryA.input(description="""Input model for deleting a group""")
 class GroupDeleteGQLModel:
-    id: uuid.UUID
+    id: uuid.UUID = strawberryA.field(description="The ID of the group data", default=None)
 
 #_______________________________RESULT_________________________________________
 @strawberryA.type(description="Result of group data operation")

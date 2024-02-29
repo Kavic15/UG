@@ -175,6 +175,7 @@ DEMO = os.getenv("DEMO", None)
 # assert DEMO is not None, "DEMO environment variable must be explicitly defined"
 # assert (DEMO == "True") or (DEMO == "False"), "DEMO environment variable can have only `True` or `False` values"
 DEMO = DEMO == "True"
+DEMO = True
 
 if DEMO:
     print("####################################################")
@@ -191,8 +192,8 @@ if DEMO:
 
 if not DEMO:
     GQLUG_ENDPOINT_URL = os.getenv("GQLUG_ENDPOINT_URL", None)
-    # assert GQLUG_ENDPOINT_URL is not None, "GQLUG_ENDPOINT_URL environment variable must be explicitly defined"
+    assert GQLUG_ENDPOINT_URL is not None, "GQLUG_ENDPOINT_URL environment variable must be explicitly defined"
     JWTPUBLICKEYURL = os.getenv("JWTPUBLICKEYURL", None)
-    # assert JWTPUBLICKEYURL is not None, "JWTPUBLICKEYURL environment variable must be explicitly defined"
+    assert JWTPUBLICKEYURL is not None, "JWTPUBLICKEYURL environment variable must be explicitly defined"
     JWTRESOLVEUSERPATHURL = os.getenv("JWTRESOLVEUSERPATHURL", None)
-    # assert JWTRESOLVEUSERPATHURL is not None, "JWTRESOLVEUSERPATHURL environment variable must be explicitly defined"
+    assert JWTRESOLVEUSERPATHURL is not None, "JWTRESOLVEUSERPATHURL environment variable must be explicitly defined"
