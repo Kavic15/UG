@@ -211,21 +211,31 @@ async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQL
     result.id = row.id
     return result
 
-@strawberryA.mutation(description="""Deletes a group""")
-async def group_delete(self, info: strawberryA.types.Info, group: GroupDeleteGQLModel) -> GroupResultGQLModel:
+# @strawberryA.mutation(description="""Deletes a group""")
+# async def group_delete(self, info: strawberryA.types.Info, group: GroupDeleteGQLModel) -> GroupResultGQLModel:
+#     loader = getLoadersFromInfo(info).groups
+
+#     # Perform group deletion operation
+#     deleted_row = await loader.delete(group.id)
+
+#     result = GroupResultGQLModel()
+#     result.id = group.id
+
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
+
+#     return result
+
+@strawberryA.mutation(
+    description="Delete the project category.",
+        permission_classes=[OnlyForAuthentized()])
+async def group_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> GroupResultGQLModel:
     loader = getLoadersFromInfo(info).groups
-
-    # Perform group deletion operation
-    deleted_row = await loader.delete(group.id)
-
-    result = GroupResultGQLModel()
-    result.id = group.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = GroupResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result
 
 @strawberryA.mutation(description="""Allows to assign the group to specified master group""")

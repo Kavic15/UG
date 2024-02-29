@@ -66,4 +66,4 @@ test_groupType_update = createUpdateQuery(
 )
 
 #TODO
-test_group_delete = createDeleteQuery(tableName="grouptypes", queryBase="grouptype", attributeNames=["id"], id="cd49e155-610c-11ed-bdbf-001a7dda7110")
+test_groupType_delete = createDeleteQuery(tableName="grouptypes", queryBase="grouptype", attributeNames=["id"], id="cd49e155-610c-11ed-bdbf-001a7dda7110")

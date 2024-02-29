@@ -17,7 +17,8 @@ from tests.gt_utils import (
     createPageTest, 
     createResolveReferenceTest, 
     createFrontendQuery, 
-    createUpdateQuery
+    createUpdateQuery,
+    createDeleteQuery
 )
 
 test_reference_roleCategory = createResolveReferenceTest(
@@ -69,3 +70,6 @@ test_roleCategory_update = createUpdateQuery(
     },
     tableName="rolecategories"
 )
+
+#TODO
+test_roleCategory_delete = createDeleteQuery(tableName="rolecategories", queryBase="rolecategory", attributeNames=["id"], id="fd73596b-1043-46f0-837a-baa0734d64df")

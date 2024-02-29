@@ -270,19 +270,12 @@ async def user_insert(self, info: strawberryA.types.Info, user: UserInsertGQLMod
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a user""")
-async def user_delete(self, info: strawberry.types.Info, user: UserDeleteGQLModel) -> UserResultGQLModel:
+@strawberryA.mutation(
+    description="Deletes user.",
+        permission_classes=[OnlyForAuthentized()])
+async def user_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> UserResultGQLModel:
     loader = getLoadersFromInfo(info).users
-
-    # Perform user deletion operation
-    deleted_row = await loader.delete(user.id)
-
-    result = UserResultGQLModel()
-    result.id = user.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = UserResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result
