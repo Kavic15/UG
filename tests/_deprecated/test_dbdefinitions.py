@@ -8,7 +8,7 @@ import pytest
 #from DBDefinitions import RoleTypeModel, RoleModel
 from gql_ug.DBDefinitions import UserModel#, GroupModel, GroupTypeModel, MembershipModel
 
-from tests.shared import prepare_demodata, prepare_in_memory_sqllite, get_demodata
+from shared import prepare_demodata, prepare_in_memory_sqllite, get_demodata
 
 
 @pytest.mark.asyncio

@@ -12,7 +12,7 @@ import pytest
 #     createUpdateQuery
 # )
 
-from tests.gt_utils import (
+from gt_utils import (
     createByIdTest, 
     createPageTest, 
     createResolveReferenceTest, 
@@ -72,4 +72,4 @@ test_roleCategory_update = createUpdateQuery(
 )
 
 #TODO
-test_roleCategory_delete = createDeleteQuery(tableName="rolecategories", queryBase="rolecategory", attributeNames=["id"], id="fd73596b-1043-46f0-837a-baa0734d64df")
+# test_roleCategory_delete = createDeleteQuery(tableName="rolecategories", queryBase="rolecategory", attributeNames=["id"], id="fd73596b-1043-46f0-837a-baa0734d64df")

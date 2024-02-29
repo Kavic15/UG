@@ -176,19 +176,19 @@ async def membership_insert(self, info: strawberryA.types.Info, membership: Memb
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a membership""")
-async def membership_delete(self, info: strawberry.types.Info, membership: MembershipDeleteGQLModel) -> MembershipResultGQLModel:
-    loader = getLoadersFromInfo(info).memberships
+# @strawberry.mutation(description="""Deletes a membership""")
+# async def membership_delete(self, info: strawberry.types.Info, membership: MembershipDeleteGQLModel) -> MembershipResultGQLModel:
+#     loader = getLoadersFromInfo(info).memberships
 
-    # Perform membership deletion operation
-    deleted_row = await loader.delete(membership.id)
+#     # Perform membership deletion operation
+#     deleted_row = await loader.delete(membership.id)
 
-    result = MembershipResultGQLModel()
-    result.id = membership.id
+#     result = MembershipResultGQLModel()
+#     result.id = membership.id
 
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
 
-    return result
+#     return result
