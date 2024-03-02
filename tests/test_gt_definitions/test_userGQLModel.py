@@ -48,12 +48,9 @@ test_user_insert = createFrontendQuery(
                         surname
                         email
                     }
-                    membership {
-                        id
-                    }
-                    roles {
-                        id
-                    }
+                    membership { id }
+                    roles { id }
+                    rbacobject { id }
                     memberOf(grouptypeId: "cd49e152-610c-11ed-9f29-001a7dda7110") {
                         id
                     }

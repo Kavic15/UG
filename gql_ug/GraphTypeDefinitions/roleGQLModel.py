@@ -60,12 +60,28 @@ class RoleGQLModel(BaseGQLModel):
     user = resolve_user
     group = resolve_group
     group_id = resolve_group_id
+    user_id = resolve_user_id
 
 
     @strawberry.field(description="""Group where user has a role name""")
     async def group(self, info: strawberry.types.Info) -> GroupGQLModel:
         #result = await resolve_group_id(session,  self.group_id)
         result = await gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
+        return result
+    
+    @strawberry.field(description="""Group where user has a role name""")
+    async def user(self, info: strawberry.types.Info) -> UserGQLModel:
+        #result = await resolve_group_id(session,  self.group_id)
+        result = await gql_ug.GraphTypeDefinitions.UserGQLModel.resolve_reference(info, self.user_id)
+        return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberry.lazy(".RBACObjectGQLModel")]
+    @strawberry.field(
+        description="""""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberry.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
         return result
     
 #####################################################################
@@ -110,13 +126,13 @@ async def role_page(
     where: Optional[GroupWhereFilter] = None,
     orderby: Optional[str] = None,
     desc: Optional[bool] = None
-) -> List[GroupGQLModel]:
+) -> List[RoleGQLModel]:
     wf = None if where is None else strawberry.asdict(where)
     loader = getLoadersFromInfo(info).roles
     result = await loader.page(skip, limit, where=wf, orderby=orderby, desc=desc)
     return result
 
-role_by_id = createRootResolver_by_id(GroupGQLModel, description="Returns role by it's ID")
+role_by_id = createRootResolver_by_id(RoleGQLModel, description="Returns role by it's ID")
 
 from gql_ug.DBDefinitions import RoleModel
 from sqlalchemy import select

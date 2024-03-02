@@ -75,6 +75,15 @@ class MembershipGQLModel(BaseGQLModel):
         loader = getLoadersFromInfo(info).groups
         result = await loader.filter_by(id = self.group_id)
         return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
+    @strawberryA.field(
+        description="""""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
+        return result
 
 #####################################################################
 #

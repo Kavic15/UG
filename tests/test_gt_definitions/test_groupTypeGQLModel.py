@@ -36,6 +36,7 @@ test_groupType_insert = createFrontendQuery(query="""mutation($id: UUID!, $name:
             created
             valid
             groups { id }
+            rbacobject { id }
         }
     }
 }
@@ -56,7 +57,6 @@ test_groupType_update = createUpdateQuery(
                         id
                         name
                         lastchange
-
                     }
                 }
         }

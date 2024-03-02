@@ -22,6 +22,41 @@ def getLoader(info):
     return info.context["all"]
 
 
+
+import datetime
+# from .GraphResolvers import resolveMembershipById
+
+# @strawberryA.federation.type(
+#     keys=["id"],
+#     description="""Entity representing a relation between an user and a group""",
+# )
+# class UGInsertGQLModel:
+#     @classmethod
+#     async def resolve_reference(cls, info: strawberryA.types.Info):
+#         result = UGInsertGQLModel()
+#         return result
+
+#     @strawberryA.field(description="""Inserts new membership""")
+#     async def id(self) -> strawberryA.ID:
+#         return 1
+
+#     @strawberryA.field(description="""Inserts new membership""")
+#     async def membership_insert(self, 
+#         info: strawberryA.types.Info, 
+#         membership: "MembershipInsertGQLModel"
+#     ) -> "MembershipResultGQLModel":
+
+#         loader = getLoader(info).memberships
+#         row = await loader.insert(membership)
+
+#         result = MembershipResultGQLModel()
+#         result.msg = "ok"
+#         result.id = row.id
+        
+#         return result
+    
+    
+
 import datetime
 # from .GraphResolvers import resolveMembershipById
 

@@ -37,21 +37,12 @@ test_group_insert = createFrontendQuery(query="""mutation ($name: String!, $grou
       name
       valid
       created
-      grouptype {
-        id
-      }
-      mastergroup {
-        id
-      }
-      subgroups {
-        id
-      }
-      memberships {
-        id
-      }
-      roles {
-        id
-      }
+      grouptype { id }
+      mastergroup { id }
+      subgroups { id }
+      memberships { id }
+      roles { id }
+      rbacobject { id }
     }
   }
 }""", variables={"name": "newname", "grouptype_id": "cd49e157-610c-11ed-9312-001a7dda7110"},

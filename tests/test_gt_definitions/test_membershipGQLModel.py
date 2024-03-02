@@ -37,15 +37,10 @@ test_membership_insert = createFrontendQuery(query="""
                 lastchange
                 created
                 valid
-                user {
-                    id
-                }
-                group {
-                    id
-                }
-                changedby {
-                    id
-                }
+                user { id }
+                group { id }
+                changedby { id }
+                rbacobject { id }
             }
         }
     }

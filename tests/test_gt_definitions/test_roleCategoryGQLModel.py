@@ -39,7 +39,7 @@ test_roleCategory_insert = createFrontendQuery(query="""
                 lastchange
                 created
                 roleTypes { id }
-                                       
+                rbacobject { id }
                 changedby { id }            
             }
         }

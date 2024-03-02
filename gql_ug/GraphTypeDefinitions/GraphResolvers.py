@@ -87,7 +87,7 @@ def resolve_created(self) -> typing.Optional[datetime.datetime]:
 
 @strawberry.field(description="""Who created entity""", permission_classes=[OnlyForAuthentized()])
 async def resolve_createdby(self) -> typing.Optional["UserGQLModel"]:
-    return await resolve_user(self.created_by)
+    return await resolve_user(self.createdby)
 
 
 @strawberry.field(description="""Who made last change""", permission_classes=[OnlyForAuthentized()])

@@ -39,7 +39,8 @@ test_roleType_insert = createFrontendQuery(query="""
                 lastchange
                 created
                 roles { id }
-                changedby { id }            
+                changedby { id }
+                rbacobject { id }
             }
         }
     }
