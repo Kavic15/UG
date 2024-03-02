@@ -47,7 +47,7 @@ class GroupGQLModel(BaseGQLModel):
     name = resolve_name
     name_en = resolve_name_en
 
-    startdate = resolve_startdate
+    # startdate = resolve_startdate
     enddate = resolve_enddate
     valid = resolve_valid
 
@@ -99,6 +99,15 @@ class GroupGQLModel(BaseGQLModel):
         # result = await resolveRolesForGroup(session,  self.id)
         loader = getLoadersFromInfo(info).roles
         result = await loader.filter_by(group_id=self.id)
+        return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
+    @strawberryA.field(
+        description="""""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
         return result
 
 #####################################################################
@@ -155,7 +164,7 @@ class GroupUpdateGQLModel:
 
     name: Optional[str] = strawberryA.field(description="The name of the financial data (optional)",default=None)
     grouptype_id: Optional[uuid.UUID] = strawberryA.field(description="The ID of the financial data type (optional)",default=None)
-    mastergroup_id: Optional[float] = strawberryA.field(description="The amount of financial data (optional)", default=None)
+    mastergroup_id: Optional[uuid.UUID] = strawberryA.field(description="The amount of financial data (optional)", default=None)
     valid: Optional[bool] = None
     changedby: strawberryA.Private[uuid.UUID] = None
 
@@ -168,6 +177,7 @@ class GroupInsertGQLModel:
     mastergroup_id: Optional[uuid.UUID] = None
     valid: Optional[bool] = None
     createdby: strawberryA.Private[uuid.UUID] = None
+    # startdate: datetime.datetime = strawberryA.field(description="Timestamp of start = TOKEN")
     
 @strawberryA.input(description="""Input model for deleting a group""")
 class GroupDeleteGQLModel:
@@ -239,35 +249,35 @@ async def group_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> Gro
     result.msg = "fail" if row is None else "ok"
     return result
 
-@strawberryA.mutation(description="""Allows to assign the group to specified master group""")
-async def group_update_master(self, 
-    info: strawberryA.types.Info, 
-    master_id: uuid.UUID,
-    group: GroupUpdateGQLModel) -> GroupResultGQLModel:
-    user = getUserFromInfo(info)
-    loader = getLoadersFromInfo(info).groups
+# @strawberryA.mutation(description="""Allows to assign the group to specified master group""")
+# async def group_update_master(self, 
+#     info: strawberryA.types.Info, 
+#     master_id: uuid.UUID,
+#     group: GroupUpdateGQLModel) -> GroupResultGQLModel:
+#     user = getUserFromInfo(info)
+#     loader = getLoadersFromInfo(info).groups
 
-    group.updatedby = uuid.UUID(user["id"])
+#     group.updatedby = uuid.UUID(user["id"])
     
-    result = GroupResultGQLModel()
-    result.id = group.id
-    result.msg = "ok"
+#     result = GroupResultGQLModel()
+#     result.id = group.id
+#     result.msg = "ok"
 
-    #use asyncio.gather here
-    updatedrow = await loader.load(group.id)
-    if updatedrow is None:
-        result.msg = "fail"
-        return result
+#     #use asyncio.gather here
+#     updatedrow = await loader.load(group.id)
+#     if updatedrow is None:
+#         result.msg = "fail"
+#         return result
 
-    masterrow = await loader.load(master_id)
-    if masterrow is None:
-        result.msg = "fail"
-        return result
+#     masterrow = await loader.load(master_id)
+#     if masterrow is None:
+#         result.msg = "fail"
+#         return result
 
-    updatedrow.master_id = master_id
-    updatedrow = await loader.update(updatedrow)
+#     updatedrow.master_id = master_id
+#     updatedrow = await loader.update(updatedrow)
     
-    if updatedrow is None:
-        result.msg = "fail"
+#     if updatedrow is None:
+#         result.msg = "fail"
     
-    return result
+#     return result

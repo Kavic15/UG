@@ -30,12 +30,11 @@ test_group_update = createUpdateQuery(tableName="groups", query="""mutation ($id
 }""", variables={"id": "2d9dcd22-a4a2-11ed-b9df-0242ac120003", "name": "newname"})
 
 test_group_insert = createFrontendQuery(query="""mutation ($name: String!, $grouptype_id: UUID!) {
-  result: groupInsert(group: {name: $name, grouptypeId: $grouptype_id }) {
+  result: groupInsert(group: {name: $name, grouptypeId: $grouptype_id}) {
     id
     msg
     group {
       name
-      lastchange
       valid
       created
       grouptype {

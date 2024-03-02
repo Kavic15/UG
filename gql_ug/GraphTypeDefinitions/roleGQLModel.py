@@ -59,11 +59,12 @@ class RoleGQLModel(BaseGQLModel):
     roletype = resolve_roletype
     user = resolve_user
     group = resolve_group
+    group_id = resolve_group_id
 
 
     @strawberry.field(description="""Group where user has a role name""")
-    async def role(self, info: strawberry.types.Info) -> GroupGQLModel:
-        # result = await resolveGroupById(session,  self.group_id)
+    async def group(self, info: strawberry.types.Info) -> GroupGQLModel:
+        #result = await resolve_group_id(session,  self.group_id)
         result = await gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
         return result
     
@@ -246,19 +247,12 @@ async def role_insert(self, info: strawberry.types.Info, role: RoleInsertGQLMode
     result.id = row.id
     return result
 
-# @strawberry.mutation(description="""Deletes a role""")
-# async def role_delete(self, info: strawberry.types.Info, role: RoleDeleteGQLModel) -> RoleResultGQLModel:
-#     loader = getLoadersFromInfo(info).roles
-
-#     # Perform role deletion operation
-#     deleted_row = await loader.delete(role.id)
-
-#     result = RoleResultGQLModel()
-#     result.id = role.id
-
-#     if deleted_row is None:
-#         result.msg = "fail"
-#     else:
-#         result.msg = "ok"
-
-#     return result
+@strawberry.mutation(
+    description="Deletes role.",
+        permission_classes=[OnlyForAuthentized()])
+async def role_delete(self, info: strawberry.types.Info, id: uuid.UUID) -> RoleResultGQLModel:
+    loader = getLoadersFromInfo(info).roles
+    row = await loader.delete(id=id)
+    result = RoleResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
+    return result

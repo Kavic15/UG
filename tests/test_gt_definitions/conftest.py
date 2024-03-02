@@ -6,89 +6,23 @@ import uuid
 @pytest_asyncio.fixture
 async def GQLInsertQueries():
     result = {
-        "events": {
-            "create": """
-mutation ($id: UUID!, $name: String!, $eventtype_id: UUID!, $name_en: String!) {
-  eventInsert(
-    event: {id: $id, name: $name, eventtypeId: $type_id, nameEn: $name_en}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: eventById(id: $id) { id }}""",
-},
-        "eventcategories": {"create": """
-mutation ($id: UUID!, $name: String!) {
-  eventCategoryInsert(
-    eventCategory: {id: $id, name: $name}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: eventCategoryById(id: $id) { id }}""",
-},
-        "events_groups":{"create": """
-mutation ($event_id: UUID!, $group_id: UUID!) {
-  eventGroupInsert(
-    eventGroup: {eventId: $event_id, groupId: $group_id}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: eventGroupById(id: $id) { id }}""",
-},
-        "eventtypes": {"create": """
-mutation ($id: UUID!, $name: String!, $category_id: UUID!) {
-  eventTypeInsert(
-    eventType: {id: $id, name: $name, categoryId: $category_id}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: eventTypeById(id: $id) { id }}""",
-},
-        "eventinvitationtypes": {"create": """
-mutation ($id: UUID!, $name: String!) {
-  invitationTypeInsert(
-    invitationType: {id: $id, name: $name }
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: invitationTypeById(id: $id) { id }}""",
-},
-        "events_users": {"create": """
-mutation ($user_id: UUID!, $event_id: UUID!, $invitationtype_id: UUID!, $presencetype_id: UUID!) {
-  presenceInsert(
-    presence: {userId: $user_id, eventId: $event_id, invitationtypeId: $invitationtype_id, presencetypeId: $presencetype_id}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: presenceById(id: $id) { id }}""",
-},
-      "eventpresencetypes": {"create": """
-mutation ($id: UUID!, $name: String!) {
-  presenceTypeInsert(
-    presenceType: {id: $id, name: $name}
-  ) {
-    id
-    msg
-  }
-}""",
-            "read": """query($id: UUID!){ result: presenceTypeById(id: $id) { id }}""",
-},
-
+        "groups": {
+          "create": """
+            mutation ($id: UUID!, $name: String!, $group_id: UUID!) {
+              groupInsert(
+                group: {id: $id, name: $name, groutypeId: $grouptype_id}
+              ) {
+                id
+                msg
+              }
+          }""",
+          "read": """
+            query ($id: UUID!){
+              result: groupById(id: $id) { id }}""",
+        },
     }
     
     return result
-
 
 @pytest_asyncio.fixture
 async def FillDataViaGQL(DemoData, GQLInsertQueries, ClientExecutorAdmin):

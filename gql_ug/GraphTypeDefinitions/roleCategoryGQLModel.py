@@ -163,19 +163,29 @@ async def role_category_insert(self, info: strawberryA.types.Info, rolecategory:
 
 
 
-@strawberry.mutation(description="""Deletes a rolecategory""")
-async def role_category_delete(self, info: strawberry.types.Info, id: uuid.UUID) -> RoleCategoryResultGQLModel:
+# @strawberry.mutation(description="""Deletes a rolecategory""")
+# async def role_category_delete(self, info: strawberry.types.Info, id: uuid.UUID) -> RoleCategoryResultGQLModel:
+#     loader = getLoadersFromInfo(info).rolecategories
+
+#     # Perform rolecategory deletion operation
+#     deleted_row = await loader.delete(id = id)
+
+#     result = RoleCategoryResultGQLModel()
+#     result.id = id
+
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
+
+#     return result
+
+@strawberryA.mutation(
+    description="Deletes role category.",
+        permission_classes=[OnlyForAuthentized()])
+async def role_category_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> RoleCategoryResultGQLModel:
     loader = getLoadersFromInfo(info).rolecategories
-
-    # Perform rolecategory deletion operation
-    deleted_row = await loader.delete(id = id)
-
-    result = RoleCategoryResultGQLModel()
-    result.id = id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = RoleCategoryResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result

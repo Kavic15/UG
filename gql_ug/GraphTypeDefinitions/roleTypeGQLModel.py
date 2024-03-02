@@ -162,19 +162,29 @@ async def role_type_insert(self, info: strawberryA.types.Info, roletype: RoleTyp
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a roletype""")
-async def role_type_delete(self, info: strawberry.types.Info, roletype: RoleTypeDeleteGQLModel) -> RoleTypeResultGQLModel:
+# @strawberry.mutation(description="""Deletes a roletype""")
+# async def role_type_delete(self, info: strawberry.types.Info, roletype: RoleTypeDeleteGQLModel) -> RoleTypeResultGQLModel:
+#     loader = getLoadersFromInfo(info).roletypes
+
+#     # Perform roletype deletion operation
+#     deleted_row = await loader.delete(roletype.id)
+
+#     result = RoleTypeResultGQLModel()
+#     result.id = roletype.id
+
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
+
+#     return result
+
+@strawberryA.mutation(
+    description="Deletes role type.",
+        permission_classes=[OnlyForAuthentized()])
+async def role_type_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> RoleTypeResultGQLModel:
     loader = getLoadersFromInfo(info).roletypes
-
-    # Perform roletype deletion operation
-    deleted_row = await loader.delete(roletype.id)
-
-    result = RoleTypeResultGQLModel()
-    result.id = roletype.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = RoleTypeResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result

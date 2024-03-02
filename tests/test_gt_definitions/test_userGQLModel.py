@@ -62,8 +62,8 @@ test_user_insert = createFrontendQuery(
         }
     """, 
     variables={  
-        "surname": "sikovny",
-        "name": "kluk"
+        "surname": "Builder",
+        "name": "Bob"
         },
     asserts=[]
 )

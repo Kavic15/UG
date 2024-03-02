@@ -25,8 +25,8 @@ test_reference_role = createResolveReferenceTest(
     tableName='roles', gqltype='RoleGQLModel', 
     attributeNames=["id"])
 # nemáš xD, musis udelat 
-#test_query_role_by_id = createByIdTest(tableName="roles", queryEndpoint="roleById")
-#test_query_role_page = createPageTest(tableName="roles", queryEndpoint="rolePage")
+test_query_role_by_id = createByIdTest(tableName="roles", queryEndpoint="roleById")
+test_query_role_page = createPageTest(tableName="roles", queryEndpoint="rolePage")
 
 test_role_insert = createFrontendQuery(query="""
    mutation($user_id: UUID!, $group_id: UUID!,$roletype_id: UUID!) {
@@ -36,8 +36,9 @@ test_role_insert = createFrontendQuery(query="""
             role {
                 id                      
                 lastchange
-                valid  
+                valid 
                 changedby { id }
+                group { id }
             }
         }
     }
@@ -73,4 +74,4 @@ test_role_update = createUpdateQuery(
 )
 
 #TODO
-# test_role_delete = createDeleteQuery(tableName="roles", queryBase="role", attributeNames=["id"], id="2d9dc5ca-a4a2-11ed-b9df-0242ac125003")
+test_role_delete = createDeleteQuery(tableName="roles", queryBase="role", attributeNames=["id"], id="2d9dc5ca-a4a2-11ed-b9df-0242ac125003")

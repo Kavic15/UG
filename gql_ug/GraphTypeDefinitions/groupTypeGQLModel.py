@@ -62,7 +62,7 @@ class GroupTypeGQLModel(BaseGQLModel):
         loader = getLoadersFromInfo(info).groups
         result = await loader.filter_by(grouptype_id=self.id)
         return result
-    
+
 #####################################################################
 #
 # Special fields for query
@@ -167,19 +167,29 @@ async def group_type_insert(self, info: strawberryA.types.Info, grouptype: Group
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a group type""")
-async def group_type_delete(self, info: strawberry.types.Info, grouptype: GroupTypeDeleteGQLModel) -> GroupTypeResultGQLModel:
+# @strawberry.mutation(description="""Deletes a group type""")
+# async def group_type_delete(self, info: strawberry.types.Info, grouptype: GroupTypeDeleteGQLModel) -> GroupTypeResultGQLModel:
+#     loader = getLoadersFromInfo(info).grouptypes
+
+#     # Perform grouptype deletion operation
+#     deleted_row = await loader.delete(grouptype.id)
+
+#     result = GroupTypeResultGQLModel()
+#     result.id = grouptype.id
+
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
+
+#     return result
+
+@strawberryA.mutation(
+    description="Deletes group type.",
+        permission_classes=[OnlyForAuthentized()])
+async def group_type_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> GroupTypeResultGQLModel:
     loader = getLoadersFromInfo(info).grouptypes
-
-    # Perform grouptype deletion operation
-    deleted_row = await loader.delete(grouptype.id)
-
-    result = GroupTypeResultGQLModel()
-    result.id = grouptype.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = GroupTypeResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result

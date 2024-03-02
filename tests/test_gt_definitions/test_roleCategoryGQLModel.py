@@ -38,6 +38,7 @@ test_roleCategory_insert = createFrontendQuery(query="""
                 nameEn
                 lastchange
                 created
+                roleTypes { id }
                                        
                 changedby { id }            
             }
@@ -72,4 +73,4 @@ test_roleCategory_update = createUpdateQuery(
 )
 
 #TODO
-# test_roleCategory_delete = createDeleteQuery(tableName="rolecategories", queryBase="rolecategory", attributeNames=["id"], id="fd73596b-1043-46f0-837a-baa0734d64df")
+test_roleCategory_delete = createDeleteQuery(tableName="rolecategories", queryBase="roleCategory", attributeNames=["id"], id="fd73596b-1043-46f0-837a-baa0734d64df")
