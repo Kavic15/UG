@@ -13,19 +13,11 @@ from gql_ug.GraphPermissions import OnlyForAuthentized
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
     resolve_name,
-    resolve_name_en,
-    resolve_group,
-    resolve_group_id,
-    resolve_user,
-    resolve_user_id,
     resolve_created,
     resolve_lastchange,
-    resolve_startdate,
-    resolve_enddate,
     resolve_createdby,
     resolve_changedby,
-    resolve_valid,
-    createRootResolver_by_id
+    resolve_valid
 )
 
 MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershipGQLModel")]
@@ -45,7 +37,6 @@ class UserGQLModel(BaseGQLModel):
     lastchange = resolve_lastchange
     createdby = resolve_createdby
     valid = resolve_valid
-    #rbacobject = resolve_rbacobject
 
     @strawberry.field(
         description="""User's family name (like Obama)""",
@@ -60,7 +51,7 @@ class UserGQLModel(BaseGQLModel):
         return self.email
 
     @strawberry.field(
-        description="""List of users, where the user is member""",
+        description="""List of groups, where the user is member""",
         permission_classes=[OnlyForAuthentized(isList=True)])
     async def membership(
         self, info: strawberry.types.Info
@@ -78,7 +69,7 @@ class UserGQLModel(BaseGQLModel):
         return result
 
     @strawberry.field(
-        description="""List of users given type, where the user is member""",
+        description="""List of groups given type, where the user is member""",
         permission_classes=[OnlyForAuthentized(isList=True)])
     async def member_of(
         self, grouptype_id: uuid.UUID, info: strawberry.types.Info
@@ -92,7 +83,7 @@ class UserGQLModel(BaseGQLModel):
 
     RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
     @strawberryA.field(
-        description="""""",
+        description="""RBAC object associated with the group""",
         permission_classes=[OnlyForAuthentized()])
     async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
         from .RBACObjectGQLModel import RBACObjectGQLModel

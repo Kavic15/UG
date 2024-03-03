@@ -85,16 +85,6 @@ def loadall():
         "eventtypes",
         "events",
     ]
-    # 'answers',
-    # 'authorizationgroups', 'authorizationroletypes', 'authorizations', 'authorizationusers', 'authors',
-    # 'events', 'eventtypes', 'externalids', 'externalidtypes',
-    # 'facilities', 'facilitytypes',
-    # 'formitems', 'formparts', 'forms', 'formsections',
-    # 'lessons',
-    # 'personalitiesCertficates', 'personalitiesCertificateTypes', 'personalitiesMedalTypeGroups', 'personalitiesMedalTypes', 'personalitiesMedals', 'personalitiesRanks',
-    # 'personalitiesRelatedDocs', 'personalitiesStudies', 'personalitiesWorkHistories',
-    # 'projectFinanceTypes', 'projectFinances', 'projectMilestones', 'projectTypes', 'projects', 'publication_types', 'publications',
-    # 'questionTypes', 'questions', 'roles', 'roletypes', 'subjects', 'surveys', 'users', 'workflows', 'workflowstateroletypes', 'workflowstates', 'workflowstateusers'
 
     orderedDBClasses = {}
     for item in order:

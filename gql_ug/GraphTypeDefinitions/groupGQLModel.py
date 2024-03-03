@@ -13,14 +13,8 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
     resolve_name,
     resolve_name_en,
-    resolve_group,
-    resolve_group_id,
-    resolve_user,
-    resolve_user_id,
     resolve_created,
     resolve_lastchange,
-    resolve_startdate,
-    resolve_enddate,
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
@@ -41,8 +35,6 @@ class GroupGQLModel(BaseGQLModel):
     name = resolve_name
     name_en = resolve_name_en
 
-    # startdate = resolve_startdate
-    enddate = resolve_enddate
     valid = resolve_valid
 
     changedby = resolve_changedby
@@ -50,8 +42,6 @@ class GroupGQLModel(BaseGQLModel):
     created = resolve_created
     createdby = resolve_createdby
     
-    #rbacobject = resolve_rbacobject
-
     @strawberryA.field(description="""Type of group""", permission_classes=[OnlyForAuthentized()])
     async def grouptype(
         self, info: strawberryA.types.Info
@@ -97,7 +87,7 @@ class GroupGQLModel(BaseGQLModel):
     
     RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
     @strawberryA.field(
-        description="""""",
+        description="""RBAC object associated with the group""",
         permission_classes=[OnlyForAuthentized()])
     async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
         from .RBACObjectGQLModel import RBACObjectGQLModel
@@ -152,29 +142,28 @@ import datetime
 #_______________________________INPUT_________________________________________
 @strawberryA.input(description="""Input model for updating a group""")
 class GroupUpdateGQLModel:
-    id: uuid.UUID = strawberryA.field(description="The ID of the financial data")
+    id: uuid.UUID = strawberryA.field(description="The ID of the group")
     lastchange: datetime.datetime = strawberryA.field(description="timestamp of last change = TOKEN")
 
-    name: Optional[str] = strawberryA.field(description="The name of the financial data (optional)",default=None)
-    grouptype_id: Optional[uuid.UUID] = strawberryA.field(description="The ID of the financial data type (optional)",default=None)
-    mastergroup_id: Optional[uuid.UUID] = strawberryA.field(description="The amount of financial data (optional)", default=None)
-    valid: Optional[bool] = None
+    name: Optional[str] = strawberryA.field(description="The name of the group (optional)",default=None)
+    grouptype_id: Optional[uuid.UUID] = strawberryA.field(description="The ID of the group type (optional)",default=None)
+    mastergroup_id: Optional[uuid.UUID] = strawberryA.field(description="The commanding group (optional)", default=None)
+    valid: Optional[bool] = strawberryA.field(description="Decides if the group is valid (optional)", default=None)
     changedby: strawberryA.Private[uuid.UUID] = None
 
 @strawberryA.input(description="""Input model for inserting a new group""")
 class GroupInsertGQLModel:
     name: str = strawberryA.field(description="Name of the financial data")
-    grouptype_id: uuid.UUID
+    grouptype_id: uuid.UUID = strawberryA.field(description="The ID of the group type (optional)",default=None)
     id: Optional[uuid.UUID] = None
     name_en: Optional[str] = None
-    mastergroup_id: Optional[uuid.UUID] = None
-    valid: Optional[bool] = None
+    mastergroup_id: Optional[uuid.UUID] = None 
+    valid: Optional[bool] = strawberryA.field(description="Decides if the group is valid (optional)", default=None)
     createdby: strawberryA.Private[uuid.UUID] = None
-    # startdate: datetime.datetime = strawberryA.field(description="Timestamp of start = TOKEN")
     
 @strawberryA.input(description="""Input model for deleting a group""")
 class GroupDeleteGQLModel:
-    id: uuid.UUID = strawberryA.field(description="The ID of the group data", default=None)
+    id: uuid.UUID = strawberryA.field(description="The ID of the group", default=None)
 
 #_______________________________RESULT_________________________________________
 @strawberryA.type(description="Result of group data operation")
@@ -191,7 +180,7 @@ class GroupResultGQLModel:
 @strawberryA.mutation(description="Update the group record.", permission_classes=[OnlyForAuthentized()])
 async def group_update(self, info: strawberryA.types.Info, group: GroupUpdateGQLModel) -> GroupResultGQLModel:
     user = getUserFromInfo(info)
-    group.changedby = uuid.UUID(user["id"])
+    group.changedby = user["id"]
     loader = getLoadersFromInfo(info).groups
     row = await loader.update(group)
     result = GroupResultGQLModel()
@@ -206,7 +195,7 @@ async def group_update(self, info: strawberryA.types.Info, group: GroupUpdateGQL
 @strawberryA.mutation(description="Adds a new group record.", permission_classes=[OnlyForAuthentized()])
 async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQLModel) -> GroupResultGQLModel:
     user = getUserFromInfo(info)
-    group.createdby = uuid.UUID(user["id"])
+    group.createdby = user["id"]
     loader = getLoadersFromInfo(info).groups
     row = await loader.insert(group)
     result = GroupResultGQLModel()
@@ -215,7 +204,7 @@ async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQL
     return result
 
 @strawberryA.mutation(
-    description="Deletes group.",
+    description="Deletes a group record.",
         permission_classes=[OnlyForAuthentized()])
 async def group_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> GroupResultGQLModel:
     loader = getLoadersFromInfo(info).groups
@@ -223,36 +212,3 @@ async def group_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> Gro
     result = GroupResultGQLModel(id=id, msg="ok")
     result.msg = "fail" if row is None else "ok"
     return result
-
-# @strawberryA.mutation(description="""Allows to assign the group to specified master group""")
-# async def group_update_master(self, 
-#     info: strawberryA.types.Info, 
-#     master_id: uuid.UUID,
-#     group: GroupUpdateGQLModel) -> GroupResultGQLModel:
-#     user = getUserFromInfo(info)
-#     loader = getLoadersFromInfo(info).groups
-
-#     group.updatedby = uuid.UUID(user["id"])
-    
-#     result = GroupResultGQLModel()
-#     result.id = group.id
-#     result.msg = "ok"
-
-#     #use asyncio.gather here
-#     updatedrow = await loader.load(group.id)
-#     if updatedrow is None:
-#         result.msg = "fail"
-#         return result
-
-#     masterrow = await loader.load(master_id)
-#     if masterrow is None:
-#         result.msg = "fail"
-#         return result
-
-#     updatedrow.master_id = master_id
-#     updatedrow = await loader.update(updatedrow)
-    
-#     if updatedrow is None:
-#         result.msg = "fail"
-    
-#     return result

@@ -17,12 +17,8 @@ from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
-    resolve_name,
-    resolve_name_en,
     resolve_group,
-    resolve_group_id,
     resolve_user,
-    resolve_user_id,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -73,7 +69,7 @@ class MembershipGQLModel(BaseGQLModel):
     
     RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
     @strawberryA.field(
-        description="""""",
+        description="""RBAC object associated with the membership""",
         permission_classes=[OnlyForAuthentized()])
     async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
         from .RBACObjectGQLModel import RBACObjectGQLModel
@@ -96,7 +92,7 @@ class MembershipWhereFilter:
     type_id: uuid.UUID
     value: str
 
-@strawberryA.field(description="""Returns a list of memberships""", permission_classes=[OnlyForAuthentized()])
+@strawberryA.field(description="""Returns a list of memberships (paged)""", permission_classes=[OnlyForAuthentized()])
 async def membership_page(
     self, info: strawberryA.types.Info, skip: int = 0, limit: int = 10,
     where: Optional[MembershipWhereFilter] = None
@@ -179,20 +175,3 @@ async def membership_insert(self, info: strawberryA.types.Info, membership: Memb
     result.msg = "ok"
     result.id = row.id
     return result
-
-# @strawberry.mutation(description="""Deletes a membership""")
-# async def membership_delete(self, info: strawberry.types.Info, membership: MembershipDeleteGQLModel) -> MembershipResultGQLModel:
-#     loader = getLoadersFromInfo(info).memberships
-
-#     # Perform membership deletion operation
-#     deleted_row = await loader.delete(membership.id)
-
-#     result = MembershipResultGQLModel()
-#     result.id = membership.id
-
-#     if deleted_row is None:
-#         result.msg = "fail"
-#     else:
-#         result.msg = "ok"
-
-#     return result
