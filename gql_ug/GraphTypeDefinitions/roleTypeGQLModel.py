@@ -13,7 +13,7 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -23,9 +23,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_group_id,
     resolve_user,
     resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -33,9 +30,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
@@ -55,7 +50,7 @@ class RoleTypeGQLModel(BaseGQLModel):
     created = resolve_created
     lastchange = resolve_lastchange
     createdby = resolve_createdby
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
 
     @strawberry.field(
         description="""List of roles with this type""",
@@ -64,6 +59,15 @@ class RoleTypeGQLModel(BaseGQLModel):
         # result = await resolveRoleForRoleType(session,  self.id)
         loader = getLoadersFromInfo(info).roles
         result = await loader.filter_by(roletype_id=self.id)
+        return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
+    @strawberryA.field(
+        description="""""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
         return result
 
 #####################################################################
@@ -162,19 +166,29 @@ async def role_type_insert(self, info: strawberryA.types.Info, roletype: RoleTyp
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a roletype""")
-async def role_type_delete(self, info: strawberry.types.Info, roletype: RoleTypeDeleteGQLModel) -> RoleTypeResultGQLModel:
+# @strawberry.mutation(description="""Deletes a roletype""")
+# async def role_type_delete(self, info: strawberry.types.Info, roletype: RoleTypeDeleteGQLModel) -> RoleTypeResultGQLModel:
+#     loader = getLoadersFromInfo(info).roletypes
+
+#     # Perform roletype deletion operation
+#     deleted_row = await loader.delete(roletype.id)
+
+#     result = RoleTypeResultGQLModel()
+#     result.id = roletype.id
+
+#     if deleted_row is None:
+#         result.msg = "fail"
+#     else:
+#         result.msg = "ok"
+
+#     return result
+
+@strawberryA.mutation(
+    description="Deletes role type.",
+        permission_classes=[OnlyForAuthentized()])
+async def role_type_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> RoleTypeResultGQLModel:
     loader = getLoadersFromInfo(info).roletypes
-
-    # Perform roletype deletion operation
-    deleted_row = await loader.delete(roletype.id)
-
-    result = RoleTypeResultGQLModel()
-    result.id = roletype.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = RoleTypeResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result

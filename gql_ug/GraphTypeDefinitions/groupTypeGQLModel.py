@@ -6,33 +6,20 @@ from .BaseGQLModel import BaseGQLModel
 import strawberry
 from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
     resolve_name,
     resolve_name_en,
-    resolve_group,
-    resolve_group_id,
-    resolve_user,
-    resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
-    resolve_startdate,
-    resolve_enddate,
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
-
-#GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
 MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershipGQLModel")]
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
@@ -51,17 +38,25 @@ class GroupTypeGQLModel(BaseGQLModel):
     created = resolve_created
     lastchange = resolve_lastchange
     createdby = resolve_createdby
-    rbacobject = resolve_rbacobject
+    valid = resolve_valid
 
     @strawberry.field(description="""List of groups which have this type""")
     async def groups(
         self, info: strawberry.types.Info
     ) -> List["GroupGQLModel"]:
-        # result = await resolveGroupForGroupType(session,  self.id)
         loader = getLoadersFromInfo(info).groups
         result = await loader.filter_by(grouptype_id=self.id)
         return result
     
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
+    @strawberryA.field(
+        description="""RBAC object associated with the group""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
+        return result
+
 #####################################################################
 #
 # Special fields for query
@@ -166,19 +161,12 @@ async def group_type_insert(self, info: strawberryA.types.Info, grouptype: Group
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a group type""")
-async def group_type_delete(self, info: strawberry.types.Info, grouptype: GroupTypeDeleteGQLModel) -> GroupTypeResultGQLModel:
+@strawberryA.mutation(
+    description="Deletes group type.",
+        permission_classes=[OnlyForAuthentized()])
+async def group_type_delete(self, info: strawberryA.types.Info, id: uuid.UUID) -> GroupTypeResultGQLModel:
     loader = getLoadersFromInfo(info).grouptypes
-
-    # Perform grouptype deletion operation
-    deleted_row = await loader.delete(grouptype.id)
-
-    result = GroupTypeResultGQLModel()
-    result.id = grouptype.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = GroupTypeResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result

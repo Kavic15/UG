@@ -13,19 +13,12 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
-    resolve_name,
-    resolve_name_en,
     resolve_group,
-    resolve_group_id,
     resolve_user,
-    resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -33,13 +26,12 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
 UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".userGQLModel")]
+GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a relation between an user and a membership""",)
 class MembershipGQLModel(BaseGQLModel):
@@ -57,7 +49,32 @@ class MembershipGQLModel(BaseGQLModel):
     valid = resolve_valid
     startdate = resolve_startdate
     enddate = resolve_enddate
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
+
+    @strawberryA.field(description="""List of user, related to .....""", permission_classes=[OnlyForAuthentized()])
+    async def user(
+        self, info: strawberryA.types.Info
+    ) -> List["UserGQLModel"]:
+        loader = getLoadersFromInfo(info).users
+        result = await loader.filter_by(id = self.user_id)
+        return result
+
+    @strawberryA.field(description="""List of group, related to .....""", permission_classes=[OnlyForAuthentized()])
+    async def group(
+        self, info: strawberryA.types.Info
+    ) -> List["GroupGQLModel"]:
+        loader = getLoadersFromInfo(info).groups
+        result = await loader.filter_by(id = self.group_id)
+        return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberryA.lazy(".RBACObjectGQLModel")]
+    @strawberryA.field(
+        description="""RBAC object associated with the membership""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberryA.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
+        return result
 
 #####################################################################
 #
@@ -75,7 +92,7 @@ class MembershipWhereFilter:
     type_id: uuid.UUID
     value: str
 
-@strawberryA.field(description="""Returns a list of memberships""", permission_classes=[OnlyForAuthentized()])
+@strawberryA.field(description="""Returns a list of memberships (paged)""", permission_classes=[OnlyForAuthentized()])
 async def membership_page(
     self, info: strawberryA.types.Info, skip: int = 0, limit: int = 10,
     where: Optional[MembershipWhereFilter] = None
@@ -157,21 +174,4 @@ async def membership_insert(self, info: strawberryA.types.Info, membership: Memb
     result = MembershipResultGQLModel()
     result.msg = "ok"
     result.id = row.id
-    return result
-
-@strawberry.mutation(description="""Deletes a membership""")
-async def membership_delete(self, info: strawberry.types.Info, membership: MembershipDeleteGQLModel) -> MembershipResultGQLModel:
-    loader = getLoadersFromInfo(info).memberships
-
-    # Perform membership deletion operation
-    deleted_row = await loader.delete(membership.id)
-
-    result = MembershipResultGQLModel()
-    result.id = membership.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
     return result

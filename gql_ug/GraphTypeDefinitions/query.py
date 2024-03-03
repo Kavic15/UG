@@ -9,17 +9,11 @@ class Query:
     from .userGQLModel import user_page
     user_page = user_page
 
-    # from .userGQLModel import user_by_letters
-    # user_by_letters = user_by_letters
-
     from .groupGQLModel import group_by_id
     group_by_id = group_by_id
 
     from .groupGQLModel import group_page
     group_page = group_page
-
-    # from .groupGQLModel import group_by_letters
-    # group_by_letters = group_by_letters
 
     from .roleTypeGQLModel import role_type_by_id
     role_type_by_id = role_type_by_id
@@ -54,3 +48,11 @@ class Query:
     from .roleGQLModel import roles_on_user
     roles_on_user = roles_on_user
 
+    from .roleGQLModel import role_page
+    role_page = role_page
+
+    from .roleGQLModel import role_by_id
+    role_by_id = role_by_id
+
+    from .RBACObjectGQLModel import rbac_by_id
+    rbac_by_id = rbac_by_id

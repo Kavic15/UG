@@ -91,21 +91,6 @@ async def get_context(request: Request):
     if asyncSessionMaker is None:
         async with initEngine(app) as cntx:
             pass
-        
-    # from gql_ug.utils.Dataloaders import createLoadersContext, createUgConnectionContext
-    # context = createLoadersContext(appcontext["asyncSessionMaker"])
-    # i = Item(query = "")
-    # # i.query = ""
-    # # i.variables = {}
-    # logging.info(f"before sentinel current user is {request.scope.get('user', None)}")
-    # await sentinel(request, i)
-    # logging.info(f"after sentinel current user is {request.scope.get('user', None)}")
-    # connectionContext = createUgConnectionContext(request=request)
-    # result = {**context, **connectionContext}
-    # result["request"] = request
-    # result["user"] = request.scope.get("user", None)
-    # logging.info(f"context created {result}")
-    # return context
     from gql_ug.utils.Dataloaders import createLoadersContext
     context = createLoadersContext(appcontext["asyncSessionMaker"])
     result = {**context}
@@ -187,9 +172,10 @@ async def apollo_gql(request: Request, item: Item):
 
 import os
 DEMO = os.getenv("DEMO", None)
-assert DEMO is not None, "DEMO environment variable must be explicitly defined"
-assert (DEMO == "True") or (DEMO == "False"), "DEMO environment variable can have only `True` or `False` values"
+# assert DEMO is not None, "DEMO environment variable must be explicitly defined"
+# assert (DEMO == "True") or (DEMO == "False"), "DEMO environment variable can have only `True` or `False` values"
 DEMO = DEMO == "True"
+DEMO = True
 
 if DEMO:
     print("####################################################")

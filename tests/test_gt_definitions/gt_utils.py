@@ -100,9 +100,9 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
         clientExecutor = ClientExecutorDemo
 
         content = "{" + ", ".join(attributeNames) + "}"
-
         data = DemoData
         table = data[tableName]
+        
         for row in table:
             rowid = f"{row['id']}"
 
@@ -124,15 +124,12 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
                 "}"+
                 "}"
             )
-            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": uuid.UUID(rowid)}]}
-            #variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
+            
+            variable_values = {"rep": [{"__typename": f"{gqltype}", "id": f"{rowid}"}]}
 
             logging.info(f"query representations {query} with {variable_values}")
-            
             resp = await clientExecutor(query, {**variable_values})
-            logging.info(f"GraphQL Response: {resp}")
             testResult(resp)
-
             resp = await schemaExecutor(query, {**variable_values})
             testResult(resp)
 
@@ -229,13 +226,92 @@ def createUpdateQuery(query="{}", variables={}, tableName=""):
                 break
         assert entity is not None, f"expected entity in response to {query}"
 
-        for key in variables.keys():
+        for key, value in entity.items():
             if key in ["id", "lastchange"]:
                 continue
-            value = entity[key]
             print("attribute check", type(key), f"[{key}] is {value} ?= {variables[key]}")
             assert value == variables[key], f"test on update failed {value} != {variables[key]}"
 
         
 
     return test_update
+
+
+# Function to create a test for deleting data by ID
+def createDeleteQuery(tableName, queryBase, id, attributeNames=["id"]):
+    """Function to create a test for deleting data by ID"""
+    # check pages
+    # do delete in sql lite and gql
+    # test if given id is NOT located in sql lite and gql response
+    @pytest.mark.asyncio
+    async def result_test(SQLite, DemoData, ClientExecutorDemo, SchemaExecutorDemo):
+        async def testConsistentPages(data=DemoData, testSchema = True):
+            def testResultPage(resp):
+                errors = resp.get("errors", None)
+                assert errors is None, resp["errors"]
+                respdata = resp.get("data", None)
+                assert respdata is not None
+
+                respdata = respdata.get(queryEndpoint, None)
+                assert respdata is not None
+                datarows = data[tableName]       
+                for rowa, rowb in zip(respdata, datarows):
+                    for att in attributeNames:
+                        # logging.info("Comparing pages gql/sql " + str(rowa[att]) +"--------"+ f'{rowb[att]}')
+                        assert rowa[att] == f'{rowb[att]}'            
+            
+            
+            # page phasee test
+            schemaExecutor = SchemaExecutorDemo
+            clientExecutor = ClientExecutorDemo
+
+            queryEndpoint = queryBase + "Page"
+
+            content = "{" + ", ".join(attributeNames) + "}"
+            query = "query{" f"{queryEndpoint}" f"{content}" "}"
+
+            resp = await schemaExecutor(query) if testSchema else await clientExecutor(query)
+            testResultPage(resp)
+            # resp = await schemaExecutor(query)
+            # testResultPage(resp)
+            # resp = await clientExecutor(query)
+            # testResultPage(resp)
+        
+        # Test if pages are consistent with demo data
+        await testConsistentPages(testSchema=True)
+        await testConsistentPages(testSchema=False)
+
+        ######################################## 
+        query = """
+                mutation($id: UUID!) {
+                    """+queryBase+"""Delete(id: $id) {
+                        id
+                        msg
+                    }
+                }
+            """
+        variables = {"id": id}
+
+        # Delete from sqlite
+        resp = await SchemaExecutorDemo(
+                    query=query, 
+                    variable_values=variables
+                )
+        
+        # Delete from DemoData (systemdata)
+        DemoData[tableName] = [ element for element in DemoData[tableName] if str(element["id"]) != id]
+        
+        # Test if sqlite and demodata are consistent
+        await testConsistentPages(testSchema=True)
+        
+        # Delete via gql api
+        resp = await ClientExecutorDemo(query=query, variable_values=variables)
+
+        respdata = resp.get("data", None)
+        logging.info(f"query for \n{query} with \n{variables} got response: \n{respdata}")
+
+        # Test if gql is consistent with demodata
+        await testConsistentPages(testSchema=False)
+
+
+    return result_test

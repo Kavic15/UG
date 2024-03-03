@@ -4,7 +4,7 @@ import asyncio
 from typing import List, Annotated, Optional
 from .BaseGQLModel import BaseGQLModel
 from .GraphResolvers import resolve_id
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 from gql_ug.utils.Dataloaders import getLoadersFromInfo
 
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]

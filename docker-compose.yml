@@ -1,18 +1,73 @@
 version: "3.10"
 
+# networks:
+#   roachnet:
+#     driver: bridge
+
 services:
+  ###################### cockroach ######################
+  # roach1:
+  #   image: cockroachdb/cockroach:latest
+  #   container_name: roach1
+  #   hostname: roach1
+  #   restart: unless-stopped
+
+  #   # joins node with the others creating a cluster
+  #   command: start --advertise-addr=roach1:26357 --http-addr=roach1:8080 --listen-addr=roach1:26357 --sql-addr=roach1:26257 --insecure --join=roach1:26357,roach2:26357,roach3:26357
+  #   # command: start --advertise-addr=roach1 --http-addr=roach1 --listen-addr=roach1 --sql-addr=roach1 --insecure --join=roach1,roach2,roach3
+  #   networks:
+  #     - roachnet
+  #   ports:
+  #     - "26257:26257"
+  #     - "8080:8080"
+  #   # volumes:
+  #   #   - roach1:/cockroach/cockroach-data
+
+
+  # roach2:
+  #   image: cockroachdb/cockroach:latest
+  #   container_name: roach2
+  #   hostname: roach2
+  #   restart: unless-stopped
+
+  #   # joins node with the others creating a cluster
+  #   command: start --advertise-addr=roach2:26357 --http-addr=roach2:8081 --listen-addr=roach2:26357 --sql-addr=roach2:26258 --insecure --join=roach1:26357,roach2:26357,roach3:26357
+  #   # command: start --advertise-addr=roach2 --http-addr=roach2 --listen-addr=roach2 --sql-addr=roach2 --insecure --join=roach1,roach2,roach3
+  #   networks:
+  #     - roachnet
+  #   ports:
+  #     - "26258:26258"
+  #     - "8081:8081"
+  #   # volumes:
+  #   #   - roach2:/cockroach/cockroach-data
+  
+
+  # roach3:
+  #   image: cockroachdb/cockroach:latest
+  #   container_name: roach3
+  #   hostname: roach3
+  #   restart: unless-stopped
+  #   # joins node with the others creating a cluster &&
+  #   command: start --advertise-addr=roach3:26357 --http-addr=roach3:8082 --listen-addr=roach3:26357 --sql-addr=roach3:26259 --insecure --join=roach1:26357,roach2:26357,roach3:26357
+  #   # command: start --advertise-addr=roach3 --http-addr=roach3 --listen-addr=roach3 --sql-addr=roach3 --insecure --join=roach1,roach2,roach3
+  #   networks:
+  #     - roachnet
+  #   ports:
+  #     - "26259:26259"
+  #     - "8082:8082"
+
   gql_ug:
     image: gql_ug
     build:
       # context definuje cestu k popisu
-      context: .
+      context: ./
     environment:
       # promenne, ktere lze cist v kontejneru
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=example
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_DB=data
-      - DEMO=True
+      - DEMO=true
       - GQL_PROXY=http://apollo:3000/api/gql/
     depends_on:
       # kontejnery, ktere musi byt spusteny drive

@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from uuid import uuid1 as uuid
 import random
 import pytest_asyncio
+from gql_ug.utils.gql_ug_proxy import get_ug_connection
 
 def uuid1():
     return f"{uuid()}"
@@ -18,7 +19,7 @@ serversTestscope = "function"
 
 @pytest.fixture
 def DBModels():
-    from DBDefinitions import (
+    from gql_ug.DBDefinitions import (
         GroupModel,
         GroupTypeModel,
         MembershipModel,
@@ -39,8 +40,7 @@ def DBModels():
             RoleTypeModel,
             UserModel
         ]
-
-from utils.DBFeeder import get_demodata
+from gql_ug.utils.DBFeeder import get_demodata
 
 @pytest.fixture(scope=serversTestscope)
 def DemoData():
@@ -52,7 +52,7 @@ async def Async_Session_Maker(DBModels):
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlalchemy.ext.asyncio import AsyncSession
     from sqlalchemy.orm import sessionmaker
-    from DBDefinitions import BaseModel
+    from gql_ug.DBDefinitions import BaseModel
     asyncEngine = create_async_engine("sqlite+aiosqlite:///:memory:")
     # asyncEngine = create_async_engine("sqlite+aiosqlite:///data.sqlite")
     async with asyncEngine.begin() as conn:
@@ -80,8 +80,8 @@ async def SQLite(Async_Session_Maker, DemoData, DBModels):
 
 @pytest.fixture
 def LoadersContext(SQLite):
-    from utils.Dataloaders import createLoaders
-    context = createLoaders(SQLite)
+    from gql_ug.utils.Dataloaders import createLoadersContext
+    context = createLoadersContext(SQLite)
     return context
 
 @pytest.fixture
@@ -97,17 +97,17 @@ def Request(AuthorizationHeaders):
     return Request()
 
 @pytest.fixture
-async def Context(AdminUser, SQLite, LoadersContext, Request):
+def Context(AdminUser, SQLite, LoadersContext, Request):
+    from gql_ug.utils.gql_ug_proxy import get_ug_connection
+    
     Async_Session_Maker = SQLite
-    loaders = await LoadersContext  # Await the coroutine to get the result
-
     return {
-        **loaders,
+        **LoadersContext,
         "request": Request,
         "": Async_Session_Maker,
         "user": AdminUser,
         "x": "",
-        # "ug_connection": get_ug_connection
+        "ug_connection": get_ug_connection
     }
 
 @pytest.fixture
@@ -124,7 +124,7 @@ def Info(Request, Context):
         @property
         def context(self):
             context = Context
-            context["request"] = Request
+            # context["request"] = Request
             return context
 
     return _Info()
@@ -315,7 +315,6 @@ def AllRole_UG_Server(AllRoleResponse):
     yield from runServer(port=8124, response=AllRoleResponse)
 
 def runOAuthServer(port):
-
     users= [
         {
             "id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003",
@@ -451,11 +450,11 @@ async def AuthorizationHeaders(AccessToken):
 @pytest.fixture
 def FastAPIClient(SQLite):
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   
@@ -464,11 +463,11 @@ def FastAPIClient(SQLite):
 @pytest.fixture
 def FastAPIClient2():
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   
@@ -490,11 +489,11 @@ def FastAPIClient2():
 @pytest.fixture
 def FastAPIClient3():
     from fastapi.testclient import TestClient
-    import DBDefinitions
+    import gql_ug.DBDefinitions
 
     def ComposeCString():
         return "sqlite+aiosqlite:///:memory:"   
-    DBDefinitions.ComposeConnectionString = ComposeCString
+    gql_ug.DBDefinitions.ComposeConnectionString = ComposeCString
 
     import main
     client = TestClient(main.app, raise_server_exceptions=False)   

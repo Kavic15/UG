@@ -12,7 +12,7 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -23,8 +23,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_user,
     resolve_user_id,
     resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -32,9 +30,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
@@ -55,16 +51,33 @@ class RoleGQLModel(BaseGQLModel):
     createdby = resolve_createdby
     lastchange = resolve_lastchange
     created = resolve_created
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
     roletype = resolve_roletype
     user = resolve_user
     group = resolve_group
+    group_id = resolve_group_id
+    user_id = resolve_user_id
 
 
     @strawberry.field(description="""Group where user has a role name""")
-    async def role(self, info: strawberry.types.Info) -> GroupGQLModel:
-        # result = await resolveGroupById(session,  self.group_id)
+    async def group(self, info: strawberry.types.Info) -> GroupGQLModel:
+        #result = await resolve_group_id(session,  self.group_id)
         result = await gql_ug.GraphTypeDefinitions.GroupGQLModel.resolve_reference(info, self.group_id)
+        return result
+    
+    @strawberry.field(description="""Group where user has a role name""")
+    async def user(self, info: strawberry.types.Info) -> UserGQLModel:
+        #result = await resolve_group_id(session,  self.group_id)
+        result = await gql_ug.GraphTypeDefinitions.UserGQLModel.resolve_reference(info, self.user_id)
+        return result
+    
+    RBACObjectGQLModel = Annotated["RBACObjectGQLModel", strawberry.lazy(".RBACObjectGQLModel")]
+    @strawberry.field(
+        description="""""",
+        permission_classes=[OnlyForAuthentized()])
+    async def rbacobject(self, info: strawberry.types.Info) -> Optional[RBACObjectGQLModel]:
+        from .RBACObjectGQLModel import RBACObjectGQLModel
+        result = None if self.id is None else await RBACObjectGQLModel.resolve_reference(info, self.id)
         return result
     
 #####################################################################
@@ -109,13 +122,13 @@ async def role_page(
     where: Optional[GroupWhereFilter] = None,
     orderby: Optional[str] = None,
     desc: Optional[bool] = None
-) -> List[GroupGQLModel]:
+) -> List[RoleGQLModel]:
     wf = None if where is None else strawberry.asdict(where)
     loader = getLoadersFromInfo(info).roles
     result = await loader.page(skip, limit, where=wf, orderby=orderby, desc=desc)
     return result
 
-role_by_id = createRootResolver_by_id(GroupGQLModel, description="Returns role by it's ID")
+role_by_id = createRootResolver_by_id(RoleGQLModel, description="Returns role by it's ID")
 
 from gql_ug.DBDefinitions import RoleModel
 from sqlalchemy import select
@@ -142,8 +155,7 @@ async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: uu
     cid = group_id
     while cid is not None:
         row = await grouploader.load(cid)
-        if row is None:
-            break
+        if row is None: break
         groupids.append(row.id)
         cid = row.mastergroup_id
     # print("groupids", groupids)
@@ -246,19 +258,12 @@ async def role_insert(self, info: strawberry.types.Info, role: RoleInsertGQLMode
     result.id = row.id
     return result
 
-@strawberry.mutation(description="""Deletes a role""")
-async def role_delete(self, info: strawberry.types.Info, role: RoleDeleteGQLModel) -> RoleResultGQLModel:
+@strawberry.mutation(
+    description="Deletes role.",
+        permission_classes=[OnlyForAuthentized()])
+async def role_delete(self, info: strawberry.types.Info, id: uuid.UUID) -> RoleResultGQLModel:
     loader = getLoadersFromInfo(info).roles
-
-    # Perform role deletion operation
-    deleted_row = await loader.delete(role.id)
-
-    result = RoleResultGQLModel()
-    result.id = role.id
-
-    if deleted_row is None:
-        result.msg = "fail"
-    else:
-        result.msg = "ok"
-
+    row = await loader.delete(id=id)
+    result = RoleResultGQLModel(id=id, msg="ok")
+    result.msg = "fail" if row is None else "ok"
     return result
