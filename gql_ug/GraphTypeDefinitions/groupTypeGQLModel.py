@@ -6,7 +6,7 @@ from .BaseGQLModel import BaseGQLModel
 import strawberry
 from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -17,8 +17,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_user,
     resolve_user_id,
     resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -26,9 +24,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 
@@ -51,7 +47,7 @@ class GroupTypeGQLModel(BaseGQLModel):
     created = resolve_created
     lastchange = resolve_lastchange
     createdby = resolve_createdby
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
     valid = resolve_valid
 
     @strawberry.field(description="""List of groups which have this type""")

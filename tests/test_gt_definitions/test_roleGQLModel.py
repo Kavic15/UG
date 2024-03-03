@@ -105,3 +105,21 @@ test_role_on_user = createFrontendQuery(
     variables={"id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
     asserts=[]
 )
+
+test_role_by_user = createFrontendQuery(
+    query="""
+        query($id: UUID!) {
+            roleByUser(userId: $id) {
+                id
+                valid
+                created
+                lastchange
+                group {
+                    name
+                }
+            }
+        }
+    """,
+    variables={"id": "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"},
+    asserts=[]
+)

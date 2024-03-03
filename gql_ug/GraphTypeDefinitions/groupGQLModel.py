@@ -7,7 +7,7 @@ from .BaseGQLModel import BaseGQLModel
 from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -17,9 +17,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_group_id,
     resolve_user,
     resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -27,9 +24,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createByIdResolver,
-    createAsPageResolver,
-    resolve_rbacobject
 )
 
 GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberryA.lazy(".groupTypeGQLModel")]
@@ -56,7 +50,7 @@ class GroupGQLModel(BaseGQLModel):
     created = resolve_created
     createdby = resolve_createdby
     
-    rbacobject = resolve_rbacobject
+    #rbacobject = resolve_rbacobject
 
     @strawberryA.field(description="""Type of group""", permission_classes=[OnlyForAuthentized()])
     async def grouptype(
@@ -145,7 +139,6 @@ async def group_page(
 async def group_by_id(
     self, info: strawberryA.types.Info, id: uuid.UUID
 ) -> Union[GroupGQLModel, None]:
-    print("3heeeer")
     result = await GroupGQLModel.resolve_reference(info=info, id=id)
     return result
 
@@ -213,7 +206,6 @@ async def group_update(self, info: strawberryA.types.Info, group: GroupUpdateGQL
 @strawberryA.mutation(description="Adds a new group record.", permission_classes=[OnlyForAuthentized()])
 async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQLModel) -> GroupResultGQLModel:
     user = getUserFromInfo(info)
-    print(user)
     group.createdby = uuid.UUID(user["id"])
     loader = getLoadersFromInfo(info).groups
     row = await loader.insert(group)
@@ -221,23 +213,6 @@ async def group_insert(self, info: strawberryA.types.Info, group: GroupInsertGQL
     result.msg = "ok"
     result.id = row.id
     return result
-
-# @strawberryA.mutation(description="""Deletes a group""")
-# async def group_delete(self, info: strawberryA.types.Info, group: GroupDeleteGQLModel) -> GroupResultGQLModel:
-#     loader = getLoadersFromInfo(info).groups
-
-#     # Perform group deletion operation
-#     deleted_row = await loader.delete(group.id)
-
-#     result = GroupResultGQLModel()
-#     result.id = group.id
-
-#     if deleted_row is None:
-#         result.msg = "fail"
-#     else:
-#         result.msg = "ok"
-
-#     return result
 
 @strawberryA.mutation(
     description="Deletes group.",

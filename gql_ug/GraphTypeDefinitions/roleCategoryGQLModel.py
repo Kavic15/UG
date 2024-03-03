@@ -13,7 +13,7 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -23,9 +23,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_group_id,
     resolve_user,
     resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -33,9 +30,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 RoleTypeGQLModel = Annotated["RoleTypeGQLModel", strawberry.lazy(".roleTypeGQLModel")]
@@ -53,7 +48,7 @@ class RoleCategoryGQLModel(BaseGQLModel):
     created = resolve_created
     lastchange = resolve_lastchange
     createdby = resolve_createdby
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
     
     @strawberry.field(description="""List of roles with this type""")
     async def role_types(self, info: strawberry.types.Info) -> List["RoleTypeGQLModel"]:

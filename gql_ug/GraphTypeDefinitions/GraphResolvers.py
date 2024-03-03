@@ -70,14 +70,14 @@ async def resolve_roletype(roletype_id):
     result = None if roletype_id is None else await RoleTypeGQLModel.resolve_reference(roletype_id)
     return result
 
-@strawberry.field(description="""Role Type ID """, permission_classes=[OnlyForAuthentized()])
-async def resolve_roletype_id(self) -> typing.Optional["RoleTypeGQLModel"]:
-    return await resolve_roletype(self.roletype_id)
+# @strawberry.field(description="""Role Type ID """, permission_classes=[OnlyForAuthentized()])
+# async def resolve_roletype_id(self) -> typing.Optional["RoleTypeGQLModel"]:
+#     return await resolve_roletype(self.roletype_id)
 
 
-@strawberry.field(description="""Level of authorization""", permission_classes=[OnlyForAuthentized()])
-def resolve_accesslevel(self) -> int:
-    return self.accesslevel
+# @strawberry.field(description="""Level of authorization""", permission_classes=[OnlyForAuthentized()])
+# def resolve_accesslevel(self) -> int:
+#     return self.accesslevel
 
 
 @strawberry.field(description="""Time of entity introduction""",permission_classes=[OnlyForAuthentized()])
@@ -95,12 +95,12 @@ async def resolve_changedby(self) -> typing.Optional["UserGQLModel"]:
     return await resolve_user(self.changedby)
 
 
-RBACObjectGQLModel = typing.Annotated["RBACObjectGQLModel", strawberry.lazy(".RBACObjectGQLModel")]
-@strawberry.field(description="""Who made last change""", permission_classes=[OnlyForAuthentized()])
-async def resolve_rbacobject(self, info: strawberry.types.Info) -> typing.Optional[RBACObjectGQLModel]:
-    from .RBACObjectGQLModel import RBACObjectGQLModel
-    result = None if self.rbacobject is None else await RBACObjectGQLModel.resolve_reference(info, self.rbacobject)
-    return result
+# RBACObjectGQLModel = typing.Annotated["RBACObjectGQLModel", strawberry.lazy(".RBACObjectGQLModel")]
+# @strawberry.field(description="""Who made last change""", permission_classes=[OnlyForAuthentized()])
+# async def resolve_rbacobject(self, info: strawberry.types.Info) -> typing.Optional[RBACObjectGQLModel]:
+#     from .RBACObjectGQLModel import RBACObjectGQLModel
+#     result = None if self.rbacobject is None else await RBACObjectGQLModel.resolve_reference(info, self.rbacobject)
+#     return result
 
 
 resolve_result_id: uuid.UUID = strawberry.field(description="primary key of CU operation object")
@@ -121,56 +121,56 @@ For update operation fail should be also stated when bad lastchange has been ent
 
 
 #---byID---#
-def createByIdResolver(
-    scalarType: None = None,
-    foreignKeyName: str = None,
-    description="Retrieves item by its id",
-    permission_classes=()
-):
-    assert scalarType is not None
-    assert foreignKeyName is not None
+# def createByIdResolver(
+#     scalarType: None = None,
+#     foreignKeyName: str = None,
+#     description="Retrieves item by its id",
+#     permission_classes=()
+# ):
+#     assert scalarType is not None
+#     assert foreignKeyName is not None
 
-    @strawberry.field(description=description, permission_classes=permission_classes)
-    async def foreignkeyScalar(
-        self, info: strawberry.types.Info
-    ) -> typing.Optional[scalarType]:
-        # 👇 self must have an attribute, otherwise it is fail of definition
-        assert hasattr(self, foreignKeyName)
-        id = getattr(self, foreignKeyName, None)
+#     @strawberry.field(description=description, permission_classes=permission_classes)
+#     async def foreignkeyScalar(
+#         self, info: strawberry.types.Info
+#     ) -> typing.Optional[scalarType]:
+#         # 👇 self must have an attribute, otherwise it is fail of definition
+#         assert hasattr(self, foreignKeyName)
+#         id = getattr(self, foreignKeyName, None)
 
-        result = None if id is None else await scalarType.resolve_reference(info=info, id=id)
-        return result
+#         result = None if id is None else await scalarType.resolve_reference(info=info, id=id)
+#         return result
 
-    return foreignkeyScalar
+#     return foreignkeyScalar
 
 #---asPAGE---#
-def createAsPageResolver(
-    scalarType: None = None,
-    whereFilterType: None = None,
-    foreignKeyName: str = None,
-    loaderLambda=lambda info: None,
-    description="Retrieves items paged",
-    skip: int = 0,
-    limit: int = 10):
-    assert scalarType is not None
-    assert foreignKeyName is not None
+# def createAsPageResolver(
+#     scalarType: None = None,
+#     whereFilterType: None = None,
+#     foreignKeyName: str = None,
+#     loaderLambda=lambda info: None,
+#     description="Retrieves items paged",
+#     skip: int = 0,
+#     limit: int = 10):
+#     assert scalarType is not None
+#     assert foreignKeyName is not None
 
-    @strawberry.field(description=description)
-    async def foreignkeyVector(
-            self, info: strawberry.types.Info,
-            skip: int = skip,
-            limit: int = limit,
-            where: typing.Optional[whereFilterType] = None
-    ) -> typing.List[scalarType]:
-        params = {foreignKeyName: self.id}
-        loader = loaderLambda(info)
-        assert loader is not None
+#     @strawberry.field(description=description)
+#     async def foreignkeyVector(
+#             self, info: strawberry.types.Info,
+#             skip: int = skip,
+#             limit: int = limit,
+#             where: typing.Optional[whereFilterType] = None
+#     ) -> typing.List[scalarType]:
+#         params = {foreignKeyName: self.id}
+#         loader = loaderLambda(info)
+#         assert loader is not None
 
-        wf = None if where is None else strawberry.asdict(where)
-        result = await loader.page(skip=skip, limit=limit, where=wf, extendedfilter=params)
-        return result
+#         wf = None if where is None else strawberry.asdict(where)
+#         result = await loader.page(skip=skip, limit=limit, where=wf, extendedfilter=params)
+#         return result
 
-    return foreignkeyVector
+#     return foreignkeyVector
 
 
 def createRootResolver_by_id(scalarType: None, description="Retrieves item by its id"):
@@ -185,29 +185,29 @@ def createRootResolver_by_id(scalarType: None, description="Retrieves item by it
     return by_id
 
 
-def createRootResolver_by_page(
-    scalarType: None, 
-    whereFilterType: None,
-    loaderLambda = lambda info: None, 
-    description="Retrieves items paged", 
-    skip: int=0, 
-    limit: int=10,
-    orderby: typing.Optional[str] = None,
-    desc: typing.Optional[bool] = None):
+# def createRootResolver_by_page(
+#     scalarType: None, 
+#     whereFilterType: None,
+#     loaderLambda = lambda info: None, 
+#     description="Retrieves items paged", 
+#     skip: int=0, 
+#     limit: int=10,
+#     orderby: typing.Optional[str] = None,
+#     desc: typing.Optional[bool] = None):
 
-    assert scalarType is not None
-    assert whereFilterType is not None
+#     assert scalarType is not None
+#     assert whereFilterType is not None
     
-    @strawberry.field(description=description,
-    permission_classes=[OnlyForAuthentized()])
-    async def paged(
-        self, info: strawberry.types.Info, 
-        skip: int=skip, limit: int=limit, where: typing.Optional[whereFilterType] = None,
-        orderby: typing.Optional[str] = None
-    ) -> typing.List[scalarType]:
-        loader = loaderLambda(info)
-        assert loader is not None
-        wf = None if where is None else strawberry.asdict(where)
-        result = await loader.page(skip=skip, limit=limit, where=wf, orderby=orderby, desc=desc)
-        return result
-    return paged
+#     @strawberry.field(description=description,
+#     permission_classes=[OnlyForAuthentized()])
+#     async def paged(
+#         self, info: strawberry.types.Info, 
+#         skip: int=skip, limit: int=limit, where: typing.Optional[whereFilterType] = None,
+#         orderby: typing.Optional[str] = None
+#     ) -> typing.List[scalarType]:
+#         loader = loaderLambda(info)
+#         assert loader is not None
+#         wf = None if where is None else strawberry.asdict(where)
+#         result = await loader.page(skip=skip, limit=limit, where=wf, orderby=orderby, desc=desc)
+#         return result
+#     return paged

@@ -13,7 +13,7 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -23,9 +23,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_group_id,
     resolve_user,
     resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -33,9 +30,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 GroupTypeGQLModel = Annotated["GroupTypeGQLModel", strawberry.lazy(".groupTypeGQLModel")]
@@ -58,7 +53,7 @@ class MembershipGQLModel(BaseGQLModel):
     valid = resolve_valid
     startdate = resolve_startdate
     enddate = resolve_enddate
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
 
     @strawberryA.field(description="""List of user, related to .....""", permission_classes=[OnlyForAuthentized()])
     async def user(

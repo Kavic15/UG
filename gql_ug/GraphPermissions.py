@@ -314,85 +314,85 @@ def OnlyForAuthentized(isList=False):
             
     return OnlyForAuthentized
 
-@cache
-def RoleBasedPermission(roles: str = "", whatreturn=[]):
-    roleIdsNeeded = RolesToList(roles)
+# @cache
+# def RoleBasedPermission(roles: str = "", whatreturn=[]):
+#     roleIdsNeeded = RolesToList(roles)
 
-    from gql_ug.GraphTypeDefinitions import RBACObjectGQLModel
-    class RolebasedPermission(BasePermission):
-        message = "User has not appropriate roles"
+#     from gql_ug.GraphTypeDefinitions import RBACObjectGQLModel
+#     class RolebasedPermission(BasePermission):
+#         message = "User has not appropriate roles"
 
-        def on_unauthorized(self) -> None:
-            return whatreturn
+#         def on_unauthorized(self) -> None:
+#             return whatreturn
         
-        async def has_permission(
-                self, source: Any, info: strawberry.types.Info, **kwargs: Any
-            # self, source, info: strawberry.types.Info, **kwargs
-            # self, source, **kwargs
-        ) -> bool:
-            # return False
-            logging.info(f"has_permission {kwargs}")
-            # assert False
+#         async def has_permission(
+#                 self, source: Any, info: strawberry.types.Info, **kwargs: Any
+#             # self, source, info: strawberry.types.Info, **kwargs
+#             # self, source, **kwargs
+#         ) -> bool:
+#             # return False
+#             logging.info(f"has_permission {kwargs}")
+#             # assert False
 
-            # GQLUG_ENDPOINT_URL = os.environ.get("GQLUG_ENDPOINT_URL", None)
-            # assert GQLUG_ENDPOINT_URL is not None
-            # proxy = createProxy(GQLUG_ENDPOINT_URL)
+#             # GQLUG_ENDPOINT_URL = os.environ.get("GQLUG_ENDPOINT_URL", None)
+#             # assert GQLUG_ENDPOINT_URL is not None
+#             # proxy = createProxy(GQLUG_ENDPOINT_URL)
 
-            print("RolebasedPermission", self) ##
-            print("RolebasedPermission", source) ## self as in GQLModel
-            print("RolebasedPermission", kwargs)
+#             print("RolebasedPermission", self) ##
+#             print("RolebasedPermission", source) ## self as in GQLModel
+#             print("RolebasedPermission", kwargs)
 
-            assert hasattr(source, "rbacobject"), f"missing rbacobject on {source}"
+#             assert hasattr(source, "rbacobject"), f"missing rbacobject on {source}"
             
-            rbacobject = source.rbacobject
+#             rbacobject = source.rbacobject
             
-            #rbacobject
-            assert rbacobject is not None, f"RoleBasedPermission cannot be used on {source} as it has None value"
-            # rbacobject = "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"
+#             #rbacobject
+#             assert rbacobject is not None, f"RoleBasedPermission cannot be used on {source} as it has None value"
+#             # rbacobject = "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"
 
 
-            ## zjistime, jake role jsou vztazeny k rbacobject 
-            # print(response)
+#             ## zjistime, jake role jsou vztazeny k rbacobject 
+#             # print(response)
 
-            authorizedroles = await RBACObjectGQLModel.resolve_roles(info=info, id=rbacobject)
-            # authloader = getLoadersFromInfo(info=info).authorizations
-            # authloader.setTokenByInfo(info)
-            # authorizedroles = await authloader.load(rbacobject)
+#             authorizedroles = await RBACObjectGQLModel.resolve_roles(info=info, id=rbacobject)
+#             # authloader = getLoadersFromInfo(info=info).authorizations
+#             # authloader.setTokenByInfo(info)
+#             # authorizedroles = await authloader.load(rbacobject)
             
 
-            print("RolebasedPermission.rbacobject", rbacobject)
-            # _ = await self.canEditGroup(session,  source.id, ...)
-            print("RolebasedPermission.authorized", authorizedroles)
+#             print("RolebasedPermission.rbacobject", rbacobject)
+#             # _ = await self.canEditGroup(session,  source.id, ...)
+#             print("RolebasedPermission.authorized", authorizedroles)
             
-            # logging.info(f"RolebasedPermission.authorized {authorizedroles}")
+#             # logging.info(f"RolebasedPermission.authorized {authorizedroles}")
 
-            # user_id = "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"
-            user = getUserFromInfo(info)
-            # logging.info(f"RolebasedPermission.authorized user {user}")
-            user_id = user["id"]
-            s = [r for r in authorizedroles if (r["roletype"]["id"] in roleIdsNeeded)and(r["user"]["id"] == user_id)]
-            # s = [r for r in authorizedroles if r["roletype"]["id"] in roleIdsNeeded]
+#             # user_id = "2d9dc5ca-a4a2-11ed-b9df-0242ac120003"
+#             user = getUserFromInfo(info)
+#             # logging.info(f"RolebasedPermission.authorized user {user}")
+#             user_id = user["id"]
+#             s = [r for r in authorizedroles if (r["roletype"]["id"] in roleIdsNeeded)and(r["user"]["id"] == user_id)]
+#             # s = [r for r in authorizedroles if r["roletype"]["id"] in roleIdsNeeded]
             
-            logging.info(f"RolebasedPermission.authorized user {user} has roles {s}")
+#             logging.info(f"RolebasedPermission.authorized user {user} has roles {s}")
 
-            if len(s) > 0:
-                print("RolebasedPermission.access allowed")
-            else:
-                print("RolebasedPermission.access denied")
-            print(s)
-            print(roleIdsNeeded)
-            isAllowed = len(s) > 0
-            return isAllowed
+#             if len(s) > 0:
+#                 print("RolebasedPermission.access allowed")
+#             else:
+#                 print("RolebasedPermission.access denied")
+#             print(s)
+#             print(roleIdsNeeded)
+#             isAllowed = len(s) > 0
+#             return isAllowed
         
-    return RolebasedPermission
+#     return RolebasedPermission
 
 
-class UserGDPRPermission(BasePermission):
-    message = "User is not authenticated"
-    async def has_permission(
-        self, source, info: strawberry.types.Info, **kwargs
-    ) -> bool:
-        print("UserGDPRPermission", source)
-        print("UserGDPRPermission", self)
-        print("UserGDPRPermission", kwargs)
-        return True
+# class UserGDPRPermission(BasePermission):
+#     message = "User is not authenticated"
+#     async def has_permission(
+#         self, source, info: strawberry.types.Info, **kwargs
+#     ) -> bool:
+#         print("UserGDPRPermission", source)
+#         print("UserGDPRPermission", self)
+#         print("UserGDPRPermission", kwargs)
+#         return True

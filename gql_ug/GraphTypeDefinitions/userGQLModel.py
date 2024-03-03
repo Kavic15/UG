@@ -8,7 +8,7 @@ from .BaseGQLModel import BaseGQLModel
 import strawberry
 from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -18,9 +18,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_group_id,
     resolve_user,
     resolve_user_id,
-    resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -28,17 +25,12 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 MembershipGQLModel = Annotated["MembershipGQLModel", strawberry.lazy(".membershipGQLModel")]
 RoleGQLModel = Annotated["RoleGQLModel", strawberry.lazy(".roleGQLModel")]
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
-
-#TODO
-from gql_ug.GraphPermissions import UserGDPRPermission
 
 @strawberry.federation.type(keys=["id"], description="""Entity representing a user""")
 class UserGQLModel(BaseGQLModel):
@@ -66,15 +58,6 @@ class UserGQLModel(BaseGQLModel):
         permission_classes=[OnlyForAuthentized()])
     def email(self) -> Optional[str]:
         return self.email
-
-    #TODO
-    # @strawberry.field(
-    #     description="""GDPRInfo for permision test""", 
-    #     permission_classes=[OnlyForAuthentized(), UserGDPRPermission])
-    # def GDPRInfo(self, info: strawberry.types.Info) -> Union[str, None]:
-    #     user_active = getUserFromInfo(info)
-    #     print(user_active)
-    #     return "GDPRInfo"
 
     @strawberry.field(
         description="""List of users, where the user is member""",
@@ -125,10 +108,6 @@ from .utils import createInputs
 from dataclasses import dataclass
 MembershipWhereFilter = Annotated["MembershipWhereFilter", strawberry.lazy(".membershipGQLModel")]
 
-# from .GraphResolvers import createRootResolver_by_id
-# user_by_id = createRootResolver_by_id(
-#     scalarType=UserGQLModel, 
-#     description="Returns a list of users (paged)")
 
 @createInputs
 @dataclass
@@ -162,49 +141,6 @@ async def user_by_id(
 ) -> Union[UserGQLModel, None]:
     result = await UserGQLModel.resolve_reference(info=info, id=id)
     return result
-
-#user_page = createRootResolver_by_page(UserGQLModel, description="Returns page of users")
-#user_by_id = createRootResolver_by_id(UserGQLModel, description="Returns user by it's ID")
-
-
-
-
-# @strawberry.field(
-#     description="""Finds an user by letters in name and surname, letters should be atleast three"""
-# )
-# async def user_by_letters(
-#     self,
-#     info: strawberry.types.Info,
-#     validity: Union[bool, None] = None,
-#     letters: str = "",
-# ) -> List[UserGQLModel]:
-#     loader = getLoader(info).users
-
-#     if len(letters) < 3:
-#         return []
-#     stmt = loader.getSelectStatement()
-#     model = loader.getModel()
-#     stmt = stmt.where((model.name + " " + model.surname).like(f"%{letters}%"))
-#     if validity is not None:
-#         stmt = stmt.filter_by(valid=True)
-
-#     result = await loader.execute_select(stmt)
-#     return result
-
-# from .GraphResolvers import UserByRoleTypeAndGroupStatement
-
-# @strawberry.field(description="""Finds users who plays in a group a roletype""")
-# async def users_by_group_and_role_type(
-#     self,
-#     info: strawberry.types.Info,
-#     group_id: uuid.UUID,
-#     role_type_id: uuid.UUID,
-# ) -> List[UserGQLModel]:
-#     # result = await resolveUserByRoleTypeAndGroup(session,  group_id, role_type_id)
-#     loader = getLoader(info).users
-#     result = await loader.execute_select(UserByRoleTypeAndGroupStatement)
-#     return result
-
 
 #####################################################################
 #

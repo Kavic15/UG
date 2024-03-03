@@ -28,6 +28,8 @@ class MembershipModel(BaseModel):
     lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now())
     createdby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
     changedby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
+    startdate = Column(DateTime)
+    enddate = Column(DateTime)
 
     user = relationship("UserModel", back_populates="memberships")
     group = relationship("GroupModel", back_populates="memberships")

@@ -12,7 +12,7 @@ from gql_ug.utils.Dataloaders import getLoadersFromInfo, getUserFromInfo
 #     resolveFinanceAll
 # )
 
-from gql_ug.GraphPermissions import RoleBasedPermission, OnlyForAuthentized
+from gql_ug.GraphPermissions import OnlyForAuthentized
 
 from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_id,
@@ -23,8 +23,6 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_user,
     resolve_user_id,
     resolve_roletype,
-    resolve_roletype_id,
-    resolve_accesslevel,
     resolve_created,
     resolve_lastchange,
     resolve_startdate,
@@ -32,9 +30,7 @@ from gql_ug.GraphTypeDefinitions.GraphResolvers import (
     resolve_createdby,
     resolve_changedby,
     resolve_valid,
-    createRootResolver_by_id,
-    createRootResolver_by_page,
-    resolve_rbacobject
+    createRootResolver_by_id
 )
 
 GroupGQLModel = Annotated["GroupGQLModel", strawberry.lazy(".groupGQLModel")]
@@ -55,7 +51,7 @@ class RoleGQLModel(BaseGQLModel):
     createdby = resolve_createdby
     lastchange = resolve_lastchange
     created = resolve_created
-    rbacobject = resolve_rbacobject
+    # rbacobject = resolve_rbacobject
     roletype = resolve_roletype
     user = resolve_user
     group = resolve_group
@@ -159,8 +155,7 @@ async def resolve_roles_on_group(self, info: strawberry.types.Info, group_id: uu
     cid = group_id
     while cid is not None:
         row = await grouploader.load(cid)
-        if row is None:
-            break
+        if row is None: break
         groupids.append(row.id)
         cid = row.mastergroup_id
     # print("groupids", groupids)
